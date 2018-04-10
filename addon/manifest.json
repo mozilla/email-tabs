@@ -1,0 +1,35 @@
+{
+  "manifest_version": 2,
+  "name": "Email Tabs",
+  "version": "0.1",
+  "description": "Email a list of your current tabs",
+  "author": "Ian Bicking (http://www.ianbicking.org)",
+  "homepage_url": "https://github.com/ianb/email-tabs/",
+  "applications": {
+    "gecko": {
+      "id": "email-tabs@mozilla.org",
+      "strict_min_version": "57.0a1"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": "side-view.svg",
+    "default_title": "Open the copy drawer"
+  },
+  "sidebar_action": {
+    "default_title": "Email Tabs",
+    "default_panel": "sidebar.html"
+  },
+  "web_accessible_resources": [
+  ],
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "<all_urls>",
+    "contextMenus"
+  ]
+}
