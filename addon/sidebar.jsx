@@ -106,17 +106,19 @@ class Email extends React.Component {
     let tabList = this.props.tabs.map(
       tab => <EmailTab key={tab.id} tab={tab} />
     );
-    return <div>{tabList}</div>;
+    // Note for email HTML we remove <section> tags before inserting
+    return <section>{tabList}</section>;
   }
 }
 
 class EmailTab extends React.Component {
   render() {
     let tab = this.props.tab;
-    return <div>
+    return <section>
       <a href={tab.url}>{tab.title}</a> <br />
       <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} />
-    </div>;
+      <br /> <br />
+    </section>;
   }
 }
 
@@ -162,6 +164,14 @@ browser.tabs.onRemoved.addListener(renderWithDelay);
 browser.runtime.onMessage.addListener((message) => {
   if (message.type == "renderRequest") {
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<Email tabs={message.tabs} />);
+    emailHtml = emailHtml.replace(/<\/?section>/gi, " ");
+    let lastValue;
+    while (lastValue !== emailHtml) {
+      lastValue = emailHtml;
+      emailHtml = emailHtml.trimRight();
+      emailHtml = emailHtml.replace(/<br\s*\/?>$/i, "");
+    }
+    emailHtml = emailHtml.replace(/(<br\s*\/?>\s*)*/, "");
     return Promise.resolve(emailHtml);
   }
 });
