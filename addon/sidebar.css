@@ -3,6 +3,10 @@ html {
   font-family: sans-serif;
 }
 
+body.popup {
+  min-width: 32em;
+}
+
 .controls {
   position: fixed;
   top: 0;

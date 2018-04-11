@@ -176,4 +176,8 @@ browser.runtime.onMessage.addListener((message) => {
   }
 });
 
+if (location.hash === "#popup") {
+  document.body.classList.add("popup");
+}
+
 render(true);
