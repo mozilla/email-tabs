@@ -36,14 +36,43 @@ class TabList extends React.Component {
 
 class Page extends React.Component {
   render() {
+    let allChecked = true;
+    this.indeterminate = false;
+    for (let tab of this.props.tabs) {
+      if (!this.props.selected.get(tab.id)) {
+        allChecked = false;
+      } else {
+        this.indeterminate = true;
+      }
+    }
+    if (allChecked) {
+      this.indeterminate = false;
+    }
     return <div>
-      <div>
-        <input type="text" placeholder="Search" value={this.props.searchTerm} onChange={this.onChangeSearch.bind(this)} ref={search => this.search = search} />
-        <button onClick={this.onClickCheckAll.bind(this)}>Check all/none</button>
-        <button onClick={this.sendEmail.bind(this)}>Send email</button>
+      <div className="controls">
+        <div>
+          <input type="text" id="search" placeholder="Search" value={this.props.searchTerm} onChange={this.onChangeSearch.bind(this)} ref={search => this.search = search} />
+        </div>
+        <div>
+          <label htmlFor="allCheckbox">
+            <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
+            All
+          </label>
+          <button onClick={this.sendEmail.bind(this)}>✉ Send email</button>
+        </div>
       </div>
-      <TabList tabs={this.props.tabs} selected={this.props.selected} />
+      <div className="tabList">
+        <TabList tabs={this.props.tabs} selected={this.props.selected} />
+      </div>
     </div>;
+  }
+
+  componentDidMount() {
+    this.allCheckbox.indeterminate = this.indeterminate;
+  }
+
+  componentDidUpdate() {
+    this.componentDidMount();
   }
 
   onChangeSearch() {
@@ -102,8 +131,15 @@ function searchTermMatches(tab, searchTerm) {
   return match(tab.title) || match(tab.url);
 }
 
-async function render() {
+async function render(firstRun) {
   let tabs = await browser.tabs.query({});
+  if (firstRun) {
+    for (let tab of tabs) {
+      if (tab.active) {
+        selected.set(tab.id, true);
+      }
+    }
+  }
   if (searchTerm) {
     tabs = tabs.filter(tab => searchTermMatches(tab, searchTerm));
   }
@@ -111,9 +147,17 @@ async function render() {
   ReactDOM.render(page, document.getElementById("container"));
 }
 
+/** Calls render(), then calls it again soon */
+function renderWithDelay() {
+  render();
+  setTimeout(render, 300);
+}
+
 for (let eventName of ["onAttached", "onCreated", "onDetached", "onMoved", "onUpdated"]) {
   browser.tabs[eventName].addListener(render);
 }
+
+browser.tabs.onRemoved.addListener(renderWithDelay);
 
 browser.runtime.onMessage.addListener((message) => {
   if (message.type == "renderRequest") {
@@ -122,4 +166,4 @@ browser.runtime.onMessage.addListener((message) => {
   }
 });
 
-render();
+render(true);

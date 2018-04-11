@@ -13,4 +13,10 @@ $ npm install
 $ npm start
 ```
 
-You must login to gmail.com to send an email.
+You must login to gmail.com before sending an email.
+
+If you are developing, note that the `.jsx` file will not trigger a reload on its own. To enable this reloading, in a separate terminal window run:
+
+```sh
+$ npm run watch
+```

@@ -1,5 +1,4 @@
 browser.runtime.onMessage.addListener((message) => {
-  console.log("got message", message.html.length);
   setHtml(message.html);
 });
 
@@ -9,5 +8,5 @@ function setHtml(html) {
     setTimeout(setHtml.bind(this, html), 100);
     return;
   }
-  editableEl.innerHTML = html + "\n<br />" + editableEl.innerHTML;
+  editableEl.innerHTML = html + "\n<br />" + editableEl.innerHTML; // eslint-disable-line no-unsanitized/property
 }

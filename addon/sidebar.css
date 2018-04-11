@@ -1,0 +1,27 @@
+body,
+html {
+  font-family: sans-serif;
+}
+
+.controls {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  border-bottom: 1px solid #000;
+}
+
+.tabList {
+  padding-top: 2.5em;
+}
+
+.tabList ul {
+  padding-left: 0;
+}
+
+.tabList li {
+  list-style: none;
+}
+
+#search {
+  width: 100%;
+}

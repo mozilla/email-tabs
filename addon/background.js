@@ -5,9 +5,11 @@ browser.contextMenus.create({
   documentUrlPatterns: ["<all_urls>"]
 });
 
+/*
 browser.browserAction.onClicked.addListener(async () => {
   browser.sidebarAction.open();
 });
+*/
 
 browser.contextMenus.onClicked.addListener(async (info, tab) => {
   browser.sidebarAction.open();
@@ -33,16 +35,13 @@ async function sendEmail(tabIds) {
     let data = await browser.tabs.executeScript(tabId, {
       file: "capture-data.js",
     });
-    console.log("got data", data[0]);
     Object.assign(tabInfo[tabId], data[0]);
   }
   let html = await browser.runtime.sendMessage({
     type: "renderRequest",
     tabs: tabIds.map(id => tabInfo[id])
   });
-  console.log("going to create new tab");
   let newTab = await browser.tabs.create({url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to="});
-  console.log("got it!", newTab.id);
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
   });
@@ -50,6 +49,4 @@ async function sendEmail(tabIds) {
     type: "setHtml",
     html
   });
-  console.log("Result:", tabInfo);
-  console.log("sending email for tabs...", tabIds);
 }

@@ -17,8 +17,10 @@
     ]
   },
   "browser_action": {
+    "browser_style": true,
     "default_icon": "side-view.svg",
-    "default_title": "Open the copy drawer"
+    "default_title": "Open the copy drawer",
+    "default_popup": "sidebar.html"
   },
   "sidebar_action": {
     "default_title": "Email Tabs",
