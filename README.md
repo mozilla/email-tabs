@@ -1,6 +1,8 @@
 # Email Tabs
 
-This is an experimental extension for Firefox that composes an email with information from a bunch of tabs in it.
+This is an experimental extension for Firefox that composes a Gmail email with information from a bunch of tabs in it.
+
+Note that only Gmail is supported, because there's no general standard for composing HTML emails.
 
 ## Install
 
