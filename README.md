@@ -13,4 +13,4 @@ $ npm install
 $ npm start
 ```
 
-You must login to gmail.com before sending an email will be successful.
+You must login to gmail.com to send an email.
