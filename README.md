@@ -9,10 +9,10 @@ Note that only Gmail is supported, because there's no general standard for compo
 To install and test out:
 
 ```sh
-$ git clone https://github.com/ianb/email-tabs.git
-$ cd email-tabs
-$ npm install
-$ npm start
+git clone https://github.com/ianb/email-tabs.git
+cd email-tabs
+npm install
+npm start
 ```
 
 You must login to gmail.com before sending an email.
@@ -20,5 +20,5 @@ You must login to gmail.com before sending an email.
 If you are developing, note that the `.jsx` file will not trigger a reload on its own. To enable this reloading, in a separate terminal window run:
 
 ```sh
-$ npm run watch
+npm run watch
 ```
