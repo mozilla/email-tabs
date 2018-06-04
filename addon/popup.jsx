@@ -104,6 +104,9 @@ class Page extends React.Component {
       type: "sendEmail",
       tabIds: sendTabs,
     });
+    setTimeout(() => {
+      window.close();
+    }, 100);
   }
 }
 
