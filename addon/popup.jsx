@@ -97,16 +97,16 @@ class Page extends React.Component {
     render();
   }
 
-  sendEmail() {
+  async sendEmail() {
     let sendTabs = this.props.tabs.filter(tab => this.props.selected.get(tab.id));
     sendTabs = sendTabs.map(tab => tab.id);
-    browser.runtime.sendMessage({
+    await browser.runtime.sendMessage({
       type: "sendEmail",
       tabIds: sendTabs,
     });
     setTimeout(() => {
       window.close();
-    }, 100);
+    }, 300);
   }
 }
 
@@ -156,7 +156,6 @@ async function render(firstRun) {
   }
   let page = <Page selected={selected} searchTerm={searchTerm} tabs={tabs} />;
   ReactDOM.render(page, document.getElementById("panel"));
-  console.log("Result:", document.getElementById("panel").outerHTML)
 }
 
 /** Calls render(), then calls it again soon */
