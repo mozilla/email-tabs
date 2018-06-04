@@ -55,6 +55,7 @@ body {
   display: flex;
   flex-direction: column;
   max-height: 300px;
+  overflow: scroll;
   flex: 1 1;
 }
 
@@ -202,4 +203,8 @@ supply a favicon */
 
 #recent-tabs[style$="none;"] + #open-tabs .separator {
   display: none !important;
+}
+
+li.active .tab {
+  font-weight: bold;
 }

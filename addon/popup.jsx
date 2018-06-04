@@ -1,6 +1,7 @@
 /* globals React, ReactDOM */
 
 let searchTerm;
+let activeTabLi;
 let selected = new Map();
 
 class Tab extends React.Component {
@@ -9,8 +10,16 @@ class Tab extends React.Component {
     let checkId = `checkbox-${this.props.tab.id}`;
     let isOkay = tab.url.startsWith("http");
     let checked = this.props.selected.get(tab.id);
+    let liClass;
+    if (tab.active) {
+      liClass = "active";
+    }
     let image = <span className="tab__image" style={{backgroundImage: `url(${tab.favIconUrl})`}} />;
-    return <li>
+    return <li className={liClass} ref={li => {
+      if (this.props.tab.active) {
+        activeTabLi = li;
+      }
+    }}>
       <label htmlFor={checkId} className="tab">
         { isOkay ? <input type="checkbox" value={tab.id} checked={checked}
         onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
@@ -156,6 +165,12 @@ async function render(firstRun) {
   }
   let page = <Page selected={selected} searchTerm={searchTerm} tabs={tabs} />;
   ReactDOM.render(page, document.getElementById("panel"));
+  if (firstRun) {
+    activeTabLi.scrollIntoView({
+      behavior: "instant",
+      block: "center"
+    });
+  }
 }
 
 /** Calls render(), then calls it again soon */
