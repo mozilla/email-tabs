@@ -39,7 +39,7 @@
     "lint:js": "eslint addon",
     "lint:styles": "stylelint ./addon/*.css",
     "build": "npm-run-all build:*",
-    "build:deps": "mkdir -p addon/build/ && cp node_modules/react/umd/react.production.min.js node_modules/react-dom/umd/react-dom.production.min.js node_modules/react-dom/umd/react-dom-server.browser.production.min.js addon/build/ && babel --retain-lines addon/sidebar.jsx > addon/build/sidebar.js",
+    "build:deps": "mkdir -p addon/build/ && cp node_modules/react/umd/react.production.min.js node_modules/react-dom/umd/react-dom.production.min.js node_modules/react-dom/umd/react-dom-server.browser.production.min.js addon/build/ && babel --retain-lines addon/popup.jsx > addon/build/popup.js",
     "build:web-ext": "web-ext build --source-dir=addon --overwrite-dest --ignore-files '*.tmpl'",
     "package": "npm run build && cp web-ext-artifacts/`ls -t1 web-ext-artifacts | head -n 1` addon.xpi",
     "run": "mkdir -p ./Profile && npm run build:deps && web-ext run --source-dir=addon -p ./Profile --browser-console --keep-profile-changes -f ${FIREFOX:-nightly}",

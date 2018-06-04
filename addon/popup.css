@@ -1,0 +1,205 @@
+body,
+html {
+  font: message-box;
+  overflow: hidden;
+}
+
+:root {
+  --dark-theme-background-color: #4a4a4f;
+  --dark-theme-highlight-color: #6d6d6f;
+  --dark-theme-superhighlight-color: hsla(0, 0%, 80%, 0.45);
+  --dark-theme-color: #fff;
+  --dark-theme-links: #45a1ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  min-width: 320px;
+  overflow: hidden !important;
+}
+
+#panel {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 440px;
+  min-width: 320px;
+  width: 100%;
+}
+
+#panel,
+.tabs-section__title,
+.tab {
+  font: menu;
+}
+
+.separator {
+  background: hsla(210, 4%, 10%, 0.14);
+  height: 1px;
+  margin: 6px 0;
+}
+
+.tabs-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.tabs-section {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  flex: 1 1;
+}
+
+.tabs-section__title {
+  align-items: center;
+  color: GrayText;
+  display: flex;
+  font-weight: normal;
+  height: 24px;
+  margin: 0;
+  padding: 4px 12px;
+}
+
+.tabs-section:first-child .tabs-section__title {
+  margin-top: 6px;
+}
+
+.tabs-section__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#open-tabs-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tab {
+  align-items: center;
+  border: 0;
+  width: 100%;
+  background: #fff;
+  display: flex;
+  font-weight: normal;
+  height: 26.5px;
+  padding-inline-start: 18px;
+  padding: 4px 12px;
+}
+
+.tab:hover,
+.tab:focus {
+  background: #ededf0;
+}
+
+.tab__image,
+.tab__text {
+  pointer-events: none;
+}
+
+.tab__image {
+  background-size: 16px 16px;
+  flex: 0 0 16px;
+  height: 16px;
+  margin-inline-end: 8px;
+}
+
+/* this is a hack if, for any reason, a site does not
+supply a favicon */
+
+.tab__image[style*=undefined] {
+  background-image: url(images/globe.svg) !important;
+}
+
+.tab__text {
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-footer {
+  border-top: 1px solid hsla(210, 4%, 10%, 0.14);
+  display: flex;
+  flex: 0 0 41px;
+  margin: 6px 0 0;
+}
+
+.panel-footer.toggle-disabled {
+  grid-template-columns: 1fr;
+}
+
+.feedback-button,
+.mobile-toggle {
+  border: 0;
+  align-items: center;
+  background: hsla(0, 0%, 80%, 0.3);
+  color: rgb(26, 26, 26);
+  cursor: default;
+  display: flex;
+  flex: 1;
+  font: menu;
+  justify-content: center;
+  margin-bottom: 0;
+  padding: 12px 4px;
+  text-decoration: none;
+}
+
+.mobile-toggle {
+  border-inline-end: 1px solid hsla(210, 4%, 10%, 0.14);
+}
+
+.toggle-disabled .mobile-toggle {
+  display: none;
+}
+
+.feedback-button:hover,
+.mobile-toggle:hover {
+  background: hsla(0, 0%, 80%, 0.4);
+}
+
+#getting-started {
+  display: none;
+  padding: 1em;
+}
+
+/* Dark theme */
+
+#panel.dark-theme,
+#panel.dark-theme .tab {
+  background: var(--dark-theme-background-color);
+  color: var(--dark-theme-color);
+}
+
+#panel.dark-theme .tab:hover,
+#panel.dark-theme .tab:focus,
+#panel.dark-theme .separator {
+  background: var(--dark-theme-highlight-color);
+}
+
+#panel.dark-theme .feedback-button,
+#panel.dark-theme .mobile-toggle {
+  background-color: var(--dark-theme-superhighlight-color);
+  color: var(--dark-theme-color);
+}
+
+#panel.dark-theme .feedback-button:hover,
+#panel.dark-theme .mobile-toggle:hover {
+  background-color: hsla(0, 0%, 80%, 0.6);
+}
+
+#recent-tabs[style$="none;"] + #open-tabs {
+  margin-top: 6px;
+}
+
+#recent-tabs[style$="none;"] + #open-tabs .separator {
+  display: none !important;
+}

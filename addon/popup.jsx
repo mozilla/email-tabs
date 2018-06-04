@@ -9,12 +9,13 @@ class Tab extends React.Component {
     let checkId = `checkbox-${this.props.tab.id}`;
     let isOkay = tab.url.startsWith("http");
     let checked = this.props.selected.get(tab.id);
+    let image = <span className="tab__image" style={{backgroundImage: `url(${tab.favIconUrl})`}} />;
     return <li>
-      <label htmlFor={checkId}>
+      <label htmlFor={checkId} className="tab">
         { isOkay ? <input type="checkbox" value={tab.id} checked={checked}
-        onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : null }
-        <img height="16" width="16" src={tab.favIconUrl} />
-        <span>{tab.title}</span>
+        onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
+        { image }
+        <span className="tab__text">{tab.title}</span>
       </label>
     </li>;
   }
@@ -30,7 +31,12 @@ class TabList extends React.Component {
     let tabElements = this.props.tabs.map(
       tab => <Tab tab={tab} key={tab.id} selected={this.props.selected} />
     );
-    return <ul>{tabElements}</ul>;
+    return <div className="tabs-wrapper">
+      <section className="tabs-section" style={{display: "flex"}}>
+        <h2 className="tabs-section__title">Tabs</h2>
+        <ul className="tabs-section__list" role="navigation">{tabElements}</ul>
+      </section>
+    </div>;
   }
 }
 
@@ -146,7 +152,8 @@ async function render(firstRun) {
     tabs = tabs.filter(tab => searchTermMatches(tab, searchTerm));
   }
   let page = <Page selected={selected} searchTerm={searchTerm} tabs={tabs} />;
-  ReactDOM.render(page, document.getElementById("container"));
+  ReactDOM.render(page, document.getElementById("panel"));
+  console.log("Result:", document.getElementById("panel").outerHTML)
 }
 
 /** Calls render(), then calls it again soon */
