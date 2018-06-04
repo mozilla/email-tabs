@@ -134,7 +134,9 @@ class EmailTab extends React.Component {
     let tab = this.props.tab;
     return <section>
       <a href={tab.url}>{tab.title}</a> <br />
-      <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} />
+      <div style={{display: "inline-block", boxShadow: "7px 7px 20px #999"}}>
+        <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} />
+      </div>
       <br /> <br />
     </section>;
   }
