@@ -140,7 +140,7 @@ function searchTermMatches(tab, searchTerm) {
 }
 
 async function render(firstRun) {
-  let tabs = await browser.tabs.query({});
+  let tabs = await browser.tabs.query({currentWindow: true});
   if (firstRun) {
     for (let tab of tabs) {
       if (tab.active) {
