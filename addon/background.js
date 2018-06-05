@@ -1,20 +1,3 @@
-browser.contextMenus.create({
-  id: "email-tabs",
-  title: "Email tabs...",
-  contexts: ["page", "tab"],
-  documentUrlPatterns: ["<all_urls>"]
-});
-
-/*
-browser.browserAction.onClicked.addListener(async () => {
-  browser.sidebarAction.open();
-});
-*/
-
-browser.contextMenus.onClicked.addListener(async (info, tab) => {
-  browser.sidebarAction.open();
-});
-
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     sendEmail(message.tabIds);

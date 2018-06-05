@@ -2,9 +2,9 @@
   "name": "email-tabs",
   "description": "Experimental extension to email a list of your tabs",
   "version": "0.1.0",
-  "author": "Ian Bicking <ian@ianbicking.org>",
+  "author": "Ian Bicking <ibicking@mozilla.com>",
   "bugs": {
-    "url": "https://github.com/ianb/email-tabs"
+    "url": "https://github.com/mozilla/email-tabs"
   },
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -25,12 +25,12 @@
     "stylelint-config-standard": "^18.2.0",
     "web-ext": "^2.4.0"
   },
-  "homepage": "https://github.com/ianb/email-tabs/",
+  "homepage": "https://github.com/mozilla/email-tabs/",
   "license": "MPL-2.0",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ianb/email-tabs.git"
+    "url": "git+https://github.com/mozilla/email-tabs.git"
   },
   "scripts": {
     "start": "npm-run-all build run",

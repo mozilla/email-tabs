@@ -4,7 +4,7 @@
   "version": "0.1",
   "description": "Email a list of your current tabs",
   "author": "Ian Bicking (http://www.ianbicking.org)",
-  "homepage_url": "https://github.com/ianb/email-tabs/",
+  "homepage_url": "https://github.com/mozilla/email-tabs/",
   "applications": {
     "gecko": {
       "id": "email-tabs@mozilla.org",
@@ -25,7 +25,6 @@
   "permissions": [
     "activeTab",
     "tabs",
-    "<all_urls>",
-    "contextMenus"
+    "<all_urls>"
   ]
 }
