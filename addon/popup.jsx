@@ -132,12 +132,19 @@ class Email extends React.Component {
 class EmailTab extends React.Component {
   render() {
     let tab = this.props.tab;
+    let img = null;
+    if (tab.screenshot) {
+      img = <section>
+        <div style={{display: "inline-block", boxShadow: "7px 7px 20px #999"}}>
+          <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} />
+        </div>
+        <br />
+      </section>;
+    }
     return <section>
       <a href={tab.url}>{tab.title}</a> <br />
-      <div style={{display: "inline-block", boxShadow: "7px 7px 20px #999"}}>
-        <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} />
-      </div>
-      <br /> <br />
+      { img }
+      <br />
     </section>;
   }
 }

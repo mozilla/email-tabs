@@ -1,6 +1,6 @@
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
-    sendEmail(message.tabIds);
+    return sendEmail(message.tabIds);
   } else {
     console.error("Unexpected message type:", message.type);
   }
@@ -12,13 +12,21 @@ async function sendEmail(tabIds) {
   for (let tab of allTabs) {
     if (tabIds.includes(tab.id)) {
       tabInfo[tab.id] = {url: tab.url, title: tab.title, favIcon: tab.favIconUrl, id: tab.id};
+      if (tab.discarded) {
+        console.info("Reloading discarded tab", tab.id, tab.url);
+        await browser.tabs.reload(tab.id);
+      }
     }
   }
   for (let tabId of tabIds) {
-    let data = await browser.tabs.executeScript(tabId, {
-      file: "capture-data.js",
-    });
-    Object.assign(tabInfo[tabId], data[0]);
+    try {
+      let data = await browser.tabs.executeScript(tabId, {
+        file: "capture-data.js",
+      });
+      Object.assign(tabInfo[tabId], data[0]);
+    } catch (e) {
+      console.warn("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
+    }
   }
   let html = await browser.runtime.sendMessage({
     type: "renderRequest",
@@ -28,7 +36,7 @@ async function sendEmail(tabIds) {
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
   });
-  browser.tabs.sendMessage(newTab.id, {
+  await browser.tabs.sendMessage(newTab.id, {
     type: "setHtml",
     html
   });
