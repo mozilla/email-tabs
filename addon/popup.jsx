@@ -134,8 +134,10 @@ class EmailTab extends React.Component {
     let tab = this.props.tab;
     let img = null;
     if (tab.screenshot) {
+      // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
+      // Note: box-shadow is specifically filtered out by gmail, other styles may get through
       img = <section>
-        <div style={{display: "inline-block", boxShadow: "7px 7px 20px #999"}}>
+        <div style={{display: "inline-block", boxShadow: "7px 7px 20px #999", border: "1px solid #999"}}>
           <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} />
         </div>
         <br />
