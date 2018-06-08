@@ -25,6 +25,7 @@
   "permissions": [
     "activeTab",
     "tabs",
+    "notifications",
     "<all_urls>"
   ]
 }

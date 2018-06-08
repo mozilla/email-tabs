@@ -4,6 +4,19 @@ browser.runtime.onMessage.addListener((message) => {
   setHtml(message.html);
 });
 
+let completed = false;
+
+window.addEventListener("beforeunload", () => {
+  if (location.href.includes("accounts.google.com")) {
+    // We've been attached to the wrong page anyway
+    return;
+  }
+  browser.runtime.sendMessage({
+    type: "sendFailed"
+  });
+  console.error("beforeunload");
+});
+
 function setHtml(html) {
   let editableEl = document.querySelector("div.editable[contenteditable]");
   if (!editableEl) {
@@ -42,6 +55,7 @@ function setHtml(html) {
   browser.runtime.sendMessage({
     type: "clearSelectionCache"
   });
+  completed = true;
   // This code waits for the images to get uploaded, then reapplies any attributes that were
   // left out during the upload (specifically alt is of interest):
   let fixupInterval = setInterval(() => {

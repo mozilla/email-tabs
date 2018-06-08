@@ -3,6 +3,7 @@
 let searchTerm;
 let activeTabLi;
 let selected = new Map();
+const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
 class Tab extends React.Component {
   render() {
@@ -70,6 +71,7 @@ class Page extends React.Component {
       this.indeterminate = false;
     }
     return <div>
+      { this.props.showLoginError ? <LoginError /> : null }
       <div className="controls">
         <div>
           <input type="text" id="search" placeholder="Search" value={this.props.searchTerm} onChange={this.onChangeSearch.bind(this)} ref={search => this.search = search} />
@@ -115,6 +117,7 @@ class Page extends React.Component {
 
   async sendEmail() {
     let sendTabs = this.props.tabs.filter(tab => this.props.selected.get(tab.id));
+    localStorage.removeItem("loginInterrupt");
     sendTabs = sendTabs.map(tab => tab.id);
     await browser.runtime.sendMessage({
       type: "sendEmail",
@@ -158,6 +161,15 @@ class EmailTab extends React.Component {
   }
 }
 
+class LoginError extends React.Component {
+  render() {
+    return <div id="login-error">
+      Last attempt to send an email failed, probably because you weren't logged into your email.
+      Please make sure you are logged in, then try again.
+    </div>;
+  }
+}
+
 function searchTermMatches(tab, searchTerm) {
   let caseInsensitive = searchTerm.toLowerCase() === searchTerm;
   let match;
@@ -183,7 +195,11 @@ async function render(firstRun) {
   if (searchTerm) {
     tabs = tabs.filter(tab => searchTermMatches(tab, searchTerm));
   }
-  let page = <Page selected={selected} searchTerm={searchTerm} tabs={tabs} />;
+  let showLoginError = parseInt(localStorage.getItem("loginInterrupt") || "0", 10);
+  if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
+    showLoginError = 0;
+  }
+  let page = <Page selected={selected} searchTerm={searchTerm} tabs={tabs} showLoginError={showLoginError} />;
   ReactDOM.render(page, document.getElementById("panel"));
   if (firstRun) {
     activeTabLi.scrollIntoView({

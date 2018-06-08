@@ -172,6 +172,14 @@ supply a favicon */
   padding: 1em;
 }
 
+#login-error {
+  margin: 3px;
+  background-color: #600;
+  color: #ddd;
+  border: 1px solid #000;
+  padding: 4px;
+}
+
 li.active .tab {
   font-weight: bold;
 }
