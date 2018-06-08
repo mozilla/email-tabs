@@ -1,10 +1,14 @@
 /* globals cloneInto */
 
 browser.runtime.onMessage.addListener((message) => {
+  thisTabId = message.thisTabId;
+  closeTabInfo = message.tabInfo;
   setHtml(message.html);
 });
 
 let completed = false;
+let thisTabId;
+let closeTabInfo;
 
 window.addEventListener("beforeunload", () => {
   if (completed) {
@@ -86,4 +90,48 @@ function setHtml(html) {
     }
     clearTimeout(fixupInterval);
   }, 100);
+}
+
+let completedTimeout = setInterval(() => {
+  let viewMessageEl = document.getElementById("link_vsm");
+  if (viewMessageEl) {
+    clearTimeout(completedTimeout);
+    showCloseButtons();
+  }
+}, 300);
+
+function showCloseButtons() {
+  let html = `<div style="
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: -50px;
+    width: 400px;
+  ">
+
+    <button class="done">Done</button> <br>
+    <button class="close-all-tabs">Close ${Object.keys(closeTabInfo).length} tabs</button>
+
+  </div>
+  `;
+  let div = document.createElement("div");
+  div.innerHTML = html;
+  div = div.childNodes[0];
+  let doneButton = div.querySelector(".done");
+  let closeAllTabsButton = div.querySelector(".close-all-tabs");
+  doneButton.addEventListener("click", async () => {
+    await browser.runtime.sendMessage({
+      type: "closeComposeTab",
+      tabId: thisTabId,
+    });
+  });
+  closeAllTabsButton.addEventListener("click", async () => {
+    await browser.runtime.sendMessage({
+      type: "closeTabs",
+      closeTabInfo,
+      composeTabId: thisTabId
+    })
+  });
+  document.body.appendChild(div);
 }

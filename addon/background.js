@@ -7,6 +7,10 @@ browser.runtime.onMessage.addListener((message, source) => {
   } else if (message.type == "sendFailed") {
     loginInterrupt();
     return null;
+  } else if (message.type === "closeComposeTab") {
+    return browser.tabs.remove(message.tabId);
+  } else if (message.type === "closeTabs") {
+    return closeManyTabs(message.composeTabId, message.closeTabInfo);
   }
   console.error("Unexpected message type:", message.type);
   return null;
@@ -17,7 +21,7 @@ async function sendEmail(tabIds) {
   let tabInfo = {};
   for (let tab of allTabs) {
     if (tabIds.includes(tab.id)) {
-      tabInfo[tab.id] = {url: tab.url, title: tab.title, favIcon: tab.favIconUrl, id: tab.id};
+      tabInfo[tab.id] = {url: tab.url, urlBar: tab.url, title: tab.title, favIcon: tab.favIconUrl, id: tab.id};
       if (tab.discarded) {
         console.info("Reloading discarded tab", tab.id, tab.url);
         await browser.tabs.reload(tab.id);
@@ -62,7 +66,9 @@ async function sendEmail(tabIds) {
   });
   await browser.tabs.sendMessage(newTab.id, {
     type: "setHtml",
-    html
+    html,
+    thisTabId: newTab.id,
+    tabInfo
   });
 }
 
@@ -83,4 +89,17 @@ function loginInterrupt() {
     message: "Please try again after logging into your email"
   });
   console.error("Sending failed, probably due to login");
+}
+
+async function closeManyTabs(composeTabId, otherTabInfo) {
+  let tabs = await browser.tabs.query({});
+  let toClose = [composeTabId];
+  for (let tab of tabs) {
+    // Note that .url might be the canonical URL, but .urlBar is what shows up in the URL bar
+    // and the tab API
+    if (otherTabInfo[tab.id] && otherTabInfo[tab.id].urlBar === tab.url) {
+      toClose.push(tab.id);
+    }
+  }
+  await browser.tabs.remove(toClose);
 }
