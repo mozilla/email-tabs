@@ -35,7 +35,7 @@
   "scripts": {
     "start": "npm-run-all build run",
     "lint": "npm-run-all lint:*",
-    "lint:addon": "npm run package && addons-linter ./addon.xpi -o text",
+    "lint:addon": "web-ext lint -s addon --ignore-files=build/*.js",
     "lint:js": "eslint addon",
     "lint:styles": "stylelint ./addon/*.css",
     "build": "npm-run-all build:*",

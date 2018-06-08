@@ -1,9 +1,9 @@
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     return sendEmail(message.tabIds);
-  } else {
-    console.error("Unexpected message type:", message.type);
   }
+  console.error("Unexpected message type:", message.type);
+  return null;
 });
 
 async function sendEmail(tabIds) {

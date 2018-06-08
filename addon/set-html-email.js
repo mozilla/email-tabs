@@ -1,3 +1,5 @@
+/* globals cloneInto */
+
 browser.runtime.onMessage.addListener((message) => {
   setHtml(message.html);
 });
@@ -32,7 +34,9 @@ function setHtml(html) {
   // Gmail does a fixup on paste, so we have to simulate a paste to make it fix the images we inserted:
   let paste = new Event("paste");
   paste = paste.wrappedJSObject;
-  paste.clipboardData = cloneInto({getData: function() {}}, window, {cloneFunctions: true});
+  paste.clipboardData = cloneInto({
+    getData() {}
+  }, window, {cloneFunctions: true});
   editableEl.dispatchEvent(paste);
   // This code waits for the images to get uploaded, then reapplies any attributes that were
   // left out during the upload (specifically alt is of interest):

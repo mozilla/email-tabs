@@ -172,6 +172,10 @@ supply a favicon */
   padding: 1em;
 }
 
+li.active .tab {
+  font-weight: bold;
+}
+
 /* Dark theme */
 
 #panel.dark-theme,
@@ -203,8 +207,4 @@ supply a favicon */
 
 #recent-tabs[style$="none;"] + #open-tabs .separator {
   display: none !important;
-}
-
-li.active .tab {
-  font-weight: bold;
 }
