@@ -31,6 +31,9 @@ class Tab extends React.Component {
 
   onChange() {
     selected.set(this.props.tab.id, this.checkbox.checked);
+    if (this.props.onChange) {
+      this.props.onChange();
+    }
     render();
   }
 }
@@ -38,7 +41,7 @@ class Tab extends React.Component {
 class TabList extends React.Component {
   render() {
     let tabElements = this.props.tabs.map(
-      tab => <Tab tab={tab} key={tab.id} selected={this.props.selected} />
+      tab => <Tab tab={tab} key={tab.id} selected={this.props.selected} onChange={this.onChangeSelection.bind(this)} />
     );
     return <div className="tabs-wrapper">
       <section className="tabs-section" style={{display: "flex"}}>
@@ -46,6 +49,9 @@ class TabList extends React.Component {
         <ul className="tabs-section__list" role="navigation">{tabElements}</ul>
       </section>
     </div>;
+  }
+  onChangeSelection() {
+    selectionCache.saveSelectedTabs(this.props.tabs);
   }
 }
 
@@ -103,6 +109,7 @@ class Page extends React.Component {
     for (let tab of this.props.tabs) {
       selected.set(tab.id, !allChecked);
     }
+    selectionCache.clear();
     render();
   }
 
@@ -165,9 +172,11 @@ function searchTermMatches(tab, searchTerm) {
 async function render(firstRun) {
   let tabs = await browser.tabs.query({currentWindow: true});
   if (firstRun) {
-    for (let tab of tabs) {
-      if (tab.active) {
-        selected.set(tab.id, true);
+    if (!selectionCache.loadSelectedTabs(tabs)) {
+      for (let tab of tabs) {
+        if (tab.active) {
+          selected.set(tab.id, true);
+        }
       }
     }
   }
@@ -183,6 +192,61 @@ async function render(firstRun) {
     });
   }
 }
+
+const selectionCache = {
+  timeout: 30*60*1000, // 30 minutes
+
+  key: "selectionCache",
+
+  load() {
+    let value = localStorage.getItem(this.key);
+    if (!value) {
+      return null;
+    }
+    value = JSON.parse(value);
+    if (Date.now() - value.time > this.timeout) {
+      localStorage.removeItem(this.key);
+      return null;
+    }
+    return value.cache;
+  },
+
+  loadSelectedTabs(tabs) {
+    let value = this.load();
+    if (!value) {
+      return false;
+    }
+    let anyFound = false;
+    for (let tab of tabs) {
+      if (value[tab.id] && value[tab.id].url === tab.url) {
+        anyFound = true;
+        selected.set(tab.id, true);
+      }
+    }
+    return anyFound;
+  },
+
+  save(value) {
+    localStorage.setItem(this.key, JSON.stringify({
+      cache: value,
+      time: Date.now()
+    }));
+  },
+
+  saveSelectedTabs(tabs) {
+    let newValue = {};
+    for (let tab of tabs) {
+      if (selected.get(tab.id)) {
+        newValue[tab.id] = {url: tab.url};
+      }
+    }
+    this.save(newValue);
+  },
+
+  clear() {
+    localStorage.removeItem(this.key);
+  }
+};
 
 /** Calls render(), then calls it again soon */
 function renderWithDelay() {

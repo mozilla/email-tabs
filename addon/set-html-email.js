@@ -38,6 +38,10 @@ function setHtml(html) {
     getData() {}
   }, window, {cloneFunctions: true});
   editableEl.dispatchEvent(paste);
+  // Now that we've successfully sent an mail, we don't have to persist the selection from before:
+  browser.runtime.sendMessage({
+    type: "clearSelectionCache"
+  });
   // This code waits for the images to get uploaded, then reapplies any attributes that were
   // left out during the upload (specifically alt is of interest):
   let fixupInterval = setInterval(() => {

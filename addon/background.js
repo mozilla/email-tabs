@@ -1,6 +1,9 @@
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     return sendEmail(message.tabIds);
+  } else if (message.type === "clearSelectionCache") {
+    localStorage.removeItem("selectionCache");
+    return null;
   }
   console.error("Unexpected message type:", message.type);
   return null;
