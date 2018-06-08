@@ -36,7 +36,7 @@
     "start": "npm-run-all build run",
     "lint": "npm-run-all lint:*",
     "lint:addon": "web-ext lint -s addon --ignore-files=build/*.js",
-    "lint:js": "eslint addon",
+    "lint:js": "eslint addon --ext=js,jsx",
     "lint:styles": "stylelint ./addon/*.css",
     "build": "npm-run-all build:*",
     "build:deps": "mkdir -p addon/build/ && cp node_modules/react/umd/react.production.min.js node_modules/react-dom/umd/react-dom.production.min.js node_modules/react-dom/umd/react-dom-server.browser.production.min.js addon/build/ && babel --retain-lines addon/popup.jsx > addon/build/popup.js",

@@ -1,4 +1,4 @@
-/* globals React, ReactDOM */
+/* globals React, ReactDOM, ReactDOMServer */
 
 let searchTerm;
 let activeTabLi;
@@ -197,7 +197,7 @@ for (let eventName of ["onAttached", "onCreated", "onDetached", "onMoved", "onUp
 browser.tabs.onRemoved.addListener(renderWithDelay);
 
 browser.runtime.onMessage.addListener((message) => {
-  if (message.type == "renderRequest") {
+  if (message.type === "renderRequest") {
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<Email tabs={message.tabs} />);
     emailHtml = emailHtml.replace(/<\/?section>/gi, " ");
     let lastValue;
@@ -209,6 +209,7 @@ browser.runtime.onMessage.addListener((message) => {
     emailHtml = emailHtml.replace(/(<br\s*\/?>\s*)*/, "");
     return Promise.resolve(emailHtml);
   }
+  return null;
 });
 
 if (location.hash === "#popup") {
