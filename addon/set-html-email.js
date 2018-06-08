@@ -7,6 +7,10 @@ browser.runtime.onMessage.addListener((message) => {
 let completed = false;
 
 window.addEventListener("beforeunload", () => {
+  if (completed) {
+    // Actually everything worked out just fine
+    return;
+  }
   if (location.href.includes("accounts.google.com")) {
     // We've been attached to the wrong page anyway
     return;

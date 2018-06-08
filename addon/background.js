@@ -38,7 +38,18 @@ async function sendEmail(tabIds) {
     type: "renderRequest",
     tabs: tabIds.map(id => tabInfo[id])
   });
-  let newTab = await browser.tabs.create({url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to="});
+  let currentTabs = await browser.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  let openerTabId;
+  if (currentTabs && currentTabs.length) {
+    openerTabId = currentTabs[0].id;
+  }
+  let newTab = await browser.tabs.create({
+    url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=",
+    openerTabId,
+  });
   setTimeout(async () => {
     let currentTab = await browser.tabs.get(newTab.id);
     if (currentTab.url.includes("accounts.google.com")) {
