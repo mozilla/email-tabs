@@ -21,11 +21,12 @@ async function sendEmail(tabIds) {
   let tabInfo = {};
   for (let tab of allTabs) {
     if (tabIds.includes(tab.id)) {
-      tabInfo[tab.id] = {url: tab.url, urlBar: tab.url, title: tab.title, favIcon: tab.favIconUrl, id: tab.id};
       if (tab.discarded) {
         console.info("Reloading discarded tab", tab.id, tab.url);
         await browser.tabs.reload(tab.id);
+        tab = await browser.tabs.get(tab.id);
       }
+      tabInfo[tab.id] = {url: tab.url, urlBar: tab.url, title: tab.title, favIcon: tab.favIconUrl, id: tab.id};
     }
   }
   for (let tabId of tabIds) {
