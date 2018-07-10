@@ -1,6 +1,5 @@
 /* globals React, ReactDOM, ReactDOMServer */
 
-let searchTerm;
 let activeTabLi;
 let selected = new Map();
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
@@ -74,9 +73,6 @@ class Page extends React.Component {
       { this.props.showLoginError ? <LoginError /> : null }
       <div className="controls">
         <div>
-          <input type="text" id="search" placeholder="Search" value={this.props.searchTerm} onChange={this.onChangeSearch.bind(this)} ref={search => this.search = search} />
-        </div>
-        <div>
           <label htmlFor="allCheckbox">
             <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
             All
@@ -96,11 +92,6 @@ class Page extends React.Component {
 
   componentDidUpdate() {
     this.componentDidMount();
-  }
-
-  onChangeSearch() {
-    searchTerm = this.search.value;
-    render();
   }
 
   onClickCheckAll() {
@@ -170,17 +161,6 @@ class LoginError extends React.Component {
   }
 }
 
-function searchTermMatches(tab, searchTerm) {
-  let caseInsensitive = searchTerm.toLowerCase() === searchTerm;
-  let match;
-  if (caseInsensitive) {
-    match = (a) => a.toLowerCase().includes(searchTerm);
-  } else {
-    match = (a) => a.includes(searchTerm);
-  }
-  return match(tab.title) || match(tab.url);
-}
-
 async function render(firstRun) {
   let tabs = await browser.tabs.query({currentWindow: true});
   if (firstRun) {
@@ -192,14 +172,11 @@ async function render(firstRun) {
       }
     }
   }
-  if (searchTerm) {
-    tabs = tabs.filter(tab => searchTermMatches(tab, searchTerm));
-  }
   let showLoginError = parseInt(localStorage.getItem("loginInterrupt") || "0", 10);
   if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
     showLoginError = 0;
   }
-  let page = <Page selected={selected} searchTerm={searchTerm} tabs={tabs} showLoginError={showLoginError} />;
+  let page = <Page selected={selected} tabs={tabs} showLoginError={showLoginError} />;
   ReactDOM.render(page, document.getElementById("panel"));
   if (firstRun) {
     activeTabLi.scrollIntoView({
