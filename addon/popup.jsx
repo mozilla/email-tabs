@@ -45,7 +45,6 @@ class TabList extends React.Component {
     );
     return <div className="tabs-wrapper">
       <section className="tabs-section" style={{display: "flex"}}>
-        <h2 className="tabs-section__title">Tabs</h2>
         <ul className="tabs-section__list" role="navigation">{tabElements}</ul>
       </section>
     </div>;
@@ -75,14 +74,24 @@ class Page extends React.Component {
         <div>
           <label htmlFor="allCheckbox">
             <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
-            All
+            Select All
           </label>
-          <button onClick={this.sendEmail.bind(this)}>✉ Send email</button>
         </div>
       </div>
+      <div className="separator"></div>
       <div className="tabList">
         <TabList tabs={this.props.tabs} selected={this.props.selected} />
       </div>
+
+      <footer class="panel-footer toggle-enabled">
+        <button onClick={this.copyTabs.bind(this)}>
+          Copy Tabs to Clipboard
+        </button>
+        <button onClick={this.sendEmail.bind(this)}>
+          Email Tabs
+        </button>
+      </footer>
+
     </div>;
   }
 
@@ -117,6 +126,10 @@ class Page extends React.Component {
     setTimeout(() => {
       window.close();
     }, 300);
+  }
+
+  async copyTabs() {
+    // FIXME: implement
   }
 }
 

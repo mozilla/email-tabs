@@ -127,6 +127,14 @@ supply a favicon */
   white-space: nowrap;
 }
 
+.controls {
+  padding: 4px 12px;
+}
+
+.controls input[type=checkbox] {
+  margin-right: 6px;
+}
+
 .panel-footer {
   border-top: 1px solid hsla(210, 4%, 10%, 0.14);
   display: flex;
@@ -138,8 +146,7 @@ supply a favicon */
   grid-template-columns: 1fr;
 }
 
-.feedback-button,
-.mobile-toggle {
+.panel-footer button {
   border: 0;
   align-items: center;
   background: hsla(0, 0%, 80%, 0.3);
@@ -154,16 +161,11 @@ supply a favicon */
   text-decoration: none;
 }
 
-.mobile-toggle {
+.panel-footer button:first-child {
   border-inline-end: 1px solid hsla(210, 4%, 10%, 0.14);
 }
 
-.toggle-disabled .mobile-toggle {
-  display: none;
-}
-
-.feedback-button:hover,
-.mobile-toggle:hover {
+.panel-footer button {
   background: hsla(0, 0%, 80%, 0.4);
 }
 
@@ -198,21 +200,11 @@ li.active .tab {
   background: var(--dark-theme-highlight-color);
 }
 
-#panel.dark-theme .feedback-button,
-#panel.dark-theme .mobile-toggle {
+#panel.dark-theme .panel-footer button {
   background-color: var(--dark-theme-superhighlight-color);
   color: var(--dark-theme-color);
 }
 
-#panel.dark-theme .feedback-button:hover,
-#panel.dark-theme .mobile-toggle:hover {
+#panel.dark-theme .panel-footer button:hover {
   background-color: hsla(0, 0%, 80%, 0.6);
-}
-
-#recent-tabs[style$="none;"] + #open-tabs {
-  margin-top: 6px;
-}
-
-#recent-tabs[style$="none;"] + #open-tabs .separator {
-  display: none !important;
 }
