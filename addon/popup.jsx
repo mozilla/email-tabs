@@ -3,6 +3,7 @@
 let activeTabLi;
 let selected = new Map();
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
+const SELECTION_TEXT_LIMIT = 1000; // 1000 characters max
 
 class Tab extends React.Component {
   render() {
@@ -147,6 +148,15 @@ class EmailTab extends React.Component {
   render() {
     let tab = this.props.tab;
     let img = null;
+    let selection = null;
+    if (tab.selection) {
+      let text = tab.selection;
+      if (text.length > SELECTION_TEXT_LIMIT) {
+        text = text.substr(0, SELECTION_TEXT_LIMIT) + "...";
+      }
+      text = `"${text}"`;
+      selection = <section>{text} <br /></section>;
+    }
     if (tab.screenshot) {
       // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
       // Note: box-shadow is specifically filtered out by gmail, other styles may get through
@@ -159,6 +169,7 @@ class EmailTab extends React.Component {
     }
     return <section>
       <a href={tab.url}>{tab.title}</a> <br />
+      { selection }
       { img }
       <br />
     </section>;

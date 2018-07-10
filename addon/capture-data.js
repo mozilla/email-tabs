@@ -10,6 +10,12 @@
     url = el.getAttribute("href") || url;
   }
 
+  let selection = null;
+
+  if (window.getSelection()) {
+    selection = String(window.getSelection());
+  }
+
   function screenshotBox(box, scale) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -31,6 +37,7 @@
   return {
     title,
     url,
+    selection,
     screenshot: screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth)
   };
 })();
