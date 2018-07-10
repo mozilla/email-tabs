@@ -1,6 +1,8 @@
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     return sendEmail(message.tabIds);
+  } else if (message.type == "copyTabHtml") {
+    return copyTabHtml(message.tabIds);
   } else if (message.type === "clearSelectionCache") {
     localStorage.removeItem("selectionCache");
     return null;
@@ -16,7 +18,7 @@ browser.runtime.onMessage.addListener((message, source) => {
   return null;
 });
 
-async function sendEmail(tabIds) {
+async function getTabInfo(tabIds) {
   let allTabs = await browser.tabs.query({});
   let tabInfo = {};
   for (let tab of allTabs) {
@@ -39,6 +41,11 @@ async function sendEmail(tabIds) {
       console.warn("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
     }
   }
+  return tabInfo;
+}
+
+async function sendEmail(tabIds) {
+  let tabInfo = await getTabInfo(tabIds);
   let html = await browser.runtime.sendMessage({
     type: "renderRequest",
     tabs: tabIds.map(id => tabInfo[id])
@@ -71,6 +78,26 @@ async function sendEmail(tabIds) {
     thisTabId: newTab.id,
     tabInfo
   });
+}
+
+async function copyTabHtml(tabIds) {
+  let tabInfo = await getTabInfo(tabIds);
+  let html = await browser.runtime.sendMessage({
+    type: "renderRequest",
+    tabs: tabIds.map(id => tabInfo[id])
+  });
+  copyHtmlToClipboard(html);
+}
+
+function copyHtmlToClipboard(html) {
+  let container = document.createElement("div");
+  container.innerHTML = html;
+  document.body.appendChild(container);
+  window.getSelection().removeAllRanges();
+  let range = document.createRange();
+  range.selectNode(container);
+  window.getSelection().addRange(range)
+  document.execCommand('copy');
 }
 
 let loginInterruptedTime;

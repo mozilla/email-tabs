@@ -130,7 +130,15 @@ class Page extends React.Component {
   }
 
   async copyTabs() {
-    // FIXME: implement
+    let sendTabs = this.props.tabs.filter(tab => this.props.selected.get(tab.id));
+    sendTabs = sendTabs.map(tab => tab.id);
+    await browser.runtime.sendMessage({
+      type: "copyTabHtml",
+      tabIds: sendTabs,
+    });
+    setTimeout(() => {
+      window.close();
+    }, 300);
   }
 }
 

@@ -30,6 +30,7 @@
     "activeTab",
     "tabs",
     "notifications",
+    "clipboardWrite",
     "<all_urls>"
   ]
 }
