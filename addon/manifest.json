@@ -5,6 +5,10 @@
   "description": "Email a list of your current tabs",
   "author": "Ian Bicking (http://www.ianbicking.org)",
   "homepage_url": "https://github.com/mozilla/email-tabs/",
+  "icons": {
+    "48": "emailtabs.svg",
+    "96": "emailtabs.svg"
+  },
   "applications": {
     "gecko": {
       "id": "email-tabs@mozilla.org",
@@ -18,8 +22,8 @@
   },
   "browser_action": {
     "browser_style": true,
-    "default_icon": "generic-fox.png",
-    "default_title": "Open the email popup",
+    "default_icon": "emailtabs.svg",
+    "default_title": "Email tabs",
     "default_popup": "popup.html"
   },
   "permissions": [
