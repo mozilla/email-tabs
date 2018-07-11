@@ -1,8 +1,8 @@
 {
   "name": "email-tabs",
-  "description": "Experimental extension to email a list of your tabs",
+  "description": "Compose an email from your tabs",
   "version": "0.1.0",
-  "author": "Ian Bicking <ibicking@mozilla.com>",
+  "author": "Mozilla Test Pilot Team (https://testpilot.firefox.com)",
   "bugs": {
     "url": "https://github.com/mozilla/email-tabs"
   },
@@ -21,6 +21,7 @@
     "eslint-plugin-mozilla": "^0.6.0",
     "eslint-plugin-no-unsanitized": "^2.0.2",
     "eslint-plugin-react": "^7.7.0",
+    "mustache": "^2.3.0",
     "npm-run-all": "^4.1.3",
     "stylelint": "^9.1.1",
     "stylelint-config-standard": "^18.2.0",
@@ -41,6 +42,7 @@
     "lint:styles": "stylelint ./addon/*.css",
     "build": "npm-run-all build:*",
     "build:deps": "mkdir -p addon/build/ && cp node_modules/react/umd/react.production.min.js node_modules/react-dom/umd/react-dom.production.min.js node_modules/react-dom/umd/react-dom-server.browser.production.min.js addon/build/ && babel --retain-lines addon/popup.jsx > addon/build/popup.js",
+    "build:manifest": "node -e 'let input = JSON.parse(fs.readFileSync(\"package.json\")); input.version = input.version.slice(0, -1) + Math.floor((Date.now() - new Date(new Date().getFullYear().toString()).getTime()) / 3600000); console.log(JSON.stringify(input))' | mustache - addon/manifest.json.tmpl > addon/manifest.json",
     "build:web-ext": "web-ext build --source-dir=addon --overwrite-dest --ignore-files '*.tmpl'",
     "package": "npm run build && cp web-ext-artifacts/`ls -t1 web-ext-artifacts | head -n 1` addon.xpi",
     "run": "mkdir -p ./Profile && npm run build:deps && web-ext run --source-dir=addon -p ./Profile --browser-console --keep-profile-changes -f ${FIREFOX:-nightly}",

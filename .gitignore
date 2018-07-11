@@ -4,3 +4,4 @@
 /web-ext-artifacts
 /addon/build
 /addon.xpi
+/addon/manifest.json

@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
   "name": "Email Tabs",
-  "version": "0.1",
-  "description": "Email a list of your current tabs",
-  "author": "Ian Bicking (http://www.ianbicking.org)",
-  "homepage_url": "https://github.com/mozilla/email-tabs/",
+  "version": "{{version}}",
+  "description": "{{{description}}}",
+  "author": "{{{author}}}",
+  "homepage_url": "{{{homepage}}}",
   "icons": {
     "48": "emailtabs.svg",
     "96": "emailtabs.svg"
@@ -12,7 +12,8 @@
   "applications": {
     "gecko": {
       "id": "email-tabs@mozilla.org",
-      "strict_min_version": "57.0a1"
+      "strict_min_version": "57.0a1",
+      "update_url": "https://testpilot.firefox.com/files/email-tabs@mozilla.org/signed-addon.xpi"
     }
   },
   "background": {
