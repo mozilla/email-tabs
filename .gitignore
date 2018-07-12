@@ -1,6 +1,5 @@
 /Profile
 /node_modules
-/package-lock.json
 /web-ext-artifacts
 /addon/build
 /addon.xpi
