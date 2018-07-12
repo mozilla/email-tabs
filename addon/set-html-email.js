@@ -35,20 +35,18 @@ function setHtml(html) {
   let oldHtml = editableEl.innerHTML;
   editableEl.innerHTML = html + "\n<br />" ; // eslint-disable-line no-unsanitized/property
   let images = editableEl.querySelectorAll("img");
+  let imageAttributeFixups = [];
   // This saves all the attribues on any images. These attributes would typically have been
   // set in the EmailTab.render method. The attributes will be lost during upload, and reapplied
   // further down in this file:
   for (let image of images) {
-    let parent = image.parentNode;
-    let fixupAttributes = [];
+    let savedAttributes = [];
+    imageAttributeFixups.push(savedAttributes);
     for (let attr of image.attributes) {
       if (["src", "height", "width"].includes(attr.name)) {
         continue;
       }
-      fixupAttributes.push([attr.name, attr.value]);
-    }
-    if (fixupAttributes.length) {
-      parent.setAttribute("data-fixup", JSON.stringify(fixupAttributes));
+      savedAttributes.push([attr.name, attr.value]);
     }
   }
   editableEl.innerHTML = editableEl.innerHTML + oldHtml; // eslint-disable-line no-unsanitized/property
@@ -69,24 +67,20 @@ function setHtml(html) {
   let fixupInterval = setInterval(() => {
     let surlImages = document.querySelectorAll("img[data-surl]");
     if (surlImages.length <= prevImages) {
+      // No new images have appeared, so we'll wait for the next interval
       return;
     }
     // FIXME: if there are no good images in the email, then this will never be reached
-    // (which is okay, nothing to fixup then, but )
-    for (let image of surlImages) {
-      let parent = image.parentNode;
-      while (parent && parent !== editableEl && !parent.hasAttribute("data-fixup")) {
-        parent = parent.parentNode;
-      }
-      if (!parent.hasAttribute("data-fixup")) {
+    // (which is okay, nothing to fixup then, but...)
+    for (let i=0; i<surlImages.length; i++) {
+      let image = surlImages[i];
+      let savedAttributes = imageAttributeFixups[i];
+      if (!savedAttributes || !savedAttributes.length) {
         continue;
       }
-      let fixupAttributes = JSON.parse(parent.getAttribute("data-fixup"));
-      parent.removeAttribute("data-fixup");
-      for (let attrPair of fixupAttributes) {
+      for (let attrPair of savedAttributes) {
         image.setAttribute(attrPair[0], attrPair[1]);
       }
-      delete parent.fixupAttributes;
     }
     clearTimeout(fixupInterval);
   }, 100);
