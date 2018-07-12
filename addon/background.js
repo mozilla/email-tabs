@@ -46,10 +46,7 @@ async function getTabInfo(tabIds) {
 
 async function sendEmail(tabIds) {
   let tabInfo = await getTabInfo(tabIds);
-  let html = await browser.runtime.sendMessage({
-    type: "renderRequest",
-    tabs: tabIds.map(id => tabInfo[id])
-  });
+  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), emailTemplates.Email);
   let currentTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
@@ -82,10 +79,7 @@ async function sendEmail(tabIds) {
 
 async function copyTabHtml(tabIds) {
   let tabInfo = await getTabInfo(tabIds);
-  let html = await browser.runtime.sendMessage({
-    type: "renderRequest",
-    tabs: tabIds.map(id => tabInfo[id])
-  });
+  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), emailTemplates.Email);
   copyHtmlToClipboard(html);
 }
 
