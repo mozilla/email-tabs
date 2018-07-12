@@ -7,8 +7,8 @@ this.emailTemplates = (function () {
       let tabList = this.props.tabs.map(
         tab => <EmailTab key={tab.id} tab={tab} />
       );
-      // Note for email HTML we remove <section> tags before inserting
-      return <section>{tabList}</section>;
+      // Note that <React.Fragment> elements do not show up in the final HTML
+      return <React.Fragment>{tabList}</React.Fragment>;
     }
   }
 
@@ -25,7 +25,7 @@ this.emailTemplates = (function () {
           text = text.substr(0, SELECTION_TEXT_LIMIT) + "...";
         }
         text = `"${text}"`;
-        selection = <section>{text} <br /></section>;
+        selection = <React.Fragment>{text} <br /></React.Fragment>;
       }
       if (tab.screenshot) {
         // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
@@ -37,23 +37,22 @@ this.emailTemplates = (function () {
           domain = domain.replace(/^www\d?\./i, "");
           imgAlt = `Screenshot of ${domain}`;
         }
-        img = <section>
+        img = <React.Fragment>
           <img style={{border: "1px solid #999"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
           <br />
-        </section>;
+        </React.Fragment>;
       }
-      return <section>
+      return <React.Fragment>
         <a href={tab.url}>{tab.title}</a> <br />
         { selection }
         { img }
         <br />
-      </section>;
+      </React.Fragment>;
     }
   }
 
   exports.renderEmail = function(tabs, BaseComponent) {
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} />);
-    emailHtml = emailHtml.replace(/<\/?section>/gi, " ");
     let lastValue;
     while (lastValue !== emailHtml) {
       lastValue = emailHtml;
