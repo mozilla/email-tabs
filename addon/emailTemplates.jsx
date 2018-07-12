@@ -38,9 +38,7 @@ this.emailTemplates = (function () {
           imgAlt = `Screenshot of ${domain}`;
         }
         img = <section>
-          <div style={{display: "inline-block", boxShadow: "7px 7px 20px #999", border: "1px solid #999"}}>
-            <img height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
-          </div>
+          <img style={{border: "1px solid #999"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
           <br />
         </section>;
       }
