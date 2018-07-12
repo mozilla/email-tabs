@@ -61,6 +61,7 @@ function setHtml(html) {
   browser.runtime.sendMessage({
     type: "clearSelectionCache"
   });
+  hideIframe();
   completed = true;
   // This code waits for the images to get uploaded, then reapplies any attributes that were
   // left out during the upload (specifically alt is of interest):
@@ -95,37 +96,93 @@ let completedTimeout = setInterval(() => {
 }, 300);
 
 function showCloseButtons() {
-  let html = `<div style="
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-left: -200px;
-    margin-top: -50px;
-    width: 400px;
-  ">
-
-    <button class="done">Done</button> <br>
-    <button class="close-all-tabs">Close ${Object.keys(closeTabInfo).length} tabs</button>
-
-  </div>
-  `;
-  let div = document.createElement("div");
-  div.innerHTML = html;
-  div = div.childNodes[0];
-  let doneButton = div.querySelector(".done");
-  let closeAllTabsButton = div.querySelector(".close-all-tabs");
-  doneButton.addEventListener("click", async () => {
+  showIframe("#done-container");
+  let done = iframeDocument.querySelector("#done");
+  let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
+  let numTabs = Object.keys(closeTabInfo).length;
+  if (numTabs === 1) {
+    closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
+  } else {
+    closeAllTabs.textContent = closeAllTabs.getAttribute("data-many-tabs").replace("__NUMBER__", numTabs);
+  }
+  done.addEventListener("click", async () => {
     await browser.runtime.sendMessage({
       type: "closeComposeTab",
       tabId: thisTabId,
     });
   });
-  closeAllTabsButton.addEventListener("click", async () => {
+  closeAllTabs.addEventListener("click", async () => {
     await browser.runtime.sendMessage({
       type: "closeTabs",
       closeTabInfo,
       composeTabId: thisTabId
     })
   });
-  document.body.appendChild(div);
 }
+
+function showLoading() {
+  showIframe("#loading-container");
+}
+
+let iframe = null;
+let initPromise;
+let iframeDocument = null;
+
+function createIframe() {
+  initPromise = new Promise((resolve, reject) => {
+    let iframeUrl = browser.extension.getURL("gmail-iframe.html");
+    iframe = document.createElement("iframe");
+    iframe.id = "mozilla-email-tabs"
+    iframe.src = iframeUrl;
+    iframe.style.zIndex = "99999999999";
+    iframe.style.border = "none";
+    iframe.style.top = "0";
+    iframe.style.left = "0";
+    iframe.style.margin = "0";
+    iframe.scrolling = "no";
+    iframe.style.clip = "auto";
+    iframe.style.display = "none";
+    iframe.style.setProperty("position", "fixed", "important");
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    document.body.appendChild(iframe);
+    iframe.addEventListener("load", () => {
+      try {
+        if (iframe.contentDocument.documentURI !== iframeUrl) {
+          // This check protects against certain attacks on the iframe that quickly change src
+          console.error("iframe URL does not match expected URL", iframe.contentDocument.documentURI);
+          throw new Error("iframe URL does not match expected URL");
+        }
+        iframeDocument = iframe.contentDocument;
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  });
+}
+
+function showIframe(container) {
+  let containers = ["#loading-container", "#done-container"];
+  if (!containers.includes(container)) {
+    throw new Error(`Unexpected container: ${container}`);
+  }
+  for (let c of containers) {
+    if (c === container) {
+      iframeDocument.querySelector(c).style.display = "";
+    } else {
+      iframeDocument.querySelector(c).style.display = "none";
+    }
+  }
+  iframe.style.display = "";
+}
+
+function hideIframe() {
+  iframe.style.display = "none";
+}
+
+createIframe();
+
+initPromise.then(() => {
+  showLoading();
+});
