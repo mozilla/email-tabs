@@ -147,9 +147,9 @@ supply a favicon */
 }
 
 .panel-footer button {
-  border: 0;
   align-items: center;
-  background: hsla(0, 0%, 80%, 0.3);
+  background: hsla(0, 0%, 80%, 0.4);
+  border: 0;
   color: rgb(26, 26, 26);
   cursor: default;
   display: flex;
@@ -163,10 +163,6 @@ supply a favicon */
 
 .panel-footer button:first-child {
   border-inline-end: 1px solid hsla(210, 4%, 10%, 0.14);
-}
-
-.panel-footer button {
-  background: hsla(0, 0%, 80%, 0.4);
 }
 
 #getting-started {
