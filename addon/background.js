@@ -17,9 +17,38 @@ browser.runtime.onMessage.addListener((message, source) => {
     return browser.tabs.remove(message.tabId);
   } else if (message.type === "closeTabs") {
     return closeManyTabs(message.composeTabId, message.closeTabInfo);
+  } else if (message.type === "sendEvent") {
+    delete message.type;
+    sendEvent(message);
+    return Promise.resolve(null);
   }
   console.error("Unexpected message type:", message.type);
   return null;
+});
+
+const manifest = browser.runtime.getManifest();
+
+const is_production = ! manifest.version_name.includes("dev");
+
+const ga = new TestPilotGA({
+  an: "email-tabs",
+  aid: manifest.applications.gecko.id,
+  aiid: "testpilot",
+  av: manifest.version,
+  // cd19 could also be dev or stage:
+  cd19: is_production ? "production" : "local",
+  ds: "addon",
+  tid: is_production ? "FIXME" : "", // FIXME: we need to get a GA property
+});
+
+async function sendEvent(args) {
+  ga.sendEvent(args.ec, args.ea, args);
+}
+
+sendEvent({
+  ec: "startup",
+  ea: "startup",
+  ni: true
 });
 
 async function getTabInfo(tabIds) {
