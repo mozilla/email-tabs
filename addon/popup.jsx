@@ -123,9 +123,7 @@ class Page extends React.Component {
       type: "sendEmail",
       tabIds: sendTabs,
     });
-    setTimeout(() => {
-      window.close();
-    }, 300);
+    window.close();
   }
 
   async copyTabs() {

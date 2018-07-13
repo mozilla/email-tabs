@@ -1,6 +1,10 @@
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
-    return sendEmail(message.tabIds);
+    sendEmail(message.tabIds).catch((e) => {
+      console.error("Error sending email:", e, String(e), e.stack);
+    })
+    // Note we don't need the popup to wait for us to send the email, so we return immediately:
+    return Promise.resolve();
   } else if (message.type == "copyTabHtml") {
     return copyTabHtml(message.tabIds);
   } else if (message.type === "clearSelectionCache") {
@@ -45,8 +49,6 @@ async function getTabInfo(tabIds) {
 }
 
 async function sendEmail(tabIds) {
-  let tabInfo = await getTabInfo(tabIds);
-  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), emailTemplates.Email);
   let currentTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
@@ -66,6 +68,8 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
+  let tabInfo = await getTabInfo(tabIds);
+  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), emailTemplates.Email);
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
   });
