@@ -130,3 +130,21 @@ cd1,
 cd2,
 cd3
 ```
+
+##### After email sent, "done" chosen
+```
+ec: interface,
+ea: button-click,
+el: email-tabs,
+cd1,
+cd2
+```
+
+##### After email sent, "Close n tabs" chosen
+```
+ec: interface,
+ea: button-click,
+el: email-tabs,
+cd1,
+cd2
+```
