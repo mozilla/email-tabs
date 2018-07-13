@@ -73,7 +73,7 @@ function setHtml(html) {
     }
     // FIXME: if there are no good images in the email, then this will never be reached
     // (which is okay, nothing to fixup then, but...)
-    for (let i=0; i<surlImages.length; i++) {
+    for (let i = 0; i < surlImages.length; i++) {
       let image = surlImages[i];
       let savedAttributes = imageAttributeFixups[i];
       if (!savedAttributes || !savedAttributes.length) {
@@ -116,7 +116,7 @@ function showCloseButtons() {
       type: "closeTabs",
       closeTabInfo,
       composeTabId: thisTabId
-    })
+    });
   });
 }
 
@@ -132,7 +132,7 @@ function createIframe() {
   initPromise = new Promise((resolve, reject) => {
     let iframeUrl = browser.extension.getURL("gmail-iframe.html");
     iframe = document.createElement("iframe");
-    iframe.id = "mozilla-email-tabs"
+    iframe.id = "mozilla-email-tabs";
     iframe.src = iframeUrl;
     iframe.style.zIndex = "99999999999";
     iframe.style.border = "none";

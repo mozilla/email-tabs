@@ -1,16 +1,18 @@
+/* globals TestPilotGA, emailTemplates */
+
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     sendEmail(message.tabIds).catch((e) => {
       console.error("Error sending email:", e, String(e), e.stack);
-    })
+    });
     // Note we don't need the popup to wait for us to send the email, so we return immediately:
     return Promise.resolve();
-  } else if (message.type == "copyTabHtml") {
+  } else if (message.type === "copyTabHtml") {
     return copyTabHtml(message.tabIds);
   } else if (message.type === "clearSelectionCache") {
     localStorage.removeItem("selectionCache");
     return null;
-  } else if (message.type == "sendFailed") {
+  } else if (message.type === "sendFailed") {
     loginInterrupt();
     return null;
   } else if (message.type === "closeComposeTab") {
@@ -28,7 +30,7 @@ browser.runtime.onMessage.addListener((message, source) => {
 
 const manifest = browser.runtime.getManifest();
 
-const is_production = ! manifest.version_name.includes("dev");
+const is_production = !manifest.version_name.includes("dev");
 
 const ga = new TestPilotGA({
   an: "email-tabs",
@@ -118,32 +120,31 @@ async function copyTabHtml(tabIds) {
 
 function copyHtmlToClipboard(html) {
   let container = document.createElement("div");
-  container.innerHTML = html;
+  container.innerHTML = html; // eslint-disable-line no-unsanitized/property
   document.body.appendChild(container);
   window.getSelection().removeAllRanges();
   let range = document.createRange();
   range.selectNode(container);
-  window.getSelection().addRange(range)
-  document.execCommand('copy');
+  window.getSelection().addRange(range);
+  document.execCommand("copy");
 }
 
 let loginInterruptedTime;
 
 function loginInterrupt() {
   // Note: this is a dumb flag for the popup:
-  if (loginInterruptedTime && Date.now() - loginInterruptedTime < 30*1000) {
+  if (loginInterruptedTime && Date.now() - loginInterruptedTime < 30 * 1000) {
     // We notified the user recently
     return;
   }
   loginInterruptedTime = Date.now();
   localStorage.setItem("loginInterrupt", String(Date.now()));
-  return browser.notifications.create("notify-no-login", {
+  browser.notifications.create("notify-no-login", {
     type: "basic",
     // iconUrl: "...",
     title: "Email sending failed",
     message: "Please try again after logging into your email"
   });
-  console.error("Sending failed, probably due to login");
 }
 
 async function closeManyTabs(composeTabId, otherTabInfo) {

@@ -83,7 +83,7 @@ class Page extends React.Component {
         <TabList tabs={this.props.tabs} selected={this.props.selected} />
       </div>
 
-      <footer class="panel-footer toggle-enabled">
+      <footer className="panel-footer toggle-enabled">
         <button onClick={this.copyTabs.bind(this)}>
           Copy Tabs to Clipboard
         </button>
@@ -131,7 +131,7 @@ class Page extends React.Component {
     sendTabs = sendTabs.map(tab => tab.id);
     await browser.runtime.sendMessage({
       type: "copyTabHtml",
-      tabIds: sendTabs,
+      tabIds: sendTabs
     });
     setTimeout(() => {
       window.close();
@@ -142,7 +142,7 @@ class Page extends React.Component {
 class LoginError extends React.Component {
   render() {
     return <div id="login-error">
-      Last attempt to send an email failed, probably because you weren't logged into your email.
+      Last attempt to send an email failed, probably because you weren&#39;t logged into your email.
       Please make sure you are logged in, then try again.
     </div>;
   }
@@ -174,7 +174,7 @@ async function render(firstRun) {
 }
 
 const selectionCache = {
-  timeout: 30*60*1000, // 30 minutes
+  timeout: 30 * 60 * 1000, // 30 minutes
 
   key: "selectionCache",
 
