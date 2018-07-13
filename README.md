@@ -10,6 +10,12 @@ Note that only Gmail is supported, because there's no general standard for compo
 
 That will install the latest version of the add-on built from the [production branch](https://github.com/mozilla/email-tabs/tree/production).
 
+### Using the add-on
+
+Once you've installed the add-on you'll see an icon in your toolbar: ![icon](https://raw.githubusercontent.com/mozilla/email-tabs/master/addon/emailtabs.svg)
+
+If you click on the icon you'll be able to select one or more of your open tabs. After you've selected tabs, an email composition tab will open up and we'll put in links to each of the pages, along with the page title, and a screenshot. If you have selected some text then that text selection will also be included.
+
 ## Developing
 
 To install and test out:
@@ -29,10 +35,22 @@ If you are developing, note that the `.jsx` file will not trigger a reload on it
 npm run watch
 ```
 
-## Code layout
+### Code layout
 
-The popup UI is in [addon/popup.jsx](./addon/popup.jsx). The email template is *also* located in that file in the `Email` class.
+The popup UI is in [addon/popup.jsx](./addon/popup.jsx).
+
+The email templates are in [addon/emailTemplates.jsx](./addon/emailTemplates.jsx).
 
 The content script [addon/capture-data.js](./addon/capture-data.js) is loaded into any tabs being sent, and captures the screenshot and some metadata.
 
 The content script [addon/set-html-mail.js](./addon/set-html-email.js) is loaded into the Gmail compose window, and effectively pastes in the HTML.
+
+Overall things are managed with the [addon/background.js](./addon/background.js) script.
+
+### Contact & Contribution
+
+You can email us at [team-email-tabs@mozilla.com](mailto:team-email-tabs@mozilla.com).
+
+IRC is the best way to communicate, via `#testpilot` on irc.mozilla.org (you can use [this link](https://kiwiirc.com/nextclient/irc.mozilla.org/testpilot) for chat access via the web if you do not otherwise use IRC). You might want to ping `ianbicking` or `JSON_voorhees`.
+
+We label some of our bugs with [good first issue](https://github.com/mozilla/email-tabs/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22).
