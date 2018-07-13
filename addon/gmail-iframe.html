@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- Note that any resources referenced here should also be listed in manifest.json under web_accessible_resources -->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .container {
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+      }
+
+      #loading-container {
+        height: 100%;
+        width: 100%;
+        font-weight: bold;
+        font-size: 40px;
+        vertical-align: center;
+      }
+
+      #done-container {
+        position: absolute;
+        height: 300px;
+        width: 300px;
+        top: 50%;
+        left: 50%;
+        margin-right: -150px;
+        margin-top: -150px;
+      }
+
+      #done-container button {
+        height: 30px;
+        width: 200px;
+        border: 1px solid #fff;
+        border-radius: 2px;
+        background-color: #339;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="loading-container" class="container">
+      L O A D I N G . . .
+    </div>
+
+    <div id="done-container" class="container" style="display: none">
+
+      <button id="done">Done</button> <br>
+      <button id="close-all-tabs" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</button>
+
+    </div>
+
+  </body>
+</html>
