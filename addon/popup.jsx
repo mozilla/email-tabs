@@ -54,7 +54,7 @@ class TabList extends React.Component {
   }
 }
 
-class Page extends React.Component {
+class Popup extends React.Component {
   render() {
     let allChecked = true;
     this.indeterminate = false;
@@ -163,8 +163,8 @@ async function render(firstRun) {
   if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
     showLoginError = 0;
   }
-  let page = <Page selected={selected} tabs={tabs} showLoginError={showLoginError} />;
-  ReactDOM.render(page, document.getElementById("panel"));
+  let popup = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} />;
+  ReactDOM.render(popup, document.getElementById("panel"));
   if (firstRun) {
     activeTabLi.scrollIntoView({
       behavior: "instant",
