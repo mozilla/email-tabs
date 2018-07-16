@@ -6,30 +6,35 @@ this.emailTemplates = (function () {
   let exports = {};
   const SELECTION_TEXT_LIMIT = 1000; // 1000 characters max
 
-  class Email extends React.Component {
+  /** Returns '"selection..."', with quotes added and ellipsis if needed */
+  function selectionDisplay(text) {
+    text = text.replace(/^\s*/, "");
+    text = text.replace(/\s*$/, "");
+    if (text.length > SELECTION_TEXT_LIMIT) {
+      text = text.substr(0, SELECTION_TEXT_LIMIT) + "…";
+    }
+    return `“${text}”`;
+  }
+
+  class TitleScreenshot extends React.Component {
     render() {
       let tabList = this.props.tabs.map(
-        tab => <EmailTab key={tab.id} tab={tab} />
+        tab => <TitleScreenshotTab key={tab.id} tab={tab} />
       );
       // Note that <React.Fragment> elements do not show up in the final HTML
       return <Fragment>{tabList}</Fragment>;
     }
   }
 
-  exports.Email = Email;
+  exports.TitleScreenshot = TitleScreenshot;
 
-  class EmailTab extends React.Component {
+  class TitleScreenshotTab extends React.Component {
     render() {
       let tab = this.props.tab;
       let img = null;
       let selection = null;
       if (tab.selection) {
-        let text = tab.selection;
-        if (text.length > SELECTION_TEXT_LIMIT) {
-          text = text.substr(0, SELECTION_TEXT_LIMIT) + "...";
-        }
-        text = `"${text}"`;
-        selection = <Fragment>{text} <br /></Fragment>;
+        selection = <Fragment>{selectionDisplay(tab.selection)} <br /></Fragment>;
       }
       if (tab.screenshot) {
         // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
@@ -54,6 +59,24 @@ this.emailTemplates = (function () {
       </Fragment>;
     }
   }
+
+  class JustLinks extends React.Component {
+    render() {
+      let tabList = this.props.tabs.map(tab => {
+        let selection =  null;
+        if (tab.selection) {
+          selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
+        }
+        return <Fragment>
+          <a href={tab.url}>{tab.title}</a> <br />
+          { selection }
+        </Fragment>;
+      });
+      return <Fragment>{tabList}</Fragment>;
+    }
+  }
+
+  exports.JustLinks = JustLinks;
 
   exports.renderEmail = function(tabs, BaseComponent) {
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} />);

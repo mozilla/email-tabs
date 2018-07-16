@@ -1,8 +1,10 @@
-/* globals TestPilotGA, emailTemplates */
+/* globals TestPilotGA, emailTemplates, templateMetadata */
+let selectedTemplate = templateMetadata.defaultTemplateName;
 
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     sendEmail(message.tabIds).catch((e) => {
+      // FIXME: maybe we should abort the email in this case?
       console.error("Error sending email:", e, String(e), e.stack);
     });
     // Note we don't need the popup to wait for us to send the email, so we return immediately:
@@ -23,6 +25,10 @@ browser.runtime.onMessage.addListener((message, source) => {
     delete message.type;
     sendEvent(message);
     return Promise.resolve(null);
+  } else if (message.type === "setSelectedTemplate") {
+    return setSelectedTemplate(message.name);
+  } else if (message.type === "getSelectedTemplate") {
+    return Promise.resolve(selectedTemplate);
   }
   console.error("Unexpected message type:", message.type);
   return null;
@@ -53,7 +59,7 @@ sendEvent({
   ni: true
 });
 
-async function getTabInfo(tabIds) {
+async function getTabInfo(tabIds, wantsScreenshots) {
   let allTabs = await browser.tabs.query({});
   let tabInfo = {};
   for (let tab of allTabs) {
@@ -68,10 +74,11 @@ async function getTabInfo(tabIds) {
   }
   for (let tabId of tabIds) {
     try {
-      let data = await browser.tabs.executeScript(tabId, {
+      await browser.tabs.executeScript(tabId, {
         file: "capture-data.js",
       });
-      Object.assign(tabInfo[tabId], data[0]);
+      let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots});
+      Object.assign(tabInfo[tabId], data);
     } catch (e) {
       console.warn("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
     }
@@ -99,8 +106,13 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
-  let tabInfo = await getTabInfo(tabIds);
-  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), emailTemplates.Email);
+  let { wantsScreenshots } = templateMetadata.getTemplate(selectedTemplate);
+  let tabInfo = await getTabInfo(tabIds, wantsScreenshots);
+  let TemplateComponent = emailTemplates[templateMetadata.getTemplate(selectedTemplate).componentName];
+  if (!TemplateComponent) {
+    throw new Error(`No component found for template: ${selectedTemplate}`);
+  }
+  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), TemplateComponent);
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
   });
@@ -113,8 +125,10 @@ async function sendEmail(tabIds) {
 }
 
 async function copyTabHtml(tabIds) {
-  let tabInfo = await getTabInfo(tabIds);
-  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), emailTemplates.Email);
+  let { wantsScreenshots } = templateMetadata.getTemplate(selectedTemplate);
+  let tabInfo = await getTabInfo(tabIds, wantsScreenshots);
+  let TemplateComponent = emailTemplates[templateMetadata.getTemplate(selectedTemplate).componentName];
+  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), TemplateComponent);
   copyHtmlToClipboard(html);
 }
 
@@ -159,3 +173,23 @@ async function closeManyTabs(composeTabId, otherTabInfo) {
   }
   await browser.tabs.remove(toClose);
 }
+
+async function setSelectedTemplate(newName) {
+  selectedTemplate = newName;
+  await browser.storage.local.set({selectedTemplate: newName});
+}
+
+async function init() {
+  let result = await browser.storage.local.get(["selectedTemplate"]);
+  if (result && result.selectedTemplate) {
+    try {
+      // Checks that the template really exists:
+      templateMetadata.getTemplate(result.selectedTemplate);
+      selectedTemplate = result.selectedTemplate;
+    } catch (e) {
+      console.error("Could not set template", result.selectedTemplate, "to:", String(e));
+    }
+  }
+}
+
+init();
