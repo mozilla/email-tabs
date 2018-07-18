@@ -47,6 +47,7 @@
     };
     if (message.wantsScreenshots) {
       data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
+      data.screenshotAltText = captureText.getText(captureText.getViewportBox());
     }
     return data;
   }

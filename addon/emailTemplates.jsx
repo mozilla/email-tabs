@@ -39,12 +39,15 @@ this.emailTemplates = (function () {
       if (tab.screenshot) {
         // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
         // Note: box-shadow is specifically filtered out by gmail, other styles may get through
-        let imgAlt = "Screenshot";
-        let domain = (new URL(tab.url)).hostname;
-        if (domain) {
-          // If it doesn't have a domain, it's probably a file: URL, or something non-standard
-          domain = domain.replace(/^www\d?\./i, "");
-          imgAlt = `Screenshot of ${domain}`;
+        let imgAlt = tab.screenshotAltText;
+        if (!imgAlt) {
+          imgAlt = "Screenshot";
+          let domain = (new URL(tab.url)).hostname;
+          if (domain) {
+            // If it doesn't have a domain, it's probably a file: URL, or something non-standard
+            domain = domain.replace(/^www\d?\./i, "");
+            imgAlt = `Screenshot of ${domain}`;
+          }
         }
         img = <Fragment>
           <img style={{border: "1px solid #999"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />

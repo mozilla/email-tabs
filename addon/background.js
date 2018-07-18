@@ -75,12 +75,15 @@ async function getTabInfo(tabIds, wantsScreenshots) {
   for (let tabId of tabIds) {
     try {
       await browser.tabs.executeScript(tabId, {
+        file: "captureText.js",
+      });
+      await browser.tabs.executeScript(tabId, {
         file: "capture-data.js",
       });
       let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots});
       Object.assign(tabInfo[tabId], data);
     } catch (e) {
-      console.warn("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
+      console.error("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
     }
   }
   return tabInfo;
