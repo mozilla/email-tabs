@@ -1,3 +1,5 @@
+/* globals captureText, Readability */
+
 (function () {
   const SCREENSHOT_WIDTH = 350;
 
@@ -37,7 +39,7 @@
   async function onMessage(message) {
     if (message.type !== "getData") {
       console.warn("Unexpected message type:", message.type);
-      return;
+      return undefined;
     }
     browser.runtime.onMessage.removeListener(onMessage);
     let data = {

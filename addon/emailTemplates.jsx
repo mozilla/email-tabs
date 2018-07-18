@@ -65,12 +65,12 @@ this.emailTemplates = (function () {
 
   class JustLinks extends React.Component {
     render() {
-      let tabList = this.props.tabs.map(tab => {
+      let tabList = this.props.tabs.map((tab, index) => {
         let selection =  null;
         if (tab.selection) {
           selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
         }
-        return <Fragment>
+        return <Fragment key={index}>
           <a href={tab.url}>{tab.title}</a> <br />
           { selection }
         </Fragment>;
@@ -90,10 +90,10 @@ this.emailTemplates = (function () {
         }
         let readability = "no readability";
         if (tab.readability && tab.readability.content) {
-          let hr = index === this.props.tabs.length -1 ? null : <hr />;
+          let hr = index === this.props.tabs.length - 1 ? null : <hr />;
           readability = <Fragment><div dangerouslySetInnerHTML={{__html: tab.readability.content}} /> { hr }</Fragment>;
         }
-        return <Fragment>
+        return <Fragment key={index}>
           <a href={tab.url}>{tab.title}</a> <br />
           { selection }
           { readability }
