@@ -59,7 +59,7 @@ sendEvent({
   ni: true
 });
 
-async function getTabInfo(tabIds, wantsScreenshots) {
+async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
   let allTabs = await browser.tabs.query({});
   let tabInfo = {};
   for (let tab of allTabs) {
@@ -77,10 +77,15 @@ async function getTabInfo(tabIds, wantsScreenshots) {
       await browser.tabs.executeScript(tabId, {
         file: "captureText.js",
       });
+      if (wantsReadability) {
+        await browser.tabs.executeScript(tabId, {
+          file: "build/Readability.js",
+        });
+      }
       await browser.tabs.executeScript(tabId, {
         file: "capture-data.js",
       });
-      let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots});
+      let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots, wantsReadability});
       Object.assign(tabInfo[tabId], data);
     } catch (e) {
       console.error("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
@@ -109,8 +114,8 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
-  let { wantsScreenshots } = templateMetadata.getTemplate(selectedTemplate);
-  let tabInfo = await getTabInfo(tabIds, wantsScreenshots);
+  let { wantsScreenshots, wantsReadability } = templateMetadata.getTemplate(selectedTemplate);
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots, wantsReadability});
   let TemplateComponent = emailTemplates[templateMetadata.getTemplate(selectedTemplate).componentName];
   if (!TemplateComponent) {
     throw new Error(`No component found for template: ${selectedTemplate}`);
@@ -128,8 +133,8 @@ async function sendEmail(tabIds) {
 }
 
 async function copyTabHtml(tabIds) {
-  let { wantsScreenshots } = templateMetadata.getTemplate(selectedTemplate);
-  let tabInfo = await getTabInfo(tabIds, wantsScreenshots);
+  let { wantsScreenshots, wantsReadability } = templateMetadata.getTemplate(selectedTemplate);
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots, wantsReadability});
   let TemplateComponent = emailTemplates[templateMetadata.getTemplate(selectedTemplate).componentName];
   let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), TemplateComponent);
   copyHtmlToClipboard(html);

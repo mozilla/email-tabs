@@ -81,6 +81,30 @@ this.emailTemplates = (function () {
 
   exports.JustLinks = JustLinks;
 
+  class FullArticles extends React.Component {
+    render() {
+      let tabList = this.props.tabs.map((tab, index) => {
+        let selection =  null;
+        if (tab.selection) {
+          selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
+        }
+        let readability = "no readability";
+        if (tab.readability && tab.readability.content) {
+          let hr = index === this.props.tabs.length -1 ? null : <hr />;
+          readability = <Fragment><div dangerouslySetInnerHTML={{__html: tab.readability.content}} /> { hr }</Fragment>;
+        }
+        return <Fragment>
+          <a href={tab.url}>{tab.title}</a> <br />
+          { selection }
+          { readability }
+        </Fragment>;
+      });
+      return <Fragment>{tabList}</Fragment>;
+    }
+  }
+
+  exports.FullArticles = FullArticles;
+
   exports.renderEmail = function(tabs, BaseComponent) {
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} />);
     let lastValue;
