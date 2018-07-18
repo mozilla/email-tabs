@@ -34,10 +34,23 @@
     };
   }
 
-  return {
-    title,
-    url,
-    selection,
-    screenshot: screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth)
-  };
+  async function onMessage(message) {
+    if (message.type !== "getData") {
+      console.warn("Unexpected message type:", message.type);
+      return;
+    }
+    browser.runtime.onMessage.removeListener(onMessage);
+    let data = {
+      title,
+      url,
+      selection
+    };
+    if (message.wantsScreenshots) {
+      data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
+    }
+    return data;
+  }
+
+  browser.runtime.onMessage.addListener(onMessage);
+
 })();
