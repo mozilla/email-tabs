@@ -39,12 +39,15 @@ this.emailTemplates = (function () {
       if (tab.screenshot) {
         // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
         // Note: box-shadow is specifically filtered out by gmail, other styles may get through
-        let imgAlt = "Screenshot";
-        let domain = (new URL(tab.url)).hostname;
-        if (domain) {
-          // If it doesn't have a domain, it's probably a file: URL, or something non-standard
-          domain = domain.replace(/^www\d?\./i, "");
-          imgAlt = `Screenshot of ${domain}`;
+        let imgAlt = tab.screenshotAltText;
+        if (!imgAlt) {
+          imgAlt = "Screenshot";
+          let domain = (new URL(tab.url)).hostname;
+          if (domain) {
+            // If it doesn't have a domain, it's probably a file: URL, or something non-standard
+            domain = domain.replace(/^www\d?\./i, "");
+            imgAlt = `Screenshot of ${domain}`;
+          }
         }
         img = <Fragment>
           <img style={{border: "1px solid #999"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
@@ -62,12 +65,12 @@ this.emailTemplates = (function () {
 
   class JustLinks extends React.Component {
     render() {
-      let tabList = this.props.tabs.map(tab => {
+      let tabList = this.props.tabs.map((tab, index) => {
         let selection =  null;
         if (tab.selection) {
           selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
         }
-        return <Fragment>
+        return <Fragment key={index}>
           <a href={tab.url}>{tab.title}</a> <br />
           { selection }
         </Fragment>;
@@ -77,6 +80,30 @@ this.emailTemplates = (function () {
   }
 
   exports.JustLinks = JustLinks;
+
+  class FullArticles extends React.Component {
+    render() {
+      let tabList = this.props.tabs.map((tab, index) => {
+        let selection =  null;
+        if (tab.selection) {
+          selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
+        }
+        let readability = "no readability";
+        if (tab.readability && tab.readability.content) {
+          let hr = index === this.props.tabs.length - 1 ? null : <hr />;
+          readability = <Fragment><div dangerouslySetInnerHTML={{__html: tab.readability.content}} /> { hr }</Fragment>;
+        }
+        return <Fragment key={index}>
+          <a href={tab.url}>{tab.title}</a> <br />
+          { selection }
+          { readability }
+        </Fragment>;
+      });
+      return <Fragment>{tabList}</Fragment>;
+    }
+  }
+
+  exports.FullArticles = FullArticles;
 
   exports.renderEmail = function(tabs, BaseComponent) {
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} />);

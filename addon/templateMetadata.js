@@ -6,13 +6,22 @@ this.templateMetadata = (function() {
       name: "title_screenshot",
       title: "With screenshots",
       wantsScreenshots: true,
+      wantsReadability: false,
       componentName: "TitleScreenshot",
     },
     {
       name: "just_links",
       title: "Just the links",
       wantsScreenshots: false,
+      wantsReadability: false,
       componentName: "JustLinks",
+    },
+    {
+      name: "readability",
+      title: "Full articles",
+      wantsScreenshots: false,
+      wantsReadability: true,
+      componentName: "FullArticles",
     }
   ];
 

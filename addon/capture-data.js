@@ -1,3 +1,5 @@
+/* globals captureText, Readability */
+
 (function () {
   const SCREENSHOT_WIDTH = 350;
 
@@ -37,7 +39,7 @@
   async function onMessage(message) {
     if (message.type !== "getData") {
       console.warn("Unexpected message type:", message.type);
-      return;
+      return undefined;
     }
     browser.runtime.onMessage.removeListener(onMessage);
     let data = {
@@ -47,6 +49,15 @@
     };
     if (message.wantsScreenshots) {
       data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
+      data.screenshotAltText = captureText.getText(captureText.getViewportBox());
+    }
+    if (message.wantsReadability) {
+      try {
+        let documentClone = document.cloneNode(true);
+        data.readability = new Readability(documentClone).parse();
+      } catch (e) {
+        console.error("Error extracting readable version:", String(e), e.stack);
+      }
     }
     return data;
   }

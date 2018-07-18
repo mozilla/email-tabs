@@ -185,8 +185,8 @@ class TemplateItem extends React.Component {
     if (this.props.selected) {
       className += " selected";
     }
-    return <li className={className} onClick={this.selectTemplate.bind(this)} role="button">
-      {this.props.title}
+    return <li className={className}>
+      <button onClick={this.selectTemplate.bind(this)}>{this.props.title}</button>
     </li>;
   }
 
