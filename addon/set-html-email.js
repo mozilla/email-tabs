@@ -99,7 +99,7 @@ function showCloseButtons() {
   showIframe("#done-container");
   let done = iframeDocument.querySelector("#done");
   let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
-  let numTabs = Object.keys(closeTabInfo).length;
+  let numTabs = closeTabInfo.length;
   if (numTabs === 1) {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
   } else {
