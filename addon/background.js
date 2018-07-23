@@ -123,6 +123,7 @@ async function sendEmail(tabIds) {
   let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), TemplateComponent);
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
+    runAt: "document_start",
   });
   await browser.tabs.sendMessage(newTab.id, {
     type: "setHtml",
