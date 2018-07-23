@@ -22,7 +22,8 @@ Data will be collected with Google Analytics and follow [Test Pilot standards](h
 
 * `cd1` - The number of open tabs across all windows.  An integer
 * `cd2` - The number of tabs selected to send.  An integer
-* `cd3` - Is the user sending tabs to themselves.  Boolean
+* `cd3` - If the user is sending the current tab ("true" or "false")
+* `cd4` - The name of the template used
 
 ### Events
 
@@ -40,48 +41,41 @@ ni: true
 
 Note `ni` (not-interactive) will keep these events from being grouped under user activity.
 
-##### When the Email Tabs experiment succeeds in loading
-
-Called at startup when the experiment loads
-
-```
-ec: startup
-ea: loaded
-ni: true
-cd1
-```
-
-##### When the Email Tabs experiment fails to load
-
-When the experiment fails to load. The experiment may fail to be present (some loading error), or may have an exception while running
-
-```
-ec: startup
-ea: failed
-el: not-present or exception
-ni: true
-cd1
-```
-
-##### When a user tries to add a disabled tab to the email list(about: or file urls)
-
-```
-ec: interface
-ea: disabled-tab-type
-el: bookmark or link
-cd1,
-cd2
-```
-
 #### `Interface`
 
-##### When the user opens the panel using the pageAction button
+##### When the user opens the panel using the browserAction button
 
 ```
 ec: interface,
-ea: expand panel,
-el: page-action,
+ea: expand-panel,
+el: browser-action,
 cd1
+```
+
+##### When the user starts to change the template
+Note `cd4` here refers to the template *before* any changes are made
+
+```
+ec: interface
+ea: button-click
+el: start-choose-template
+cd1,
+cd2,
+cd3,
+cd4
+```
+
+###### When the user changes the template
+Note `cd4` here is the template chosen
+
+```
+ec: interface
+ea: button-click
+el: choose-template,
+cd1,
+cd2,
+cd3,
+cd4
 ```
 
 ##### When the user clicks the feedback button
@@ -90,7 +84,9 @@ ec: interface,
 ea: button-click,
 el: feedback,
 cd1,
-cd2
+cd2,
+cd3,
+cd4
 ```
 
 ##### When the user Clicks the Copy Tabs to Clipboard button
@@ -99,7 +95,9 @@ ec: interface,
 ea: button-click,
 el: copy-tabs-to-clipboard,
 cd1,
-cd2
+cd2,
+cd3,
+cd4
 ```
 
 ##### When the user Email Tabs button
@@ -108,43 +106,79 @@ ec: interface,
 ea: button-click,
 el: email-tabs,
 cd1,
-cd2
+cd2,
+cd3,
+cd4
+```
+
+###### When the user is not logged in, or encounters a compose window error
+`el` will be `account` if we believe the user encountered a login form, or `error` if there's some other problem encountered.
+
+```
+ec: interface
+ea: compose-window-error
+el: account or error,
+cd1,
+cd2,
+cd3,
+cd4
+```
+
+###### When `capture-data.js` encounters a non-fatal error
+Sometimes the capturing can fail, though we will still attempt to compose the email with incomplete information. We will attempt to get the schema (e.g., http, https, file, about) of the failing tab.
+
+```
+ec: interface
+ea: collect-info-error
+el: tab-url-scheme
+cd1,
+cd2,
+cd3,
+cd4
 ```
 
 ##### When the compose window is finished uploading images
 ```
 ec: interface,
-ea: button-click,
-el: email-tabs,
+ea: compose-pasted,
 cd1,
 cd2,
-cd3
+cd3,
+cd4
+ni: true
 ```
 
-##### When the send button is pressed in the compose window
+##### When the email is sent
+`el` will be `send-to-self` if the user sent the email back to themselves, and `send-to-other` if not.
+
 ```
 ec: interface,
-ea: button-click,
-el: email-tabs,
+ea: compose-sent,
+el: send-to-self or send-to-other
 cd1,
 cd2,
-cd3
+cd3,
+cd4
 ```
 
 ##### After email sent, "done" chosen
 ```
 ec: interface,
 ea: button-click,
-el: email-tabs,
+el: compose-done-close,
 cd1,
-cd2
+cd2,
+cd3,
+cd4
 ```
 
 ##### After email sent, "Close n tabs" chosen
 ```
 ec: interface,
 ea: button-click,
-el: email-tabs,
+el: compose-done-close-all,
 cd1,
-cd2
+cd2,
+cd3,
+cd4
 ```
