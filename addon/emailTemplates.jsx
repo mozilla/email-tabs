@@ -88,10 +88,15 @@ this.emailTemplates = (function () {
         if (tab.selection) {
           selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
         }
-        let readability = "no readability";
+        let readability = null;
         if (tab.readability && tab.readability.content) {
+          let content = parseReadableDocument(tab.readability.content);
+          for (let img of content.querySelectorAll("img")) {
+            img.style.maxWidth = "600px";
+            img.style.height = "auto";
+          }
           let hr = index === this.props.tabs.length - 1 ? null : <hr />;
-          readability = <Fragment><div dangerouslySetInnerHTML={{__html: tab.readability.content}} /> { hr }</Fragment>;
+          readability = <Fragment><div style={{maxWidth: "600px", border: "2px solid #aaa", borderRadius: "3px", padding: "10px"}} dangerouslySetInnerHTML={{__html: content.outerHTML}} /> { hr }</Fragment>;
         }
         return <Fragment key={index}>
           <a href={tab.url}>{tab.title}</a> <br />
@@ -101,6 +106,15 @@ this.emailTemplates = (function () {
       });
       return <Fragment>{tabList}</Fragment>;
     }
+  }
+
+  function parseReadableDocument(d) {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(d, "text/html");
+    if (doc.body.childNodes.length !== 1) {
+      console.warn("Readable body did not have exactly one element:", doc.body.childNodes.length, "elements found");
+    }
+    return doc.body.childNodes[0];
   }
 
   exports.FullArticles = FullArticles;
