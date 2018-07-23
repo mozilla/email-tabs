@@ -102,7 +102,8 @@ async function renderTabs(tabIds, templateName) {
     throw new Error(`No component found for template: ${templateName}`);
   }
   let html = emailTemplates.renderEmail(tabInfo, TemplateComponent);
-  return { html, tabInfo };
+  let subject = emailTemplates.renderSubject(tabInfo);
+  return { html, tabInfo, subject };
 }
 
 async function sendEmail(tabIds) {
@@ -125,13 +126,14 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
-  let { html, tabInfo } = await renderTabs(tabIds, selectedTemplate);
+  let { html, tabInfo, subject } = await renderTabs(tabIds, selectedTemplate);
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
   });
   await browser.tabs.sendMessage(newTab.id, {
     type: "setHtml",
     html,
+    subject,
     thisTabId: newTab.id,
     tabInfo
   });
