@@ -176,6 +176,7 @@ function loginInterrupt() {
 
 async function closeManyTabs(composeTabId, otherTabInfo) {
   let tabs = await browser.tabs.query({});
+
   let toClose = [composeTabId];
   let tabInfoById = {};
   for (let tabInfo of otherTabInfo) {
@@ -184,9 +185,13 @@ async function closeManyTabs(composeTabId, otherTabInfo) {
   for (let tab of tabs) {
     // Note that .url might be the canonical URL, but .urlBar is what shows up in the URL bar
     // and the tab API
-    if (tabInfoById[tab.id] && tabInfoById[tab.id].urlBar === tab.url) {
+    if (tabInfoById[tab.id] && tabInfoById[tab.id].urlBar === tab.url && !tab.pinned) {
       toClose.push(tab.id);
     }
+  }
+  if (toClose.length === tabs.length) {
+    // Then this would result in *all* the tabs being closed, so let's open a new tab:
+    await browser.tabs.create({});
   }
   await browser.tabs.remove(toClose);
 }
