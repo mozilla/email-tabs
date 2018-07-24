@@ -114,12 +114,15 @@ let completedTimeout = setInterval(() => {
 function showCloseButtons() {
   showIframe("#done-container");
   let done = iframeDocument.querySelector("#done");
+  let doneMsg = iframeDocument.querySelector("#done-message");
   let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
   let numTabs = closeTabInfo.length;
   if (numTabs === 1) {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
+    doneMsg.textContent = doneMsg.getAttribute("data-one-tab");
   } else {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-many-tabs").replace("__NUMBER__", numTabs);
+    doneMsg.textContent = doneMsg.getAttribute("data-many-tabs").replace("__NUMBER__", numTabs);
   }
   done.addEventListener("click", async () => {
     await browser.runtime.sendMessage({
