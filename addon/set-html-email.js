@@ -1,9 +1,15 @@
 /* globals cloneInto */
 
 browser.runtime.onMessage.addListener((message) => {
-  thisTabId = message.thisTabId;
-  closeTabInfo = message.tabInfo;
-  setHtml(message.html);
+  try {
+    thisTabId = message.thisTabId;
+    closeTabInfo = message.tabInfo;
+    setSubject(message.subject);
+    setHtml(message.html);
+  } catch (e) {
+    console.error("Unable to setHtml:", String(e), e.stack);
+    throw e;
+  }
 });
 
 let completed = false;
@@ -24,6 +30,15 @@ window.addEventListener("beforeunload", () => {
   });
   console.error("beforeunload");
 });
+
+function setSubject(subject) {
+  let input = document.querySelector("input[name='subjectbox']");
+  if (!input) {
+    setTimeout(setSubject.bind(this, subject), 100);
+    return;
+  }
+  input.value = subject;
+}
 
 function setHtml(html) {
   let editableEl = document.querySelector("div.editable[contenteditable]");
@@ -99,7 +114,7 @@ function showCloseButtons() {
   showIframe("#done-container");
   let done = iframeDocument.querySelector("#done");
   let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
-  let numTabs = Object.keys(closeTabInfo).length;
+  let numTabs = closeTabInfo.length;
   if (numTabs === 1) {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
   } else {

@@ -131,5 +131,14 @@ this.emailTemplates = (function () {
     return emailHtml;
   };
 
+  exports.renderSubject = function(tabs) {
+    if (tabs.length === 1) {
+      return `“${tabs[0].title}”`;
+    } else if (tabs.length === 2) {
+      return `“${tabs[0].title}” and 1 other link`;
+    }
+    return `“${tabs[0].title}” and ${tabs.length - 1} other links`;
+  };
+
   return exports;
 })();

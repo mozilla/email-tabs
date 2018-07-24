@@ -91,7 +91,19 @@ async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
       console.error("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
     }
   }
-  return tabInfo;
+  return tabIds.map(id => tabInfo[id]);
+}
+
+async function renderTabs(tabIds, templateName) {
+  let { wantsScreenshots, wantsReadability } = templateMetadata.getTemplate(templateName);
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots, wantsReadability});
+  let TemplateComponent = emailTemplates[templateMetadata.getTemplate(templateName).componentName];
+  if (!TemplateComponent) {
+    throw new Error(`No component found for template: ${templateName}`);
+  }
+  let html = emailTemplates.renderEmail(tabInfo, TemplateComponent);
+  let subject = emailTemplates.renderSubject(tabInfo);
+  return { html, tabInfo, subject };
 }
 
 async function sendEmail(tabIds) {
@@ -114,13 +126,7 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
-  let { wantsScreenshots, wantsReadability } = templateMetadata.getTemplate(selectedTemplate);
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots, wantsReadability});
-  let TemplateComponent = emailTemplates[templateMetadata.getTemplate(selectedTemplate).componentName];
-  if (!TemplateComponent) {
-    throw new Error(`No component found for template: ${selectedTemplate}`);
-  }
-  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), TemplateComponent);
+  let { html, tabInfo, subject } = await renderTabs(tabIds, selectedTemplate);
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
     runAt: "document_start",
@@ -128,16 +134,14 @@ async function sendEmail(tabIds) {
   await browser.tabs.sendMessage(newTab.id, {
     type: "setHtml",
     html,
+    subject,
     thisTabId: newTab.id,
     tabInfo
   });
 }
 
 async function copyTabHtml(tabIds) {
-  let { wantsScreenshots, wantsReadability } = templateMetadata.getTemplate(selectedTemplate);
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots, wantsReadability});
-  let TemplateComponent = emailTemplates[templateMetadata.getTemplate(selectedTemplate).componentName];
-  let html = emailTemplates.renderEmail(tabIds.map(id => tabInfo[id]), TemplateComponent);
+  let { html } = await renderTabs(tabIds, selectedTemplate);
   copyHtmlToClipboard(html);
 }
 
@@ -173,10 +177,14 @@ function loginInterrupt() {
 async function closeManyTabs(composeTabId, otherTabInfo) {
   let tabs = await browser.tabs.query({});
   let toClose = [composeTabId];
+  let tabInfoById = {};
+  for (let tabInfo of otherTabInfo) {
+    tabInfoById[tabInfo.id] = tabInfo;
+  }
   for (let tab of tabs) {
     // Note that .url might be the canonical URL, but .urlBar is what shows up in the URL bar
     // and the tab API
-    if (otherTabInfo[tab.id] && otherTabInfo[tab.id].urlBar === tab.url) {
+    if (tabInfoById[tab.id] && tabInfoById[tab.id].urlBar === tab.url) {
       toClose.push(tab.id);
     }
   }
