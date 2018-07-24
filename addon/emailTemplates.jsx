@@ -50,7 +50,7 @@ this.emailTemplates = (function () {
           }
         }
         img = <Fragment>
-          <img style={{border: "1px solid #999"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
+          <img style={{border: "1px solid rgba(12,12,13,0.10)"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
           <br />
         </Fragment>;
       }
