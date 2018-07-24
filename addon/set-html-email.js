@@ -64,6 +64,7 @@ function setHtml(html) {
       savedAttributes.push([attr.name, attr.value]);
     }
   }
+
   editableEl.innerHTML = editableEl.innerHTML + oldHtml; // eslint-disable-line no-unsanitized/property
   // Gmail does a fixup on paste, so we have to simulate a paste to make it fix the images we inserted:
   let paste = new Event("paste");
