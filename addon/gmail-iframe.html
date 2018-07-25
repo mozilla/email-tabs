@@ -8,6 +8,48 @@
         margin: 0;
         height: 100%;
         width: 100%;
+        font-family: sans-serif;
+      }
+
+      .btn {
+        background: #0060df;
+        border-radius: 2px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 400;
+        height: 32px;
+        min-width: 132px;
+        padding: 8px;
+        width: auto;
+      }
+
+      .btn:hover {
+        background: #003eaa;
+      }
+
+      .btn:active {
+        background: #002275;
+      }
+
+      .btn:focus {
+        box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
+      }
+
+      .close {
+        color: #0c0c0d;
+        background: rgba(12, 12, 13, 0.1);
+      }
+
+      .close:hover {
+        background: rgba(12, 12, 13, 0.2);
+      }
+
+      .close:active {
+        background: rgba(12, 12, 13, 0.3);
+      }
+
+      .close:focus {
+        box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
       }
 
       .container {
@@ -24,23 +66,39 @@
       }
 
       #done-container {
+        background-color: transparent;
         position: absolute;
-        height: 300px;
+        height: 175px;
         width: 300px;
-        top: 50%;
-        left: 50%;
+        top: 40%;
+        left: 40%;
         margin-right: -150px;
         margin-top: -150px;
+        box-shadow: 0 1px 4px rgba(12, 12, 13, 0.1);
       }
 
-      #done-container button {
-        height: 30px;
-        width: 200px;
-        border: 1px solid #fff;
-        border-radius: 2px;
-        background-color: #339;
-        color: #fff;
-        margin-bottom: 10px;
+      #done-container:hover {
+        box-shadow: 0 2px 8px rgba(12, 12, 13, 0.1);
+      }
+
+      #done-container p {
+        color: black;
+        font-size: 15px;
+        font-weight: 400;
+      }
+
+      #done-container h4 {
+        color: black;
+      }
+
+      .message-wrap {
+        margin: 20px auto;
+        text-align: center;
+        width: 100%;
+      }
+
+      a {
+        cursor: pointer;
       }
     </style>
   </head>
@@ -51,10 +109,13 @@
     </div>
 
     <div id="done-container" class="container" style="display: none">
-
-      <button id="done">Done</button> <br>
-      <button id="close-all-tabs" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</button>
-
+      <div class="message-wrap">
+        <h4>Thanks for using Firefox Email Tabs</h4>
+        <p id="done-message" data-many-tabs="__NUMBER__ tabs were sent." data-one-tab="Tab was sent.">Tabs were sent.</p>
+        <br>
+        <a id="done" class="btn">Done</a>
+        <a id="close-all-tabs" class="btn close" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</a>
+      </div>
     </div>
 
   </body>
