@@ -24,6 +24,7 @@ Data will be collected with Google Analytics and follow [Test Pilot standards](h
 * `cd2` - The number of tabs selected to send.  An integer
 * `cd3` - If the user is sending the current tab ("true" or "false")
 * `cd4` - The name of the template used
+* `cd5` - Count of email recipients
 
 ### Events
 
@@ -100,7 +101,7 @@ cd3,
 cd4
 ```
 
-##### When the user Email Tabs button
+##### When the user Clicks the Email Tabs button
 ```
 ec: interface,
 ea: button-click,
@@ -158,7 +159,8 @@ el: send-to-self or send-to-other
 cd1,
 cd2,
 cd3,
-cd4
+cd4,
+cd5
 ```
 
 ##### After email sent, "done" chosen
