@@ -168,10 +168,10 @@ supply a favicon */
 
 .panel-footer button {
   align-items: center;
-  background: hsla(0, 0%, 80%, 0.4);
+  background: #0060df;
   border: 0;
-  color: rgb(26, 26, 26);
-  cursor: default;
+  color: #fff;
+  cursor: pointer;
   display: flex;
   flex: 1;
   font: menu;
@@ -181,8 +181,26 @@ supply a favicon */
   text-decoration: none;
 }
 
+.panel-footer button:hover {
+  background: #003eaa;
+}
+
+.panel-footer button:active {
+  background: #002275;
+}
+
 .panel-footer button:first-child {
+  background: rgba(12, 12, 13, 0.1);
   border-inline-end: 1px solid hsla(210, 4%, 10%, 0.14);
+  color: rgb(26, 26, 26);
+}
+
+.panel-footer button:first-child:hover {
+  background: rgba(12, 12, 13, 0.2);
+}
+
+.panel-footer button:first-child:active {
+  background: rgba(12, 12, 13, 0.3);
 }
 
 #getting-started {
