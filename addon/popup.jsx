@@ -85,6 +85,8 @@ class Popup extends React.Component {
       <div className="tabList">
         <TabList tabs={this.props.tabs} selected={this.props.selected} />
       </div>
+      <div className="separator"></div>
+      <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com">Let us know.</a></p>
 
       <footer className="panel-footer toggle-enabled">
         <button onClick={this.copyTabs.bind(this)}>

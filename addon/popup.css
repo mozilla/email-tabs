@@ -135,6 +135,26 @@ supply a favicon */
   margin-right: 6px;
 }
 
+.feedback-link {
+  font-size: 11px;
+  color: #4A4A4F;
+  letter-spacing: -0.08px;
+  padding: 2px 10px;
+}
+
+.feedback-link a {
+  color: #0A84FF;
+  text-decoration: none;
+}
+
+.feedback-link a:hover {
+  color: #0060df;
+}
+
+.feedback-link a:active {
+  color: #003eaa;
+}
+
 .panel-footer {
   border-top: 1px solid hsla(210, 4%, 10%, 0.14);
   display: flex;
