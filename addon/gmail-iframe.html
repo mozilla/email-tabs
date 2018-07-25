@@ -57,15 +57,7 @@
         color: #fff;
       }
 
-      #loading-container {
-        height: 100%;
-        width: 100%;
-        font-weight: bold;
-        font-size: 40px;
-        vertical-align: center;
-      }
-
-      #done-container {
+      .card-container {
         background-color: transparent;
         position: absolute;
         height: 175px;
@@ -77,8 +69,26 @@
         box-shadow: 0 1px 4px rgba(12, 12, 13, 0.1);
       }
 
-      #done-container:hover {
+      .card-container:hover {
         box-shadow: 0 2px 8px rgba(12, 12, 13, 0.1);
+      }
+
+      #loading-container {
+        width: 100%;
+        height: 100%;
+        background: white;
+      }
+
+      #loading-container .card-container {
+        font-weight: bold;
+        font-size: 20px;
+        height: 250px;
+        vertical-align: center;
+        text-align: center;
+      }
+
+      #loading-container p {
+        color: #0A84FF;
       }
 
       #done-container p {
@@ -100,15 +110,100 @@
       a {
         cursor: pointer;
       }
+
+      .app-loading-indicator {
+        align-items:center;
+        background:var(--white);
+        display:flex;
+        height:55%;
+        justify-content:center;
+        left:0;
+        position:relative;
+        top:0;
+        width:100%;
+        z-index:20000;
+        flex-direction:column;
+      }
+      .app-loading-indicator .app-loading-indicator__spinner {
+          align-items:center;
+          border-radius:50%;
+          color:#fff;
+          display:flex;
+          height:74px;
+          width:74px;
+          position:relative;
+          overflow:hidden;
+      }
+      .app-loading-indicator .app-loading-indicator__spinner:before {
+          content:"";
+          animation-duration:8s;
+          animation-iteration-count:infinite;
+          animation-name:rainbow;
+          animation-timing-function:ease-in-out;
+          box-shadow:inset 0 0 0 6px #bf4040;
+          width:72px;
+          height:72px;
+          border-radius:50%;
+          margin:1px;
+      }
+      .app-loading-indicator .app-loading-indicator__spinner:after {
+          content:"";
+          box-sizing:border-box;
+          width:72px;
+          height:72px;
+          animation:rotate linear 1.88s infinite;
+          transform-origin:left top;
+          background:hsla(0,0%,100%,.7);
+          position:absolute;
+          top:37px;
+          left:37px;
+      }
+
+      @keyframes rotate {
+          0% {
+              transform:rotate(0);
+          }
+          to {
+              transform:rotate(1turn);
+          }
+      }
+
+      @keyframes rainbow {
+          0% {
+              box-shadow:inset 0 0 0 6px #bf4040;
+          }
+          16% {
+              box-shadow:inset 0 0 0 6px #bfbf40;
+          }
+          32% {
+              box-shadow:inset 0 0 0 6px #40bf40;
+          }
+          48% {
+              box-shadow:inset 0 0 0 6px #40bfbf;
+          }
+          64% {
+              box-shadow:inset 0 0 0 6px #4040bf;                                                       }
+          80% {
+              box-shadow:inset 0 0 0 6px #bf40bf;
+          }
+          96% {
+              box-shadow:inset 0 0 0 6px #bf4040;
+          }
+      }
     </style>
   </head>
   <body>
 
-    <div id="loading-container" class="container">
-      L O A D I N G . . .
+    <div id="loading-container">
+      <div class="container card-container">
+        <div class="app-loading-indicator">
+          <div class="app-loading-indicator__spinner"></div>
+        </div>
+        <p>Preparing your email...</p>
+      </div>
     </div>
 
-    <div id="done-container" class="container" style="display: none">
+    <div id="done-container" class="container card-container" style="display: none">
       <div class="message-wrap">
         <h4>Thanks for using Firefox Email Tabs</h4>
         <p id="done-message" data-many-tabs="__NUMBER__ tabs were sent." data-one-tab="Tab was sent.">Tabs were sent.</p>
