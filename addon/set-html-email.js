@@ -1,20 +1,18 @@
-/* globals cloneInto */
+/* globals cloneInto, templateMetadata */
 
 browser.runtime.onMessage.addListener((message) => {
   try {
     thisTabId = message.thisTabId;
-    closeTabInfo = message.tabInfo;
-    setSubject(message.subject);
-    setHtml(message.html);
+    tabInfo = message.tabInfo;
   } catch (e) {
-    console.error("Unable to setHtml:", String(e), e.stack);
+    console.error("Error getting tabInfo:", String(e), e.stack);
     throw e;
   }
 });
 
 let completed = false;
 let thisTabId;
-let closeTabInfo;
+let tabInfo;
 
 window.addEventListener("beforeunload", () => {
   if (completed) {
@@ -28,7 +26,6 @@ window.addEventListener("beforeunload", () => {
   browser.runtime.sendMessage({
     type: "sendFailed"
   });
-  console.error("beforeunload");
 });
 
 function setSubject(subject) {
@@ -116,7 +113,7 @@ function showCloseButtons() {
   let done = iframeDocument.querySelector("#done");
   let doneMsg = iframeDocument.querySelector("#done-message");
   let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
-  let numTabs = closeTabInfo.length;
+  let numTabs = tabInfo.length;
   if (numTabs === 1) {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
     doneMsg.textContent = doneMsg.getAttribute("data-one-tab");
@@ -133,7 +130,7 @@ function showCloseButtons() {
   closeAllTabs.addEventListener("click", async () => {
     await browser.runtime.sendMessage({
       type: "closeTabs",
-      closeTabInfo,
+      closeTabInfo: tabInfo,
       composeTabId: thisTabId
     });
   });
@@ -141,6 +138,39 @@ function showCloseButtons() {
 
 function showLoading() {
   showIframe("#loading-container");
+}
+
+function showTemplateSelector() {
+  showIframe("#choose-template");
+  let cancel = iframeDocument.querySelector("#choose-template-cancel");
+  cancel.addEventListener("click", async () => {
+    completed = true;
+    await browser.runtime.sendMessage({
+      type: "closeComposeTab",
+      tabId: thisTabId,
+    });
+  });
+  let elTemplate = iframeDocument.querySelector(".template-template");
+  for (let template of templateMetadata.metadata) {
+    let instance = elTemplate.cloneNode(true);
+    instance.style.display = "";
+    instance.classList.remove("template-template");
+    for (let el of instance.querySelectorAll("*[data-substitute]")) {
+      el.textContent = template[el.getAttribute("data-substitute")];
+      el.removeAttribute("data-substitute");
+    }
+    instance.addEventListener("click", async () => {
+      showLoading();
+      let { html, subject } = await browser.runtime.sendMessage({
+        type: "renderTemplate",
+        selectedTemplate: template.name,
+        tabInfo,
+      });
+      setSubject(subject);
+      setHtml(html);
+    });
+    cancel.parentNode.insertBefore(instance, cancel);
+  }
 }
 
 let iframe = null;
@@ -182,7 +212,7 @@ function createIframe() {
 }
 
 function showIframe(container) {
-  let containers = ["#loading-container", "#done-container"];
+  let containers = ["#loading-container", "#done-container", "#choose-template"];
   if (!containers.includes(container)) {
     throw new Error(`Unexpected container: ${container}`);
   }
@@ -203,5 +233,5 @@ function hideIframe() {
 createIframe();
 
 initPromise.then(() => {
-  showLoading();
+  showTemplateSelector();
 });

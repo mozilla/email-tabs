@@ -73,6 +73,15 @@
         box-shadow: 0 2px 8px rgba(12, 12, 13, 0.1);
       }
 
+      .big-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+
       #loading-container {
         width: 100%;
         height: 100%;
@@ -210,6 +219,17 @@
         <br>
         <a id="done" class="btn">Done</a>
         <a id="close-all-tabs" class="btn close" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</a>
+      </div>
+    </div>
+
+    <div id="choose-template" class="container big-container" style="display: none">
+      <div class="template-template" style="display: none">
+        <button>
+          Use <span data-substitute="title"></span>
+        </button>
+      </div>
+      <div id="choose-template-container" class="card-container">
+        <button id="choose-template-cancel">Cancel</button>
       </div>
     </div>
 
