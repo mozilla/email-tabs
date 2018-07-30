@@ -2,8 +2,6 @@
 
 let activeTabLi;
 let selected = new Map();
-let isChoosingTemplate = false;
-let selectedTemplate = templateMetadata.defaultTemplateName;
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
 class Tab extends React.Component {
@@ -78,7 +76,6 @@ class Popup extends React.Component {
             <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
             Select All
           </label>
-          <button onClick={this.chooseTemplate.bind(this)}>Change template ({selectedTemplate})</button>
         </div>
       </div>
       <div className="separator"></div>
@@ -143,10 +140,6 @@ class Popup extends React.Component {
     }, 300);
   }
 
-  chooseTemplate() {
-    isChoosingTemplate = true;
-    render();
-  }
 }
 
 class LoginError extends React.Component {
@@ -155,47 +148,6 @@ class LoginError extends React.Component {
       Last attempt to send an email failed, probably because you weren&#39;t logged into your email.
       Please make sure you are logged in, then try again.
     </div>;
-  }
-}
-
-class TemplateChooser extends React.Component {
-  render() {
-    let templates = templateMetadata.metadata.map(template => {
-      return <TemplateItem key={template.name} selected={template.name === selectedTemplate} {...template} />;
-    });
-    return <div>
-      <ul>
-        { templates }
-      </ul>
-      <footer className="panel-footer toggle-enabled">
-        <button onClick={this.onCancel.bind(this)}>
-          Cancel
-        </button>
-      </footer>
-    </div>;
-  }
-
-  onCancel() {
-    isChoosingTemplate = false;
-    render();
-  }
-}
-
-class TemplateItem extends React.Component {
-  render() {
-    let className = "";
-    if (this.props.selected) {
-      className += " selected";
-    }
-    return <li className={className}>
-      <button onClick={this.selectTemplate.bind(this)}>{this.props.title}</button>
-    </li>;
-  }
-
-  selectTemplate() {
-    setSelectedTemplate(this.props.name);
-    isChoosingTemplate = false;
-    render();
   }
 }
 
@@ -214,12 +166,7 @@ async function render(firstRun) {
   if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
     showLoginError = 0;
   }
-  let page;
-  if (isChoosingTemplate) {
-    page = <TemplateChooser />;
-  } else {
-    page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} />;
-  }
+  let page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} />;
   ReactDOM.render(page, document.getElementById("panel"));
   if (firstRun) {
     activeTabLi.scrollIntoView({
@@ -296,13 +243,7 @@ for (let eventName of ["onAttached", "onCreated", "onDetached", "onMoved", "onUp
 
 browser.tabs.onRemoved.addListener(renderWithDelay);
 
-async function setSelectedTemplate(name) {
-  selectedTemplate = name;
-  await browser.runtime.sendMessage({type: "setSelectedTemplate", name});
-}
-
 async function init() {
-  selectedTemplate = await browser.runtime.sendMessage({type: "getSelectedTemplate"});
   render(true);
 }
 

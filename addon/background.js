@@ -1,6 +1,4 @@
 /* globals TestPilotGA, emailTemplates, templateMetadata */
-let selectedTemplate = templateMetadata.defaultTemplateName;
-
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     sendEmail(message.tabIds).catch((e) => {
@@ -25,10 +23,8 @@ browser.runtime.onMessage.addListener((message, source) => {
     delete message.type;
     sendEvent(message);
     return Promise.resolve(null);
-  } else if (message.type === "setSelectedTemplate") {
-    return setSelectedTemplate(message.name);
-  } else if (message.type === "getSelectedTemplate") {
-    return Promise.resolve(selectedTemplate);
+  } else if (message.type === "renderTemplate") {
+    return renderTabs(message.tabInfo, message.selectedTemplate);
   }
   console.error("Unexpected message type:", message.type);
   return null;
@@ -94,16 +90,14 @@ async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
   return tabIds.map(id => tabInfo[id]);
 }
 
-async function renderTabs(tabIds, templateName) {
-  let { wantsScreenshots, wantsReadability } = templateMetadata.getTemplate(templateName);
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots, wantsReadability});
+async function renderTabs(tabInfo, templateName) {
   let TemplateComponent = emailTemplates[templateMetadata.getTemplate(templateName).componentName];
   if (!TemplateComponent) {
     throw new Error(`No component found for template: ${templateName}`);
   }
   let html = emailTemplates.renderEmail(tabInfo, TemplateComponent);
   let subject = emailTemplates.renderSubject(tabInfo);
-  return { html, tabInfo, subject };
+  return { html, subject };
 }
 
 async function sendEmail(tabIds) {
@@ -126,22 +120,25 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
-  let { html, tabInfo, subject } = await renderTabs(tabIds, selectedTemplate);
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true});
+  await browser.tabs.executeScript(newTab.id, {
+    file: "templateMetadata.js",
+    runAt: "document_start",
+  });
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
     runAt: "document_start",
   });
   await browser.tabs.sendMessage(newTab.id, {
-    type: "setHtml",
-    html,
-    subject,
+    type: "sendTabInfo",
     thisTabId: newTab.id,
     tabInfo
   });
 }
 
 async function copyTabHtml(tabIds) {
-  let { html } = await renderTabs(tabIds, selectedTemplate);
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: false, wantsReadability: false});
+  let { html } = await renderTabs(tabInfo, "just_links");
   copyHtmlToClipboard(html);
 }
 
@@ -195,23 +192,3 @@ async function closeManyTabs(composeTabId, otherTabInfo) {
   }
   await browser.tabs.remove(toClose);
 }
-
-async function setSelectedTemplate(newName) {
-  selectedTemplate = newName;
-  await browser.storage.local.set({selectedTemplate: newName});
-}
-
-async function init() {
-  let result = await browser.storage.local.get(["selectedTemplate"]);
-  if (result && result.selectedTemplate) {
-    try {
-      // Checks that the template really exists:
-      templateMetadata.getTemplate(result.selectedTemplate);
-      selectedTemplate = result.selectedTemplate;
-    } catch (e) {
-      console.error("Could not set template", result.selectedTemplate, "to:", String(e));
-    }
-  }
-}
-
-init();
