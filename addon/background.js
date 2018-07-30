@@ -8,6 +8,7 @@ browser.runtime.onMessage.addListener((message, source) => {
     // Note we don't need the popup to wait for us to send the email, so we return immediately:
     return Promise.resolve();
   } else if (message.type === "copyTabHtml") {
+    localStorage.removeItem("selectionCache");
     return copyTabHtml(message.tabIds);
   } else if (message.type === "clearSelectionCache") {
     localStorage.removeItem("selectionCache");
