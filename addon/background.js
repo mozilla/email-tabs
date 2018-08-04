@@ -31,6 +31,49 @@ browser.runtime.onMessage.addListener((message, source) => {
   return null;
 });
 
+const ALLOWED_EXTENSION_IDS = new Set(["notes@mozilla.com"]);
+
+browser.runtime.onMessageExternal.addListener((message, source) => {
+  if (!ALLOWED_EXTENSION_IDS.has(source.id)) {
+    console.error("Email-tabs received external message from unknown source:", source.id);
+    return undefined;
+  }
+  if (message.type === "exportFromNotes") {
+    return sendRawEmail(message.content);
+  }
+  throw new Error("Unexpected message");
+});
+
+async function repeatTry({times, delay, func}) {
+  if (times <= 0) {
+    return null;
+  }
+  try {
+    return await func();
+  } catch (error) {
+    if (times <= 1) {
+      throw error;
+    }
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        return repeatTry({times: times - 1, delay, func}).then(resolve, reject);
+      }, delay);
+    });
+  }
+}
+
+repeatTry({
+  async func() {
+    await browser.runtime.sendMessage("notes@mozilla.com", {
+      type: "registerExport",
+      name: "email-tabs",
+      title: "Export via Gmail",
+    });
+  },
+  times: 3,
+  delay: 1000,
+});
+
 const manifest = browser.runtime.getManifest();
 
 const is_production = !manifest.version_name.includes("dev");
@@ -101,7 +144,7 @@ async function renderTabs(tabInfo, templateName) {
   return { html, subject };
 }
 
-async function sendEmail(tabIds) {
+async function openEmailTab() {
   let currentTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
@@ -114,6 +157,11 @@ async function sendEmail(tabIds) {
     url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=",
     openerTabId,
   });
+  return newTab;
+}
+
+async function sendEmail(tabIds) {
+  let newTab = await openEmailTab();
   setTimeout(async () => {
     let currentTab = await browser.tabs.get(newTab.id);
     if (currentTab.url.includes("accounts.google.com")) {
@@ -134,6 +182,19 @@ async function sendEmail(tabIds) {
     type: "sendTabInfo",
     thisTabId: newTab.id,
     tabInfo
+  });
+}
+
+async function sendRawEmail(html) {
+  let newTab = await openEmailTab();
+  await browser.tabs.executeScript(newTab.id, {
+    file: "set-html-email.js",
+    runAt: "document_start",
+  });
+  await browser.tabs.sendMessage(newTab.id, {
+    type: "sendRawEmail",
+    html,
+    thisTabId: newTab.id,
   });
 }
 
