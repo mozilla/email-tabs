@@ -48,7 +48,7 @@
     "build:manifest": "node -e 'let input = JSON.parse(fs.readFileSync(\"package.json\")); input.version = input.version.slice(0, -1) + Math.floor((Date.now() - new Date(new Date().getFullYear().toString()).getTime()) / 3600000); input.version_name = `${input.version} ${process.env.NODE_ENV === \"prod\" ? \"release\" : \"dev\"}`; console.log(JSON.stringify(input))' | mustache - addon/manifest.json.tmpl > addon/manifest.json",
     "build:web-ext": "web-ext build --source-dir=addon --overwrite-dest --ignore-files '*.tmpl' --ignore-files '*.jsx'",
     "package": "NODE_ENV=prod npm run build && cp web-ext-artifacts/`ls -t1 web-ext-artifacts | head -n 1` addon.xpi",
-    "run": "mkdir -p ./Profile && npm run build:deps && web-ext run --source-dir=addon -p ./Profile --browser-console --keep-profile-changes -f ${FIREFOX:-nightly}",
+    "run": "mkdir -p ./Profile && npm run build:deps && web-ext run --source-dir=addon -p ./Profile --browser-console --keep-profile-changes -f \"${FIREFOX:-nightly}\"",
     "test": "npm run lint",
     "postinstall": "npm run build",
     "watch": "nodemon -e jsx,tmpl -w addon/ --exec 'npm run build:deps'"
