@@ -4,11 +4,15 @@ let activeTabLi;
 let selected = new Map();
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
+/* True if this is a tab we can "send". Doesn't include about:preferences, etc. */
+function isSelectableTabUrl(url) {
+  return url.startsWith("http");
+}
+
 class Tab extends React.Component {
   render() {
     let tab = this.props.tab;
     let checkId = `checkbox-${this.props.tab.id}`;
-    let isOkay = tab.url.startsWith("http");
     let checked = this.props.selected.get(tab.id);
     let liClass;
     if (tab.active) {
@@ -21,7 +25,7 @@ class Tab extends React.Component {
       }
     }}>
       <label htmlFor={checkId} className="tab">
-        { isOkay ? <input type="checkbox" value={tab.id} checked={checked}
+        { isSelectableTabUrl(tab.url) ? <input type="checkbox" value={tab.id} checked={checked}
         onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
         { image }
         <span className="tab__text">{tab.title}</span>
@@ -107,10 +111,11 @@ class Popup extends React.Component {
 
   onClickCheckAll() {
     let allChecked = true;
-    for (let tab of this.props.tabs) {
+    let selectableTabs = this.props.tabs.filter(tab => isSelectableTabUrl(tab.url));
+    for (let tab of selectableTabs) {
       allChecked = allChecked && this.props.selected.get(tab.id);
     }
-    for (let tab of this.props.tabs) {
+    for (let tab of selectableTabs) {
       selected.set(tab.id, !allChecked);
     }
     selectionCache.clear();
@@ -119,6 +124,10 @@ class Popup extends React.Component {
 
   async sendEmail() {
     let sendTabs = this.props.tabs.filter(tab => this.props.selected.get(tab.id));
+    if (!sendTabs.length) {
+      console.info("Tried to send tabs with nothing selected");
+      return;
+    }
     localStorage.removeItem("loginInterrupt");
     sendTabs = sendTabs.map(tab => tab.id);
     await browser.runtime.sendMessage({
@@ -130,6 +139,10 @@ class Popup extends React.Component {
 
   async copyTabs() {
     let sendTabs = this.props.tabs.filter(tab => this.props.selected.get(tab.id));
+    if (!sendTabs.length) {
+      console.info("Tried to copy tabs with nothing selected");
+      return;
+    }
     sendTabs = sendTabs.map(tab => tab.id);
     await browser.runtime.sendMessage({
       type: "copyTabHtml",
@@ -156,7 +169,7 @@ async function render(firstRun) {
   if (firstRun) {
     if (!selectionCache.loadSelectedTabs(tabs)) {
       for (let tab of tabs) {
-        if (tab.active) {
+        if (tab.active && isSelectableTabUrl(tab.url)) {
           selected.set(tab.id, true);
         }
       }
