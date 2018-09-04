@@ -1,4 +1,4 @@
-/* globals TestPilotGA, emailTemplates, templateMetadata */
+/* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify */
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
     sendEmail(message.tabIds).catch((e) => {
@@ -83,6 +83,9 @@ async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
         file: "capture-data.js",
       });
       let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots, wantsReadability});
+      if (data.readability && data.readability.content) {
+        data.readability.content = DOMPurify.sanitize(data.readability.content);
+      }
       Object.assign(tabInfo[tabId], data);
     } catch (e) {
       console.error("Error getting info for tab", tabId, tabInfo[tabId].url, ":", String(e));
