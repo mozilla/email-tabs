@@ -83,8 +83,22 @@ this.emailTemplates = (function () {
 
   class FullArticles extends React.Component {
     render() {
+      let toc = null;
+      if (this.props.tabs.length > 1) {
+        toc = this.props.tabs.map((tab, index) => {
+          let anchor = `email-tabs-article-${index}`;
+          tab.anchorName = anchor;
+          return <Fragment key={`toc-${index}`}><a href={`#${anchor}`}>Jump to {tab.title}</a> <br /></Fragment>;
+        });
+        toc.push(<br />);
+      }
       let tabList = this.props.tabs.map((tab, index) => {
         let selection =  null;
+        let anchorTag = null;
+        if (toc) {
+           // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/anchor-has-content
+          anchorTag = <a name={tab.anchorName}></a>;
+        }
         if (tab.selection) {
           selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
         }
@@ -99,12 +113,16 @@ this.emailTemplates = (function () {
           readability = <Fragment><div style={{maxWidth: "600px", border: "2px solid #aaa", borderRadius: "3px", padding: "10px"}} dangerouslySetInnerHTML={{__html: content.outerHTML}} /> { hr }</Fragment>;
         }
         return <Fragment key={index}>
+          { anchorTag }
           <a href={tab.url}>{tab.title}</a> <br />
           { selection }
           { readability }
         </Fragment>;
       });
-      return <Fragment>{tabList}</Fragment>;
+      return <Fragment>
+        {toc}
+        {tabList}
+      </Fragment>;
     }
   }
 
