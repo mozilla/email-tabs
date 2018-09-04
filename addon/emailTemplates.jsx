@@ -10,10 +10,23 @@ this.emailTemplates = (function () {
   function selectionDisplay(text) {
     text = text.replace(/^\s*/, "");
     text = text.replace(/\s*$/, "");
-    if (text.length > SELECTION_TEXT_LIMIT) {
-      text = text.substr(0, SELECTION_TEXT_LIMIT) + "…";
-    }
+    text = truncateText(text, SELECTION_TEXT_LIMIT, SELECTION_TEXT_LIMIT + 50);
     return `“${text}”`;
+  }
+
+  /* If necessary, truncates text after limit characters, at some word boundary, not to
+   * exceed hardLimit characters
+   */
+  function truncateText(text, limit, hardLimit) {
+    if (text.length <= limit) {
+      return text;
+    }
+    let trunc = text.substr(0, limit) + text.substr(limit).split(/\s+/)[0] + "…";
+    if (trunc.length > hardLimit) {
+      // There's no words to split on
+      trunc = text.substr(0, limit) + "…";
+    }
+    return trunc;
   }
 
   class TitleScreenshot extends React.Component {
@@ -150,12 +163,13 @@ this.emailTemplates = (function () {
   };
 
   exports.renderSubject = function(tabs) {
+    let title = truncateText(tabs[0].title, 50, 65);
     if (tabs.length === 1) {
-      return `“${tabs[0].title}”`;
+      return `“${title}”`;
     } else if (tabs.length === 2) {
-      return `“${tabs[0].title}” and 1 other link`;
+      return `“${title}” and 1 other link`;
     }
-    return `“${tabs[0].title}” and ${tabs.length - 1} other links`;
+    return `“${title}” and ${tabs.length - 1} other links`;
   };
 
   return exports;
