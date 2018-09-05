@@ -14,6 +14,14 @@ this.emailTemplates = (function () {
     return `“${text}”`;
   }
 
+  function selectionMarkup(text) {
+    if (!text) {
+      return null;
+    }
+    // When you hit Ctrl-] in Gmail it produces this markup:
+    return <div style={{marginLeft: "40px"}}>{selectionDisplay(text)}</div>;
+  }
+
   /* If necessary, truncates text after limit characters, at some word boundary, not to
    * exceed hardLimit characters
    */
@@ -45,10 +53,6 @@ this.emailTemplates = (function () {
     render() {
       let tab = this.props.tab;
       let img = null;
-      let selection = null;
-      if (tab.selection) {
-        selection = <Fragment>{selectionDisplay(tab.selection)} <br /></Fragment>;
-      }
       if (tab.screenshot) {
         // Note: the alt attribute is searched by gmail, but the title attribute is NOT searched
         // Note: box-shadow is specifically filtered out by gmail, other styles may get through
@@ -69,7 +73,7 @@ this.emailTemplates = (function () {
       }
       return <Fragment>
         <a href={tab.url}>{tab.title}</a> <br />
-        { selection }
+        { selectionMarkup(tab.selection) }
         { img }
         <br />
       </Fragment>;
@@ -79,13 +83,9 @@ this.emailTemplates = (function () {
   class JustLinks extends React.Component {
     render() {
       let tabList = this.props.tabs.map((tab, index) => {
-        let selection =  null;
-        if (tab.selection) {
-          selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
-        }
         return <Fragment key={index}>
           <a href={tab.url}>{tab.title}</a> <br />
-          { selection }
+          { selectionMarkup(tab.selection) }
         </Fragment>;
       });
       return <Fragment>{tabList}</Fragment>;
@@ -106,14 +106,10 @@ this.emailTemplates = (function () {
         toc.push(<br />);
       }
       let tabList = this.props.tabs.map((tab, index) => {
-        let selection =  null;
         let anchorTag = null;
         if (toc) {
            // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/anchor-has-content
           anchorTag = <a name={tab.anchorName}></a>;
-        }
-        if (tab.selection) {
-          selection = <Fragment>{selectionDisplay(tab.selection)} <br /><br /></Fragment>;
         }
         let readability = null;
         if (tab.readability && tab.readability.content) {
@@ -128,7 +124,7 @@ this.emailTemplates = (function () {
         return <Fragment key={index}>
           { anchorTag }
           <a href={tab.url}>{tab.title}</a> <br />
-          { selection }
+          { selectionMarkup(tab.selection) }
           { readability }
         </Fragment>;
       });
