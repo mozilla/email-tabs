@@ -1,12 +1,18 @@
 /* globals cloneInto, templateMetadata */
 
 browser.runtime.onMessage.addListener((message) => {
-  try {
+  if (message.type === "sendTabInfo") {
+    try {
+      thisTabId = message.thisTabId;
+      tabInfo = message.tabInfo;
+    } catch (e) {
+      console.error("Error getting tabInfo:", String(e), e.stack);
+      throw e;
+    }
+  } else if (message.type === "sendRawEmail") {
     thisTabId = message.thisTabId;
-    tabInfo = message.tabInfo;
-  } catch (e) {
-    console.error("Error getting tabInfo:", String(e), e.stack);
-    throw e;
+    tabInfo = [];
+    setHtml(message.html);
   }
 });
 
@@ -174,40 +180,46 @@ function showTemplateSelector() {
 }
 
 let iframe = null;
-let initPromise;
+let initPromiseResolve, initPromiseReject;
+let initPromise = new Promise((resolve, reject) => {
+  initPromiseResolve = resolve;
+  initPromiseReject = reject;
+});
 let iframeDocument = null;
 
 function createIframe() {
-  initPromise = new Promise((resolve, reject) => {
-    let iframeUrl = browser.extension.getURL("gmail-iframe.html");
-    iframe = document.createElement("iframe");
-    iframe.id = "mozilla-email-tabs";
-    iframe.src = iframeUrl;
-    iframe.style.zIndex = "99999999999";
-    iframe.style.border = "none";
-    iframe.style.top = "0";
-    iframe.style.left = "0";
-    iframe.style.margin = "0";
-    iframe.scrolling = "no";
-    iframe.style.clip = "auto";
-    iframe.style.display = "none";
-    iframe.style.setProperty("position", "fixed", "important");
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    document.body.appendChild(iframe);
-    iframe.addEventListener("load", () => {
-      try {
-        if (iframe.contentDocument.documentURI !== iframeUrl) {
-          // This check protects against certain attacks on the iframe that quickly change src
-          console.error("iframe URL does not match expected URL", iframe.contentDocument.documentURI);
-          throw new Error("iframe URL does not match expected URL");
-        }
-        iframeDocument = iframe.contentDocument;
-        resolve();
-      } catch (e) {
-        reject(e);
+  if (!document.body) {
+    setTimeout(iframe, 100);
+    return;
+  }
+  let iframeUrl = browser.extension.getURL("gmail-iframe.html");
+  iframe = document.createElement("iframe");
+  iframe.id = "mozilla-email-tabs";
+  iframe.src = iframeUrl;
+  iframe.style.zIndex = "99999999999";
+  iframe.style.border = "none";
+  iframe.style.top = "0";
+  iframe.style.left = "0";
+  iframe.style.margin = "0";
+  iframe.scrolling = "no";
+  iframe.style.clip = "auto";
+  iframe.style.display = "none";
+  iframe.style.setProperty("position", "fixed", "important");
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  document.body.appendChild(iframe);
+  iframe.addEventListener("load", () => {
+    try {
+      if (iframe.contentDocument.documentURI !== iframeUrl) {
+        // This check protects against certain attacks on the iframe that quickly change src
+        console.error("iframe URL does not match expected URL", iframe.contentDocument.documentURI);
+        throw new Error("iframe URL does not match expected URL");
       }
-    });
+      iframeDocument = iframe.contentDocument;
+      initPromiseResolve();
+    } catch (e) {
+      initPromiseReject(e);
+    }
   });
 }
 
@@ -233,5 +245,9 @@ function hideIframe() {
 createIframe();
 
 initPromise.then(() => {
-  showTemplateSelector();
+  if (typeof emailTemplates !== "undefined") {
+    showTemplateSelector();
+  } else {
+    showLoading();
+  }
 });
