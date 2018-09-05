@@ -155,6 +155,9 @@ function copyHtmlToClipboard(html) {
   range.selectNode(container);
   window.getSelection().addRange(range);
   document.execCommand("copy");
+  setTimeout(() => {
+    document.body.removeChild(container);
+  }, 100);
 }
 
 let loginInterruptedTime;
