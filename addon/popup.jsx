@@ -24,12 +24,15 @@ class Tab extends React.Component {
         activeTabLi = li;
       }
     }}>
-      <label htmlFor={checkId} className="tab">
+      <div className="tab">
         { isSelectableTabUrl(tab.url) ? <input type="checkbox" value={tab.id} checked={checked}
-        onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
-        { image }
-        <span className="tab__text">{tab.title}</span>
-      </label>
+          onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
+        <label htmlFor={checkId} className="styled-checkbox"></label>
+        <label htmlFor={checkId} className="tab__label">
+          { image }
+          <span className="tab__text">{tab.title}</span>
+        </label>
+      </div>
     </li>;
   }
 

@@ -44,6 +44,7 @@
     "lint:js": "eslint addon --ext=js,jsx",
     "lint:styles": "stylelint ./addon/*.css",
     "build": "npm-run-all build:*",
+    "build:images": "cp -r addon/images addon/build",
     "build:deps": "mkdir -p addon/build/ && cp node_modules/react/umd/react.production.min.js node_modules/react-dom/umd/react-dom.production.min.js node_modules/react-dom/umd/react-dom-server.browser.production.min.js node_modules/readability/Readability.js node_modules/dompurify/dist/purify.min.js addon/build/ && babel --retain-lines addon/popup.jsx > addon/build/popup.js && babel --retain-lines addon/emailTemplates.jsx > addon/build/emailTemplates.js",
     "build:ga": "mkdir -p addon/build && cp node_modules/testpilot-ga/dist/index.js addon/build && mv addon/build/index.js addon/build/testpilot-ga.js",
     "build:manifest": "node -e 'let input = JSON.parse(fs.readFileSync(\"package.json\")); input.version = input.version.slice(0, -1) + Math.floor((Date.now() - new Date(new Date().getFullYear().toString()).getTime()) / 3600000); input.version_name = `${input.version} ${process.env.NODE_ENV === \"prod\" ? \"release\" : \"dev\"}`; console.log(JSON.stringify(input))' | mustache - addon/manifest.json.tmpl > addon/manifest.json",
