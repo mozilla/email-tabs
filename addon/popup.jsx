@@ -66,7 +66,8 @@ class Popup extends React.Component {
     let anyChecked = false;
     let allChecked = true;
     this.indeterminate = false;
-    for (let tab of this.props.tabs) {
+    const linkableTabs = this.props.tabs.filter((t) => isSelectableTabUrl(t.url));
+    for (let tab of linkableTabs) {
       if (!this.props.selected.get(tab.id)) {
         allChecked = false;
       } else {
@@ -81,10 +82,9 @@ class Popup extends React.Component {
       { this.props.showLoginError ? <LoginError /> : null }
       <div className="controls">
         <div>
-          <label htmlFor="allCheckbox">
-            <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
-            Select All
-          </label>
+          <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
+          <label htmlFor="allCheckbox" className="styled-checkbox"></label>
+          <label htmlFor="allCheckbox">Select All</label>
         </div>
       </div>
       <div className="separator"></div>

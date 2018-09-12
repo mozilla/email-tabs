@@ -134,7 +134,7 @@ supply a favicon */
 }
 
 .controls {
-  padding: 4px 12px;
+  padding: 10px 12px 4px;
 }
 
 .styled-checkbox {
@@ -144,7 +144,8 @@ supply a favicon */
 }
 
 /* checkboxes */
-.tab input[type="checkbox"] {
+.tab input[type="checkbox"],
+.controls input[type="checkbox"] {
   display: none;
 }
 
@@ -176,7 +177,8 @@ input[type="checkbox"]:hover + .styled-checkbox:before {
   background: rgba(12, 12, 13, 0.2);
 }
 
-input[type="checkbox"]:checked:hover + .styled-checkbox:before {
+input[type="checkbox"]:checked:hover + .styled-checkbox:before,
+input[type="checkbox"]:indeterminate:hover + .styled-checkbox:before {
   background: #003eaa;
 }
 
@@ -184,7 +186,8 @@ input[type="checkbox"]:active + .styled-checkbox:before {
   background: rgba(12, 12, 13, 0.3);
 }
 
-input[type="checkbox"]:checked:active + .styled-checkbox:before {
+input[type="checkbox"]:checked:active + .styled-checkbox:before,
+input[type="checkbox"]:indeterminate:active + .styled-checkbox:before {
   background: #002275;
 }
 
@@ -192,11 +195,13 @@ input[type="checkbox"]:focus + .styled-checkbox:before {
   box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
 }
 
-input[type="checkbox"]:checked:focus + .styled-checkbox:before {
+input[type="checkbox"]:checked:focus + .styled-checkbox:before,
+input[type="checkbox"]:indeterminate:focus + .styled-checkbox:before {
   box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
 }
 
-input[type="checkbox"]:checked + .styled-checkbox:before {
+input[type="checkbox"]:checked + .styled-checkbox:before,
+input[type="checkbox"]:indeterminate + .styled-checkbox:before {
   background: #0060df;
   border: 1px solid #0060df;
 }
@@ -219,6 +224,14 @@ input[type="checkbox"]:disabled + .styled-checkbox + .tab__label {
 
 input[type="checkbox"]:checked + .styled-checkbox:after {
   background: url(images/check.svg);
+}
+
+input[type="checkbox"]:indeterminate + .styled-checkbox:after {
+  background: url(images/unselect.svg);
+}
+
+input[type="checkbox"]#allCheckbox:checked + .styled-checkbox:after {
+  background: url(images/check.svg) !important;
 }
 
 .feedback-link {
