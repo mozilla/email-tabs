@@ -63,12 +63,14 @@ class TabList extends React.Component {
 
 class Popup extends React.Component {
   render() {
+    let anyChecked = false;
     let allChecked = true;
     this.indeterminate = false;
     for (let tab of this.props.tabs) {
       if (!this.props.selected.get(tab.id)) {
         allChecked = false;
       } else {
+        anyChecked = true;
         this.indeterminate = true;
       }
     }
@@ -93,10 +95,10 @@ class Popup extends React.Component {
       <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com">Let us know.</a></p>
 
       <footer className="panel-footer toggle-enabled">
-        <button onClick={this.copyTabs.bind(this)}>
+        <button onClick={this.copyTabs.bind(this)} disabled={!anyChecked}>
           Copy Tabs to Clipboard
         </button>
-        <button onClick={this.sendEmail.bind(this)}>
+        <button onClick={this.sendEmail.bind(this)} disabled={!anyChecked}>
           Email Tabs
         </button>
       </footer>

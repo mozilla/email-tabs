@@ -289,6 +289,10 @@ input[type="checkbox"]:checked + .styled-checkbox:after {
   background: rgba(12, 12, 13, 0.3);
 }
 
+.panel-footer button:disabled {
+  opacity: .4;
+}
+
 #getting-started {
   display: none;
   padding: 1em;
