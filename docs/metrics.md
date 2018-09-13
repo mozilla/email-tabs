@@ -25,6 +25,7 @@ Data will be collected with Google Analytics and follow [Test Pilot standards](h
 * `cd3` - If the user is sending the current tab ("true" or "false")
 * `cd4` - The name of the template used
 * `cd5` - Count of email recipients
+* `cd6` - Did the user actually send all tabs ("true" or "false")
 
 ### Events
 
@@ -53,30 +54,13 @@ el: browser-action,
 cd1
 ```
 
-##### When the user starts to change the template
-Note `cd4` here refers to the template *before* any changes are made
+##### When the user clicks select all
 
 ```
-ec: interface
-ea: button-click
-el: start-choose-template
-cd1,
-cd2,
-cd3,
-cd4
-```
-
-###### When the user changes the template
-Note `cd4` here is the template chosen
-
-```
-ec: interface
-ea: button-click
-el: choose-template,
-cd1,
-cd2,
-cd3,
-cd4
+ec: interface,
+ea: select-all,
+el: browser-action,
+cd1
 ```
 
 ##### When the user clicks the feedback button
@@ -86,8 +70,7 @@ ea: button-click,
 el: feedback,
 cd1,
 cd2,
-cd3,
-cd4
+cd3
 ```
 
 ##### When the user Clicks the Copy Tabs to Clipboard button
@@ -97,8 +80,7 @@ ea: button-click,
 el: copy-tabs-to-clipboard,
 cd1,
 cd2,
-cd3,
-cd4
+cd3
 ```
 
 ##### When the user Clicks the Email Tabs button
@@ -109,7 +91,7 @@ el: email-tabs,
 cd1,
 cd2,
 cd3,
-cd4
+cd6
 ```
 
 ###### When the user is not logged in, or encounters a compose window error
@@ -122,7 +104,21 @@ el: account or error,
 cd1,
 cd2,
 cd3,
-cd4
+cd6
+```
+
+###### When the user chooses the template
+Note `cd4` here is the template chosen
+
+```
+ec: interface
+ea: button-click
+el: choose-template,
+cd1,
+cd2,
+cd3,
+cd4,
+cd6
 ```
 
 ###### When `capture-data.js` encounters a non-fatal error
@@ -135,7 +131,8 @@ el: tab-url-scheme
 cd1,
 cd2,
 cd3,
-cd4
+cd4,
+cd6
 ```
 
 ##### When the compose window is finished uploading images
@@ -145,7 +142,8 @@ ea: compose-pasted,
 cd1,
 cd2,
 cd3,
-cd4
+cd4,
+cd6,
 ni: true
 ```
 
@@ -160,7 +158,21 @@ cd1,
 cd2,
 cd3,
 cd4,
-cd5
+cd5,
+cd6
+```
+
+##### The user cancels or closes the email before sending it
+
+```
+ec: interface,
+ea: compose-cancelled
+cd1,
+cd2,
+cd3,
+cd4,
+cd5,
+cd6
 ```
 
 ##### After email sent, "done" chosen
@@ -171,7 +183,8 @@ el: compose-done-close,
 cd1,
 cd2,
 cd3,
-cd4
+cd4,
+cd6
 ```
 
 ##### After email sent, "Close n tabs" chosen
@@ -182,5 +195,6 @@ el: compose-done-close-all,
 cd1,
 cd2,
 cd3,
-cd4
+cd4,
+cd6
 ```
