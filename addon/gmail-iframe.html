@@ -4,6 +4,30 @@
   <head>
     <meta charset="UTF-8">
     <style>
+
+      button {
+      /*Reset's every elements apperance*/
+        background: none repeat scroll 0 0 transparent;
+        border: medium none;
+        border-spacing: 0;
+        color: #26589F;
+        font-family: 'PT Sans Narrow',sans-serif;
+        font-size: 16px;
+        font-weight: normal;
+        line-height: 1.42rem;
+        list-style: none outside none;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        text-decoration: none;
+        text-indent: 0;
+      }
+
+      button::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+      }
+
       html, body {
         margin: 0;
         height: 100%;
@@ -209,6 +233,10 @@
         text-align: center;
       }
 
+      #choose-template h2 {
+        font-size: 20px;
+      }
+
       .template-contain {
         display: flex;
       }
@@ -226,6 +254,10 @@
         background-size: cover;
         border: 1px solid rgba(115,115,115,0.20);
         border-radius: 7px;
+      }
+
+      .template-icon p {
+        font-size: 14px;
       }
 
       .template-icon:active div {
@@ -246,6 +278,28 @@
 
       #readability-template div {
         background: url(images/articles.svg);
+      }
+
+      #choose-template-cancel {
+        background: rgba(12, 12, 13, 0.1);
+        border-radius: 2px;
+        color: #0c0c0d;
+        height: 32px;
+        font-size: 13px;
+        font-weight: 400;
+        margin-top: 30px;
+        min-width: 110px;
+        padding: 0px 8px;
+        text-align: center;
+        width: auto;
+      }
+
+      #choose-template-cancel:hover {
+        background: rgba(12, 12, 13, 0.2);
+      }
+
+      #choose-template-cancel:active {
+        background: rgba(12, 12, 13, 0.3);
       }
     </style>
   </head>
@@ -289,7 +343,7 @@
             <p>Link with Full Articles</p>
           </a>
         </div>
-        <a id="choose-template-cancel" href="#">Cancel</a>
+        <button id="choose-template-cancel">Cancel</button>
       </section>
     </div>
 
