@@ -79,7 +79,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: white;
       }
 
       #loading-container {
@@ -199,6 +199,42 @@
               box-shadow:inset 0 0 0 6px #bf4040;
           }
       }
+
+      /* Templates */
+      #choose-template section {
+        height: 400px;
+        margin: 120px auto;
+        width: 660px;
+        color: black;
+        text-align: center;
+      }
+
+      .template-icon {
+        margin: 40px;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+      }
+
+      .template-icon div {
+        width: 175px;
+        height: 180px;
+        background-size: cover;
+        border: 1px solid rgba(115,115,115,0.20);
+        border-radius: 7px;
+      }
+
+      #screenshot-template div {
+        background: url(images/screenshots.svg);
+      }
+
+      #link-template div {
+        background: url(images/links.svg);
+      }
+
+      #readability-template div {
+        background: url(images/articles.svg);
+      }
     </style>
   </head>
   <body>
@@ -223,14 +259,26 @@
     </div>
 
     <div id="choose-template" class="container big-container" style="display: none">
-      <div class="template-template" style="display: none">
-        <button>
-          Use <span data-substitute="title"></span>
-        </button>
-      </div>
-      <div id="choose-template-container" class="card-container">
-        <button id="choose-template-cancel">Cancel</button>
-      </div>
+      <section>
+        <h2>Select an email template</h2>
+        <div class="template-contain">
+          <a id="screenshot-template" class="template-icon" data-name-"title_screenshot" href="#">
+            <div></div>
+            <p>Link with Screenshots</p>
+          </a>
+
+          <a id="link-template" class="template-icon" data-name="just_links" href="#">
+            <div></div>
+            <p>Link only</p>
+          </a>
+
+          <a id="readability-template" class="template-icon" data-name="readability" href="#">
+            <div></div>
+            <p>Link with Full Articles</p>
+          </a>
+        </div>
+        <a id="choose-template-cancel" href="#">Cancel</a>
+      </section>
     </div>
 
   </body>
