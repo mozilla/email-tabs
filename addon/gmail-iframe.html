@@ -204,13 +204,17 @@
       #choose-template section {
         height: 400px;
         margin: 120px auto;
-        width: 660px;
+        width: 650px;
         color: black;
         text-align: center;
       }
 
+      .template-contain {
+        display: flex;
+      }
+
       .template-icon {
-        margin: 40px;
+        margin: 20px;
         text-align: center;
         text-decoration: none;
         color: black;
@@ -222,6 +226,14 @@
         background-size: cover;
         border: 1px solid rgba(115,115,115,0.20);
         border-radius: 7px;
+      }
+
+      .template-icon:active div {
+        border: 1px solid #0A84FF;
+      }
+
+      .template-icon:hover div {
+        border: 1px solid rgba(23,138,254,0.80);
       }
 
       #screenshot-template div {
@@ -262,7 +274,7 @@
       <section>
         <h2>Select an email template</h2>
         <div class="template-contain">
-          <a id="screenshot-template" class="template-icon" data-name-"title_screenshot" href="#">
+          <a id="screenshot-template" class="template-icon" data-name="title_screenshot" href="#">
             <div></div>
             <p>Link with Screenshots</p>
           </a>
