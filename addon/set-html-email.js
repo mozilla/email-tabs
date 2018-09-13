@@ -173,11 +173,6 @@ function showTemplateSelector() {
   let readabilityTemplate = iframeDocument.querySelector("#readability-template");
   readabilityTemplate.addEventListener("click",
                                 getTemplateListener(readabilityTemplate.getAttribute("data-name")));
-
-  let elTemplate = iframeDocument.querySelector(".template-template");
-  let instance = elTemplate.cloneNode(true);
-  instance.style.display = "";
-  instance.classList.remove("template-template");
 }
 
 let iframe = null;
