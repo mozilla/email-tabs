@@ -24,12 +24,15 @@ class Tab extends React.Component {
         activeTabLi = li;
       }
     }}>
-      <label htmlFor={checkId} className="tab">
+      <div className="tab">
         { isSelectableTabUrl(tab.url) ? <input type="checkbox" value={tab.id} checked={checked}
-        onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
-        { image }
-        <span className="tab__text">{tab.title}</span>
-      </label>
+          onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
+        <label htmlFor={checkId} className="styled-checkbox"></label>
+        <label htmlFor={checkId} className="tab__label">
+          { image }
+          <span className="tab__text">{tab.title}</span>
+        </label>
+      </div>
     </li>;
   }
 
@@ -60,12 +63,15 @@ class TabList extends React.Component {
 
 class Popup extends React.Component {
   render() {
+    let anyChecked = false;
     let allChecked = true;
     this.indeterminate = false;
-    for (let tab of this.props.tabs) {
+    const linkableTabs = this.props.tabs.filter((t) => isSelectableTabUrl(t.url));
+    for (let tab of linkableTabs) {
       if (!this.props.selected.get(tab.id)) {
         allChecked = false;
       } else {
+        anyChecked = true;
         this.indeterminate = true;
       }
     }
@@ -76,10 +82,9 @@ class Popup extends React.Component {
       { this.props.showLoginError ? <LoginError /> : null }
       <div className="controls">
         <div>
-          <label htmlFor="allCheckbox">
-            <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
-            Select All
-          </label>
+          <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
+          <label htmlFor="allCheckbox" className="styled-checkbox"></label>
+          <label htmlFor="allCheckbox">Select All</label>
         </div>
       </div>
       <div className="separator"></div>
@@ -90,10 +95,10 @@ class Popup extends React.Component {
       <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com">Let us know.</a></p>
 
       <footer className="panel-footer toggle-enabled">
-        <button onClick={this.copyTabs.bind(this)}>
+        <button onClick={this.copyTabs.bind(this)} disabled={!anyChecked}>
           Copy Tabs to Clipboard
         </button>
-        <button onClick={this.sendEmail.bind(this)}>
+        <button onClick={this.sendEmail.bind(this)} disabled={!anyChecked}>
           Email Tabs
         </button>
       </footer>
