@@ -4,6 +4,30 @@
   <head>
     <meta charset="UTF-8">
     <style>
+
+      button {
+      /*Reset's every elements apperance*/
+        background: none repeat scroll 0 0 transparent;
+        border: medium none;
+        border-spacing: 0;
+        color: #26589F;
+        font-family: 'PT Sans Narrow',sans-serif;
+        font-size: 16px;
+        font-weight: normal;
+        line-height: 1.42rem;
+        list-style: none outside none;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        text-decoration: none;
+        text-indent: 0;
+      }
+
+      button::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+      }
+
       html, body {
         margin: 0;
         height: 100%;
@@ -79,7 +103,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: white;
       }
 
       #loading-container {
@@ -199,6 +223,84 @@
               box-shadow:inset 0 0 0 6px #bf4040;
           }
       }
+
+      /* Templates */
+      #choose-template section {
+        height: 400px;
+        margin: 120px auto;
+        width: 650px;
+        color: black;
+        text-align: center;
+      }
+
+      #choose-template h2 {
+        font-size: 20px;
+      }
+
+      .template-contain {
+        display: flex;
+      }
+
+      .template-icon {
+        margin: 20px;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+      }
+
+      .template-icon div {
+        width: 175px;
+        height: 180px;
+        background-size: cover;
+        border: 1px solid rgba(115,115,115,0.20);
+        border-radius: 7px;
+      }
+
+      .template-icon p {
+        font-size: 14px;
+      }
+
+      .template-icon:active div {
+        border: 1px solid #0A84FF;
+      }
+
+      .template-icon:hover div {
+        border: 1px solid rgba(23,138,254,0.80);
+      }
+
+      #screenshot-template div {
+        background: url(images/screenshots.svg);
+      }
+
+      #link-template div {
+        background: url(images/links.svg);
+      }
+
+      #readability-template div {
+        background: url(images/articles.svg);
+      }
+
+      #choose-template-cancel {
+        background: rgba(12, 12, 13, 0.1);
+        border-radius: 2px;
+        color: #0c0c0d;
+        height: 32px;
+        font-size: 13px;
+        font-weight: 400;
+        margin-top: 30px;
+        min-width: 110px;
+        padding: 0px 8px;
+        text-align: center;
+        width: auto;
+      }
+
+      #choose-template-cancel:hover {
+        background: rgba(12, 12, 13, 0.2);
+      }
+
+      #choose-template-cancel:active {
+        background: rgba(12, 12, 13, 0.3);
+      }
     </style>
   </head>
   <body>
@@ -223,14 +325,26 @@
     </div>
 
     <div id="choose-template" class="container big-container" style="display: none">
-      <div class="template-template" style="display: none">
-        <button>
-          Use <span data-substitute="title"></span>
-        </button>
-      </div>
-      <div id="choose-template-container" class="card-container">
+      <section>
+        <h2>Select an email template</h2>
+        <div class="template-contain">
+          <a id="screenshot-template" class="template-icon" data-name="title_screenshot" href="#">
+            <div></div>
+            <p>Link with Screenshots</p>
+          </a>
+
+          <a id="link-template" class="template-icon" data-name="just_links" href="#">
+            <div></div>
+            <p>Link only</p>
+          </a>
+
+          <a id="readability-template" class="template-icon" data-name="readability" href="#">
+            <div></div>
+            <p>Link with Full Articles</p>
+          </a>
+        </div>
         <button id="choose-template-cancel">Cancel</button>
-      </div>
+      </section>
     </div>
 
   </body>

@@ -1,4 +1,4 @@
-/* globals cloneInto, templateMetadata */
+/* globals cloneInto */
 
 browser.runtime.onMessage.addListener((message) => {
   try {
@@ -140,6 +140,19 @@ function showLoading() {
   showIframe("#loading-container");
 }
 
+function getTemplateListener(selectedTemplate) {
+  return async () => {
+    showLoading();
+    let { html, subject } = await browser.runtime.sendMessage({
+      type: "renderTemplate",
+      selectedTemplate,
+      tabInfo
+    });
+    setSubject(subject);
+    setHtml(html);
+  };
+}
+
 function showTemplateSelector() {
   showIframe("#choose-template");
   let cancel = iframeDocument.querySelector("#choose-template-cancel");
@@ -150,27 +163,16 @@ function showTemplateSelector() {
       tabId: thisTabId,
     });
   });
-  let elTemplate = iframeDocument.querySelector(".template-template");
-  for (let template of templateMetadata.metadata) {
-    let instance = elTemplate.cloneNode(true);
-    instance.style.display = "";
-    instance.classList.remove("template-template");
-    for (let el of instance.querySelectorAll("*[data-substitute]")) {
-      el.textContent = template[el.getAttribute("data-substitute")];
-      el.removeAttribute("data-substitute");
-    }
-    instance.addEventListener("click", async () => {
-      showLoading();
-      let { html, subject } = await browser.runtime.sendMessage({
-        type: "renderTemplate",
-        selectedTemplate: template.name,
-        tabInfo,
-      });
-      setSubject(subject);
-      setHtml(html);
-    });
-    cancel.parentNode.insertBefore(instance, cancel);
-  }
+
+  let screenshotTemplate = iframeDocument.querySelector("#screenshot-template");
+  screenshotTemplate.addEventListener("click",
+                                getTemplateListener(screenshotTemplate.getAttribute("data-name")));
+  let linkTemplate = iframeDocument.querySelector("#link-template");
+  linkTemplate.addEventListener("click",
+                                getTemplateListener(linkTemplate.getAttribute("data-name")));
+  let readabilityTemplate = iframeDocument.querySelector("#readability-template");
+  readabilityTemplate.addEventListener("click",
+                                getTemplateListener(readabilityTemplate.getAttribute("data-name")));
 }
 
 let iframe = null;
