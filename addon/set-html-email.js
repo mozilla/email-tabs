@@ -54,7 +54,7 @@ function setHtml(html) {
   let anyDataImages = false;
   for (let image of images) {
     if (image.src.startsWith("data:")) {
-      anyDataImage = true;
+      anyDataImages = true;
     }
     let savedAttributes = [];
     imageAttributeFixups.push(savedAttributes);

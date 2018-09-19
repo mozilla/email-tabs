@@ -50,6 +50,7 @@
     if (message.wantsScreenshots) {
       if (document.contentType.startsWith("image/")) {
         let img = document.querySelector("img");
+        data.title = `Original image from ${location.hostname}`;
         data.screenshot = {
           url: location.href,
           height: img.height,
@@ -61,11 +62,21 @@
       }
     }
     if (message.wantsReadability) {
-      try {
-        let documentClone = document.cloneNode(true);
-        data.readability = new Readability(documentClone).parse();
-      } catch (e) {
-        console.error("Error extracting readable version:", String(e), e.stack);
+      if (document.contentType.startsWith("image/")) {
+        let img = document.querySelector("img");
+        data.title = `Original image from ${location.hostname}`;
+        data.readability = {
+          title: data.title,
+          content: `<div>${img.outerHTML}</div>`,
+          length: 0,
+        };
+      } else {
+        try {
+          let documentClone = document.cloneNode(true);
+          data.readability = new Readability(documentClone).parse();
+        } catch (e) {
+          console.error("Error extracting readable version:", String(e), e.stack);
+        }
       }
     }
     return data;
