@@ -43,7 +43,7 @@ const ga = new TestPilotGA({
   // cd19 could also be dev or stage:
   cd19: is_production ? "production" : "local",
   ds: "addon",
-  tid: is_production ? "FIXME" : "", // FIXME: we need to get a GA property
+  tid: is_production ? "UA-124570950-1" : "",
 });
 
 async function sendEvent(args) {
