@@ -74,7 +74,6 @@ function setHtml(html) {
   browser.runtime.sendMessage({
     type: "clearSelectionCache"
   });
-  hideIframe();
   completed = true;
   // This code waits for the images to get uploaded, then reapplies any attributes that were
   // left out during the upload (specifically alt is of interest):
@@ -97,6 +96,7 @@ function setHtml(html) {
       }
     }
     clearTimeout(fixupInterval);
+    hideIframe();
   }, 100);
 }
 
