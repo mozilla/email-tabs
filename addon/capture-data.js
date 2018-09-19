@@ -48,8 +48,17 @@
       selection
     };
     if (message.wantsScreenshots) {
-      data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
-      data.screenshotAltText = captureText.getText(captureText.getViewportBox());
+      if (document.contentType.startsWith("image/")) {
+        let img = document.querySelector("img");
+        data.screenshot = {
+          url: location.href,
+          height: img.height,
+          width: img.width,
+        };
+      } else {
+        data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
+        data.screenshotAltText = captureText.getText(captureText.getViewportBox());
+      }
     }
     if (message.wantsReadability) {
       try {
