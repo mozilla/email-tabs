@@ -51,7 +51,11 @@ function setHtml(html) {
   // This saves all the attribues on any images. These attributes would typically have been
   // set in the EmailTab.render method. The attributes will be lost during upload, and reapplied
   // further down in this file:
+  let anyDataImages = false;
   for (let image of images) {
+    if (image.src.startsWith("data:")) {
+      anyDataImages = true;
+    }
     let savedAttributes = [];
     imageAttributeFixups.push(savedAttributes);
     for (let attr of image.attributes) {
@@ -75,29 +79,33 @@ function setHtml(html) {
     type: "clearSelectionCache"
   });
   completed = true;
-  // This code waits for the images to get uploaded, then reapplies any attributes that were
-  // left out during the upload (specifically alt is of interest):
-  let fixupInterval = setInterval(() => {
-    let surlImages = document.querySelectorAll("img[data-surl]");
-    if (surlImages.length <= prevImages) {
-      // No new images have appeared, so we'll wait for the next interval
-      return;
-    }
-    // FIXME: if there are no good images in the email, then this will never be reached
-    // (which is okay, nothing to fixup then, but...)
-    for (let i = 0; i < surlImages.length; i++) {
-      let image = surlImages[i];
-      let savedAttributes = imageAttributeFixups[i];
-      if (!savedAttributes || !savedAttributes.length) {
-        continue;
+  if (anyDataImages) {
+    // This code waits for the images to get uploaded, then reapplies any attributes that were
+    // left out during the upload (specifically alt is of interest):
+    let fixupInterval = setInterval(() => {
+      let surlImages = document.querySelectorAll("img[data-surl]");
+      if (surlImages.length <= prevImages) {
+        // No new images have appeared, so we'll wait for the next interval
+        return;
       }
-      for (let attrPair of savedAttributes) {
-        image.setAttribute(attrPair[0], attrPair[1]);
+      // FIXME: if there are no good images in the email, then this will never be reached
+      // (which is okay, nothing to fixup then, but...)
+      for (let i = 0; i < surlImages.length; i++) {
+        let image = surlImages[i];
+        let savedAttributes = imageAttributeFixups[i];
+        if (!savedAttributes || !savedAttributes.length) {
+          continue;
+        }
+        for (let attrPair of savedAttributes) {
+          image.setAttribute(attrPair[0], attrPair[1]);
+        }
       }
-    }
-    clearTimeout(fixupInterval);
+      clearTimeout(fixupInterval);
+      hideIframe();
+    }, 100);
+  } else {
     hideIframe();
-  }, 100);
+  }
 }
 
 let completedTimeout = setInterval(() => {
