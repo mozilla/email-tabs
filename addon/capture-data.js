@@ -45,7 +45,7 @@
     let data = {
       title,
       url,
-      selection
+      selection,
     };
     if (message.wantsScreenshots) {
       if (document.contentType.startsWith("image/")) {

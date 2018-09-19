@@ -151,7 +151,7 @@ class Popup extends React.Component {
     sendTabs = sendTabs.map(tab => tab.id);
     await browser.runtime.sendMessage({
       type: "copyTabHtml",
-      tabIds: sendTabs
+      tabIds: sendTabs,
     });
     setTimeout(() => {
       window.close();
@@ -189,7 +189,7 @@ async function render(firstRun) {
   if (firstRun) {
     activeTabLi.scrollIntoView({
       behavior: "instant",
-      block: "center"
+      block: "center",
     });
   }
 }
@@ -230,7 +230,7 @@ const selectionCache = {
   save(value) {
     localStorage.setItem(this.key, JSON.stringify({
       cache: value,
-      time: Date.now()
+      time: Date.now(),
     }));
   },
 
@@ -246,7 +246,7 @@ const selectionCache = {
 
   clear() {
     localStorage.removeItem(this.key);
-  }
+  },
 };
 
 /** Calls render(), then calls it again soon */
