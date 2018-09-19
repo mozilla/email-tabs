@@ -78,6 +78,11 @@ class Popup extends React.Component {
     if (allChecked) {
       this.indeterminate = false;
     }
+
+    let emailTabsTitle = null;
+    if (this.props.incognito) {
+      emailTabsTitle = "Emailing tabs from a Private Browsing window is not supported";
+    }
     return <div>
       { this.props.showLoginError ? <LoginError /> : null }
       <div className="controls">
@@ -98,7 +103,7 @@ class Popup extends React.Component {
         <button onClick={this.copyTabs.bind(this)} disabled={!anyChecked}>
           Copy Tabs to Clipboard
         </button>
-        <button onClick={this.sendEmail.bind(this)} disabled={!anyChecked}>
+        <button onClick={this.sendEmail.bind(this)} disabled={!anyChecked || this.props.incognito} title={emailTabsTitle} >
           Email Tabs
         </button>
       </footer>
@@ -171,6 +176,7 @@ class LoginError extends React.Component {
 
 async function render(firstRun) {
   let tabs = await browser.tabs.query({currentWindow: true});
+  let incognito = tabs.some(tab => tab.incognito);
   if (firstRun) {
     if (!selectionCache.loadSelectedTabs(tabs)) {
       for (let tab of tabs) {
@@ -184,7 +190,7 @@ async function render(firstRun) {
   if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
     showLoginError = 0;
   }
-  let page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} />;
+  let page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} incognito={incognito} />;
   ReactDOM.render(page, document.getElementById("panel"));
   if (firstRun) {
     activeTabLi.scrollIntoView({
