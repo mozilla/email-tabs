@@ -24,7 +24,7 @@ window.addEventListener("beforeunload", () => {
     return;
   }
   browser.runtime.sendMessage({
-    type: "sendFailed"
+    type: "sendFailed",
   });
 });
 
@@ -67,12 +67,12 @@ function setHtml(html) {
   let paste = new Event("paste");
   paste = paste.wrappedJSObject;
   paste.clipboardData = cloneInto({
-    getData() {}
+    getData() {},
   }, window, {cloneFunctions: true});
   editableEl.dispatchEvent(paste);
   // Now that we've successfully sent an mail, we don't have to persist the selection from before:
   browser.runtime.sendMessage({
-    type: "clearSelectionCache"
+    type: "clearSelectionCache",
   });
   completed = true;
   // This code waits for the images to get uploaded, then reapplies any attributes that were
@@ -131,7 +131,7 @@ function showCloseButtons() {
     await browser.runtime.sendMessage({
       type: "closeTabs",
       closeTabInfo: tabInfo,
-      composeTabId: thisTabId
+      composeTabId: thisTabId,
     });
   });
 }
@@ -146,7 +146,7 @@ function getTemplateListener(selectedTemplate) {
     let { html, subject } = await browser.runtime.sendMessage({
       type: "renderTemplate",
       selectedTemplate,
-      tabInfo
+      tabInfo,
     });
     setSubject(subject);
     setHtml(html);

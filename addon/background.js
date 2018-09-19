@@ -53,7 +53,7 @@ async function sendEvent(args) {
 sendEvent({
   ec: "startup",
   ea: "startup",
-  ni: true
+  ni: true,
 });
 
 async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
@@ -136,7 +136,7 @@ async function sendEmail(tabIds) {
   await browser.tabs.sendMessage(newTab.id, {
     type: "sendTabInfo",
     thisTabId: newTab.id,
-    tabInfo
+    tabInfo,
   });
 }
 
@@ -174,7 +174,7 @@ function loginInterrupt() {
     type: "basic",
     // iconUrl: "...",
     title: "Email sending failed",
-    message: "Please try again after logging into your email"
+    message: "Please try again after logging into your email",
   });
 }
 

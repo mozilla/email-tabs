@@ -22,7 +22,7 @@ this.templateMetadata = (function() {
       wantsScreenshots: false,
       wantsReadability: true,
       componentName: "FullArticles",
-    }
+    },
   ];
 
   for (let name in this.templateMetadata) {

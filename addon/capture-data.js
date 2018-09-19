@@ -45,7 +45,7 @@
     let data = {
       title,
       url,
-      selection
+      selection,
     };
     if (message.wantsScreenshots) {
       data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
