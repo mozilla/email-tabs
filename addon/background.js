@@ -119,7 +119,8 @@ async function sendEmail(tabIds) {
   });
   setTimeout(async () => {
     let currentTab = await browser.tabs.get(newTab.id);
-    if (currentTab.url.includes("accounts.google.com")) {
+    // The Gmail redesign changed the login redirect:
+    if (currentTab.url.includes("accounts.google.com") || currentTab.url.includes("google.com/gmail/about/")) {
       // We have a login form
       loginInterrupt();
     }
