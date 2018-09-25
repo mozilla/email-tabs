@@ -35,6 +35,11 @@ If you are developing, note that the `.jsx` file will not trigger a reload on it
 npm run watch
 ```
 
+If you want to view the template in browser (easier for style tweaks):
+```sh
+npm run preview-templates
+```
+
 ### Code layout
 
 The popup UI is in [addon/popup.jsx](./addon/popup.jsx).
