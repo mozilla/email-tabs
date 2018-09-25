@@ -3,6 +3,7 @@
 /* eslint jsx-a11y/no-noninteractive-element-interactions: 0 */
 
 let activeTabLi;
+let activeTabSelected = false; // unsure abt this method, need to review before merging
 let selected = new Map();
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
@@ -45,6 +46,15 @@ class Tab extends React.Component {
     }
     render();
   }
+}
+
+function getSelectedCount() {
+  let selectedCount = 0;
+  for (let t of selected.values()) {
+    selectedCount++;
+    if (t.done) break;
+  }
+  return selectedCount;
 }
 
 class TabList extends React.Component {
@@ -110,7 +120,17 @@ class Popup extends React.Component {
         <TabList tabs={this.props.tabs} selected={this.props.selected} />
       </div>
       <div className="separator"></div>
-      <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com">Let us know.</a></p>
+      <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com" onClick={async () => {
+        browser.runtime.sendMessage({
+          type: "sendEvent",
+          ec: "interface",
+          ea: "button-click",
+          el: "feedback",
+          cd1: await browser.tabs.query({}).length,
+          cd2: getSelectedCount(), // # selected to send
+          cd3: activeTabSelected, // current tab (true/false) UNSURE of this method, need to do some further testing before merging.
+        });
+      }}>Let us know.</a></p>
 
       <footer className="panel-footer toggle-enabled">
         <button onClick={this.copyTabs.bind(this)} disabled={!anyChecked}>
@@ -132,7 +152,7 @@ class Popup extends React.Component {
     this.componentDidMount();
   }
 
-  onClickCheckAll() {
+  async onClickCheckAll() {
     let allChecked = true;
     let selectableTabs = this.props.tabs.filter(tab => isSelectableTabUrl(tab.url));
     for (let tab of selectableTabs) {
@@ -143,6 +163,14 @@ class Popup extends React.Component {
     }
     selectionCache.clear();
     render();
+
+    await browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "select-all",
+      el: "browser-action",
+      cd1: await browser.tabs.query({}).length,
+    });
   }
 
   async sendEmail() {
@@ -153,10 +181,29 @@ class Popup extends React.Component {
     }
     localStorage.removeItem("loginInterrupt");
     sendTabs = sendTabs.map(tab => tab.id);
+
     await browser.runtime.sendMessage({
       type: "sendEmail",
       tabIds: sendTabs,
+      customDimensions: {
+        cd1: await browser.tabs.query({}).length,
+        cd2: getSelectedCount(),
+        cd3: activeTabSelected,
+        cd6: this.allCheckbox.checked, // check that this works
+      },
     });
+
+    browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "button-click",
+      el: "email-tabs",
+      cd1: await browser.tabs.query({}).length,
+      cd2: getSelectedCount(),
+      cd3: activeTabSelected,
+      cd6: this.allCheckbox.checked, // check that this works
+    });
+
     window.close();
   }
 
@@ -174,6 +221,16 @@ class Popup extends React.Component {
     setTimeout(() => {
       window.close();
     }, 300);
+
+    browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "button-click",
+      el: "copy-tabs-to-clipboard",
+      cd1: await browser.tabs.query({}).length,
+      cd2: getSelectedCount(),
+      cd3: activeTabSelected,
+    });
   }
 
 }
@@ -197,6 +254,7 @@ async function render(firstRun) {
     if (!selectionCache.loadSelectedTabs(tabs)) {
       for (let tab of tabs) {
         if (tab.active && isSelectableTabUrl(tab.url)) {
+          activeTabSelected = true;
           selected.set(tab.id, true);
         }
       }

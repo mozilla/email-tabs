@@ -76,6 +76,13 @@
           data.readability = new Readability(documentClone).parse();
         } catch (e) {
           console.error("Error extracting readable version:", String(e), e.stack);
+          browser.runtime.sendMessage(Object.assign, {}, message.customDimensions, {
+            type: "sendEvent",
+            ec: "interface",
+            ea: "collect-info-error",
+            el: "tab-url-scheme",
+            cd4: "readability",
+          });
         }
       }
     }
