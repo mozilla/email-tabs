@@ -28,7 +28,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 384px;
+  max-width: 400px;
   min-width: 320px;
   width: 100%;
 }
@@ -91,9 +91,8 @@ body {
   background: #fff;
   display: flex;
   font-weight: normal;
-  height: 26.5px;
-  padding-inline-start: 18px;
-  padding: 4px 12px;
+  height: 30px;
+  padding: 0 16px;
 }
 
 .tab:hover,
@@ -108,6 +107,8 @@ body {
 
 .tab__image {
   background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center center;
   height: 16px;
   margin-inline-end: 8px;
   width: 16px;
@@ -123,24 +124,26 @@ supply a favicon */
 .tab__label {
   display: flex;
   overflow: hidden;
+  height: 16px;
 }
 
 .tab__text {
-  margin-top: 1px;
+  margin-top: 0px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 100%;
+  width: calc(100% - 24px);
 }
 
 .controls {
-  padding: 10px 12px 4px;
+  padding: 12px 16px 6px;
 }
 
 .styled-checkbox {
   cursor: pointer;
-  margin-right: 25px;
-  position: relative;
+  margin-right: 26px;
+  position: relative; 
+  margin-top: -2px;
 }
 
 /* checkboxes */
@@ -153,11 +156,11 @@ supply a favicon */
 .styled-checkbox::after {
   bottom: 0;
   content: '';
-  height: 16px;
+  height: 14px;
   margin: auto;
   position: absolute;
   top: 0;
-  width: 16px;
+  width: 14px;
 }
 
 .styled-checkbox::before {
@@ -165,8 +168,8 @@ supply a favicon */
   margin-right: 10px;
   display: inline-block;
   vertical-align: text-top;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border: 1px solid rgba(12, 12, 13, 0.3);
   border-radius: 2px;
   background-color: rgba(12, 12, 13, 0.1);
@@ -230,14 +233,16 @@ input[type="checkbox"]:indeterminate + .styled-checkbox::after {
 }
 
 input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
-  background: url(images/check.svg) !important;
+  background-image: url(images/check.svg) !important;
+  background-position: 0 center;
+  background-repeat: no-repeat;
 }
 
 .feedback-link {
   font-size: 11px;
   color: #4a4a4f;
   letter-spacing: -0.08px;
-  padding: 2px 10px;
+  padding: 2px 16px;
 }
 
 .feedback-link a {
