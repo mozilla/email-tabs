@@ -318,11 +318,30 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
 }
 
 #login-error {
-  margin: 3px;
-  background-color: #600;
-  color: #ddd;
-  border: 1px solid #000;
-  padding: 4px;
+  background-color: #ffe902;
+  border-radius: 4px;
+  color: #3e2800;
+  margin: 6px;
+  padding: 1px;
+}
+
+#login-error p {
+  padding: 0 30px;
+}
+
+#login-error .warn {
+  left: 15px;
+  position: absolute;
+  top: 20px;
+  width: 15px;
+}
+
+#login-error .close {
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 20px;
+  width: 15px;
 }
 
 li.active .tab {
