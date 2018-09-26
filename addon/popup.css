@@ -128,7 +128,7 @@ supply a favicon */
 }
 
 .tab__text {
-  margin-top: 0px;
+  margin-top: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
