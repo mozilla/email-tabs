@@ -1,7 +1,7 @@
 /* globals captureText, Readability */
 
 (function () {
-  const SCREENSHOT_WIDTH = 350;
+  const SCREENSHOT_WIDTH = 540;
 
   let title = document.title;
   for (let el of document.querySelectorAll("meta[name='twitter:title'], meta[name='og:title']")) {
