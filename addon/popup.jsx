@@ -1,4 +1,6 @@
 /* globals React, ReactDOM, ReactDOMServer, templateMetadata */
+/* eslint jsx-a11y/click-events-have-key-events: 0 */
+/* eslint jsx-a11y/no-noninteractive-element-interactions: 0 */
 
 let activeTabLi;
 let selected = new Map();
@@ -62,6 +64,17 @@ class TabList extends React.Component {
 }
 
 class Popup extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showLoginError: this.props.showLoginError,
+    };
+  }
+
+  dismissError() {
+    this.setState({showLoginError: false});
+  }
+
   render() {
     let anyChecked = false;
     let allChecked = true;
@@ -84,7 +97,7 @@ class Popup extends React.Component {
       emailTabsTitle = "Emailing tabs from a Private Browsing window is not supported";
     }
     return <div>
-      { this.props.showLoginError ? <LoginError /> : null }
+      { this.state.showLoginError ? <LoginError dismissError={this.dismissError.bind(this)} /> : null }
       <div className="controls">
         <div>
           <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
@@ -168,8 +181,11 @@ class Popup extends React.Component {
 class LoginError extends React.Component {
   render() {
     return <div id="login-error">
+      <img className="warn" src="images/warning.svg" alt="warning icon"/>
+      <p>
       Last attempt to send an email failed, probably because you weren&#39;t logged into your email.
-      Please make sure you are logged in, then try again.
+      Please make sure you are logged in, then try again.</p>
+      <img className="close" src="images/close.svg" onClick={this.props.dismissError} alt="close" />
     </div>;
   }
 }
@@ -188,7 +204,7 @@ async function render(firstRun) {
   }
   let showLoginError = parseInt(localStorage.getItem("loginInterrupt") || "0", 10);
   if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
-    showLoginError = 0;
+    showLoginError = false;
   }
   let page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} incognito={incognito} />;
   ReactDOM.render(page, document.getElementById("panel"));
