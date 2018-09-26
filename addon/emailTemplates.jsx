@@ -42,8 +42,7 @@ this.emailTemplates = (function () {
       let tabList = this.props.tabs.map(
         tab => <TitleScreenshotTab key={tab.id} tab={tab} />
       );
-      // Note that <React.Fragment> elements do not show up in the final HTML
-      return <Fragment>{tabList}</Fragment>;
+      return <div style={{width: "600px"}}>{tabList}</div>;
     }
   }
 
@@ -66,17 +65,14 @@ this.emailTemplates = (function () {
             imgAlt = `Screenshot of ${domain}`;
           }
         }
-        img = <Fragment>
-          <img style={{border: "1px solid rgba(12,12,13,0.10)"}} height={tab.screenshot.height} width={tab.screenshot.width} src={tab.screenshot.url} alt={imgAlt} />
-          <br />
-        </Fragment>;
+        img = <img width="540px" height="auto" src={tab.screenshot.url} alt={imgAlt} />;
       }
-      return <Fragment>
-        <a href={tab.url}>{tab.title}</a> <br />
+      return <div style={{ width: "540px", background: "#f9f9fa", borderBottom: "2px solid #ededf0", padding: "24px 30px", marginBottom: "24px", borderRadius: "3px" }}>
         { selectionMarkup(tab.selection) }
         { img }
         <br />
-      </Fragment>;
+        <a href={tab.url} style={{ color: "#0060df", fontSize: "1.1em" }}>{tab.title}</a>
+      </div>;
     }
   }
 
@@ -84,7 +80,7 @@ this.emailTemplates = (function () {
     render() {
       let tabList = this.props.tabs.map((tab, index) => {
         return <Fragment key={index}>
-          <a href={tab.url}>{tab.title}</a> <br />
+          <a href={tab.url} style={{ color: "#0060df" }}>{tab.title}</a> <br />
           { selectionMarkup(tab.selection) }
         </Fragment>;
       });
@@ -101,7 +97,7 @@ this.emailTemplates = (function () {
         toc = this.props.tabs.map((tab, index) => {
           let anchor = `email-tabs-article-${index}`;
           tab.anchorName = anchor;
-          return <Fragment key={`toc-${index}`}><a href={`#${anchor}`}>Jump to {tab.title}</a> <br /></Fragment>;
+          return <Fragment key={`toc-${index}`}><a href={`#${anchor}`} style={{ color: "#0060df"}}>Jump to {tab.title}</a> <br /></Fragment>;
         });
         toc.push(<br />);
       }
@@ -115,23 +111,56 @@ this.emailTemplates = (function () {
         if (tab.readability && tab.readability.content) {
           let content = parseReadableDocument(tab.readability.content);
           for (let img of content.querySelectorAll("img")) {
-            img.style.maxWidth = "600px";
+            img.style.maxWidth = "540px";
             img.style.height = "auto";
           }
-          let hr = index === this.props.tabs.length - 1 ? null : <hr />;
-          readability = <Fragment><div style={{maxWidth: "600px", border: "2px solid #aaa", borderRadius: "3px", padding: "10px"}} dangerouslySetInnerHTML={{__html: content.outerHTML}} /> { hr }</Fragment>;
+          for (let a of content.querySelectorAll("a")) {
+            a.style.color = "#0060df";
+          }
+
+          for (let figure of content.querySelectorAll("figure")) {
+            figure.style.backgroundColor = "white";
+            figure.style.border = "1px solid #ededf0";
+            figure.style.borderBottomWidth = "2px";
+            figure.style.borderRadius = "3px";
+            figure.style.margin = "0 0 16px 0";
+            figure.style.padding = "24px";
+          }
+
+          for (let figcaption of content.querySelectorAll("figcaption")) {
+            figcaption.style.fontStyle = "italic";
+          }
+
+          for (let blockquote of content.querySelectorAll("blockquote")) {
+            blockquote.style.borderLeft = "3px solid #ededf0";
+            blockquote.style.margin = "16px";
+            blockquote.style.padding = "24px";
+          }
+
+          for (let p of content.querySelectorAll("p")) {
+            p.style.lineHeight = "1.56em";
+            p.style.margin = "0 0 24px 0";
+          }
+
+          readability = <div dangerouslySetInnerHTML={{__html: content.outerHTML}} />;
         }
-        return <Fragment key={index}>
+
+        return <div key={index} style={{ maxWidth: "600px", background: "#f9f9fa", borderBottom: "2px solid #ededf0", padding: "24px", marginBottom: "24px", borderRadius: "3px" }}>
           { anchorTag }
-          <a href={tab.url}>{tab.title}</a> <br />
+          <h2 style={{ fontWeight: "normal", marginTop: "10px", fontSize: "28px" }}>{tab.title}</h2>
+          <a href={tab.url} style={{ color: "#0060df" }}>Source</a>
+          <br />
+          <br />
           { selectionMarkup(tab.selection) }
           { readability }
-        </Fragment>;
+        </div>;
       });
-      return <Fragment>
+      return <div style={{fontSize: "1.1em"}}>
+        <h4>Table of Contents</h4>
         {toc}
+        <h4>Full Text</h4>
         {tabList}
-      </Fragment>;
+      </div>;
     }
   }
 
