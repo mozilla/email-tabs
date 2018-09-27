@@ -145,6 +145,13 @@ async function copyTabHtml(tabIds) {
   let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: false, wantsReadability: false});
   let { html } = await renderTabs(tabInfo, "just_links");
   copyHtmlToClipboard(html);
+
+  browser.notifications.create("notify-copied", {
+    type: "basic",
+    // iconUrl: "...",
+    title: "Tabs copied",
+    message: "Tabs copied to clipboard",
+  });
 }
 
 function copyHtmlToClipboard(html) {
