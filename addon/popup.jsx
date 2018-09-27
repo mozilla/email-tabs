@@ -26,7 +26,7 @@ class Tab extends React.Component {
         activeTabLi = li;
       }
     }}>
-      <div className="tab">
+      <div className={isSelectableTabUrl(tab.url) ? "tab" : "tab disabled"}>
         { isSelectableTabUrl(tab.url) ? <input type="checkbox" value={tab.id} checked={checked}
           onChange={this.onChange.bind(this)} id={checkId} ref={checkbox => this.checkbox = checkbox} /> : <input type="checkbox" disabled /> }
         <label htmlFor={checkId} className="styled-checkbox"></label>

@@ -100,6 +100,10 @@ body {
   background: #ededf0;
 }
 
+.tab.disabled:hover {
+  background: #fff;
+}
+
 .tab__image,
 .tab__text {
   pointer-events: none;
@@ -360,6 +364,10 @@ li.active .tab {
 #panel.dark-theme .tab:focus,
 #panel.dark-theme .separator {
   background: var(--dark-theme-highlight-color);
+}
+
+#panel.dark-theme .tab.disabled:hover {
+  background: var(--dark-theme-background-color);
 }
 
 #panel.dark-theme .panel-footer button {
