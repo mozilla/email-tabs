@@ -14,6 +14,7 @@
         font-family: 'PT Sans Narrow',sans-serif;
         font-size: 16px;
         font-weight: normal;
+        height: 32px;
         line-height: 1.42rem;
         list-style: none outside none;
         margin: 0;
@@ -40,10 +41,10 @@
         background: #0060df;
         border-radius: 2px;
         color: #fff;
+        cursor: pointer;
         font-size: 13px;
         font-weight: 400;
         height: 32px;
-        min-width: 132px;
         padding: 8px;
         width: auto;
       }
@@ -125,14 +126,38 @@
         color: #0a84ff;
       }
 
+      #done-container {
+        left: 35%;
+        width: 432px;
+      }
+
+      #done-container .btn {
+        min-width: 132px;
+      }
+
       #done-container p {
         color: black;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 400;
+        margin-top: -10px;
       }
 
       #done-container h4 {
         color: black;
+        font-size: 20px;
+      }
+
+      #done-container button {
+        color: #0C0C0D;
+        font-size: 13px;
+        letter-spacing: 0;
+        margin-left: 10px;
+        padding: 3px;
+        text-align: center;
+      }
+
+      #done-container #done {
+        color: white;
       }
 
       .message-wrap {
@@ -318,10 +343,10 @@
     <div id="done-container" class="container card-container" style="display: none">
       <div class="message-wrap">
         <h4>Thanks for using Firefox Email Tabs</h4>
-        <p id="done-message" data-many-tabs="__NUMBER__ tabs were sent." data-one-tab="Tab was sent.">Tabs were sent.</p>
+        <p id="done-message" data-many-tabs="__NUMBER__ tabs were sent." data-one-tab="Tab was sent.">tabs were sent.</p>
         <br>
-        <a id="done" class="btn">Done</a>
-        <a id="close-all-tabs" class="btn close" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</a>
+        <button id="done" class="btn">Done</button>
+        <button id="close-all-tabs" class="btn close" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</button>
       </div>
     </div>
 
