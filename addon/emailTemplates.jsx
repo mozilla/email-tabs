@@ -156,9 +156,9 @@ this.emailTemplates = (function () {
         </div>;
       });
       return <div style={{fontSize: "1.1em"}}>
-        <h4>Table of Contents</h4>
+        {!!toc && <h4>Table of Contents</h4>}
         {toc}
-        <h4>Full Text</h4>
+        {!!toc && <h4>Full Text</h4>}
         {tabList}
       </div>;
     }
