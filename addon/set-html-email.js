@@ -205,8 +205,15 @@ function createIframe() {
     iframe.style.width = "100%";
     iframe.style.height = "100%";
     document.body.appendChild(iframe);
+    // If the "load" event doesn't fire after 3 seconds, we put a warning in the console
+    let loadTimeoutId = setTimeout(() => {
+      console.warn("Iframe failed to load in 3 seconds");
+      console.warn("Iframe:", iframe && iframe.outerHTML);
+      console.warn("Iframe parent:", String(iframe.parentNode));
+    }, 3000);
     iframe.addEventListener("load", () => {
       try {
+        clearTimeout(loadTimeoutId);
         if (iframe.contentDocument.documentURI !== iframeUrl) {
           // This check protects against certain attacks on the iframe that quickly change src
           console.error("iframe URL does not match expected URL", iframe.contentDocument.documentURI);
