@@ -92,7 +92,16 @@ body {
   display: flex;
   font-weight: normal;
   height: 30px;
+}
+
+.tab > label {
+  display: flex;
+  height: 30px;
+  overflow: hidden;
   padding: 0 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: calc(100% - 24px);
 }
 
 .tab:hover,
@@ -128,7 +137,8 @@ supply a favicon */
 .tab__label {
   display: flex;
   overflow: hidden;
-  height: 16px;
+  height: 100%;
+  padding: 7px;
 }
 
 .tab__text {
