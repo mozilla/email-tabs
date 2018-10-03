@@ -3,7 +3,7 @@
 /* eslint jsx-a11y/no-noninteractive-element-interactions: 0 */
 
 let activeTabLi;
-let activeTabSelected = false; // unsure abt this method, need to review before merging
+let activeTabSelected = false;
 let selected = new Map();
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
@@ -51,8 +51,7 @@ class Tab extends React.Component {
 function getSelectedCount() {
   let selectedCount = 0;
   for (let t of selected.values()) {
-    selectedCount++;
-    if (t.done) break;
+    if (t) selectedCount++;
   }
   return selectedCount;
 }
@@ -127,8 +126,8 @@ class Popup extends React.Component {
           ea: "button-click",
           el: "feedback",
           cd1: await browser.tabs.query({}).length,
-          cd2: getSelectedCount(), // # selected to send
-          cd3: activeTabSelected, // current tab (true/false) UNSURE of this method, need to do some further testing before merging.
+          cd2: getSelectedCount(),
+          cd3: activeTabSelected,
         });
       }}>Let us know.</a></p>
 
@@ -189,7 +188,7 @@ class Popup extends React.Component {
         cd1: await browser.tabs.query({}).length,
         cd2: getSelectedCount(),
         cd3: activeTabSelected,
-        cd6: this.allCheckbox.checked, // check that this works
+        cd6: this.allCheckbox.checked,
       },
     });
 
@@ -201,7 +200,7 @@ class Popup extends React.Component {
       cd1: await browser.tabs.query({}).length,
       cd2: getSelectedCount(),
       cd3: activeTabSelected,
-      cd6: this.allCheckbox.checked, // check that this works
+      cd6: this.allCheckbox.checked,
     });
 
     window.close();

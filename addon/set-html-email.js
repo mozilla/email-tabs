@@ -1,4 +1,4 @@
-/* globals cloneInto, GLOBALS */
+/* globals cloneInto */
 
 browser.runtime.onMessage.addListener((message) => {
   try {
@@ -13,7 +13,6 @@ browser.runtime.onMessage.addListener((message) => {
 
 let completed = false;
 let customDimensions = {};
-let selfEmailAddress;
 let thisTabId;
 let tabInfo;
 
@@ -90,6 +89,7 @@ function setHtml(html) {
     type: "clearSelectionCache",
   });
   completed = true;
+
   if (anyDataImages) {
     // This code waits for the images to get uploaded, then reapplies any attributes that were
     // left out during the upload (specifically alt is of interest):
@@ -128,6 +128,8 @@ function setHtml(html) {
 let completedInterval = setInterval(() => {
   let viewMessageEl = document.getElementById("link_vsm");
   if (viewMessageEl) {
+    const endIndex = document.title.indexOf(" - Gmail");
+    const selfEmailAddress = document.title.substring(15, endIndex);
     clearInterval(completedInterval);
     const selfSend = Array.from(document.querySelectorAll("span[email]"))
           .map(el => el.getAttribute("email"))
@@ -211,10 +213,6 @@ function getTemplateListener(selectedTemplate) {
 }
 
 function showTemplateSelector() {
-  // need to set the users email address here to check for self sending
-  // custom dimension once the send button is clicked. We lose GLOBALS
-  // variable at that point.
-  selfEmailAddress = GLOBALS[10];
   showIframe("#choose-template");
   let cancel = iframeDocument.querySelector("#choose-template-cancel");
   cancel.addEventListener("click", async () => {
