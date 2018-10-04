@@ -80,7 +80,7 @@
             type: "sendEvent",
             ec: "interface",
             ea: "collect-info-error",
-            el: "tab-url-scheme",
+            el: (new URL(location.href)).protocol,
             cd4: "readability",
           });
         }

@@ -39,6 +39,18 @@ class Tab extends React.Component {
     </li>;
   }
 
+  async onFeedback() {
+    browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "button-click",
+      el: "feedback",
+      cd1: await browser.tabs.query({currentWindow: true}).length,
+      cd2: getSelectedCount(),
+      cd3: activeTabSelected,
+    });
+  }
+
   onChange() {
     selected.set(this.props.tab.id, this.checkbox.checked);
     if (this.props.onChange) {
@@ -48,12 +60,10 @@ class Tab extends React.Component {
   }
 }
 
+
+
 function getSelectedCount() {
-  let selectedCount = 0;
-  for (let t of selected.values()) {
-    if (t) selectedCount++;
-  }
-  return selectedCount;
+  return Array.from(selected.values()).filter(x => x).length;
 }
 
 class TabList extends React.Component {
@@ -119,17 +129,7 @@ class Popup extends React.Component {
         <TabList tabs={this.props.tabs} selected={this.props.selected} />
       </div>
       <div className="separator"></div>
-      <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com" onClick={async () => {
-        browser.runtime.sendMessage({
-          type: "sendEvent",
-          ec: "interface",
-          ea: "button-click",
-          el: "feedback",
-          cd1: await browser.tabs.query({}).length,
-          cd2: getSelectedCount(),
-          cd3: activeTabSelected,
-        });
-      }}>Let us know.</a></p>
+      <p className="feedback-link">What do you think of Email Tabs? <a href="mailto:team-email-tabs@mozilla.com" onClick={this.onFeedback}>Let us know.</a></p>
 
       <footer className="panel-footer toggle-enabled">
         <button onClick={this.copyTabs.bind(this)} disabled={!anyChecked}>
@@ -168,7 +168,7 @@ class Popup extends React.Component {
       ec: "interface",
       ea: "select-all",
       el: "browser-action",
-      cd1: await browser.tabs.query({}).length,
+      cd1: await browser.tabs.query({currentWindow: true}).length,
     });
   }
 
@@ -185,7 +185,7 @@ class Popup extends React.Component {
       type: "sendEmail",
       tabIds: sendTabs,
       customDimensions: {
-        cd1: await browser.tabs.query({}).length,
+        cd1: await browser.tabs.query({currentWindow: true}).length,
         cd2: getSelectedCount(),
         cd3: activeTabSelected,
         cd6: this.allCheckbox.checked,
@@ -197,7 +197,7 @@ class Popup extends React.Component {
       ec: "interface",
       ea: "button-click",
       el: "email-tabs",
-      cd1: await browser.tabs.query({}).length,
+      cd1: await browser.tabs.query({currentWindow: true}).length,
       cd2: getSelectedCount(),
       cd3: activeTabSelected,
       cd6: this.allCheckbox.checked,
@@ -226,7 +226,7 @@ class Popup extends React.Component {
       ec: "interface",
       ea: "button-click",
       el: "copy-tabs-to-clipboard",
-      cd1: await browser.tabs.query({}).length,
+      cd1: await browser.tabs.query({currentWindow: true}).length,
       cd2: getSelectedCount(),
       cd3: activeTabSelected,
     });
@@ -342,6 +342,13 @@ browser.tabs.onRemoved.addListener(renderWithDelay);
 
 async function init() {
   render(true);
+  browser.runtime.sendMessage({
+    type: "sendEvent",
+    ec: "interface",
+    ea: "expand-panel",
+    el: "browser-action",
+    cd1: await browser.tabs.query({currentWindow: true}).length,
+  });
 }
 
 init();

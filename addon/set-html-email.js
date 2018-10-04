@@ -128,9 +128,10 @@ function setHtml(html) {
 let completedInterval = setInterval(() => {
   let viewMessageEl = document.getElementById("link_vsm");
   if (viewMessageEl) {
-    const endIndex = document.title.indexOf(" - Gmail");
-    const selfEmailAddress = document.title.substring(15, endIndex);
     clearInterval(completedInterval);
+
+    let match = document.title.match(/([^\s<>()[\]]+@[a-z0-9.-]+)/);
+    let selfEmailAddress = match && match[1];
     const selfSend = Array.from(document.querySelectorAll("span[email]"))
           .map(el => el.getAttribute("email"))
           .includes(selfEmailAddress);

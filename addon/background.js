@@ -56,17 +56,8 @@ sendEvent({
   ni: true,
 });
 
-browser.browserAction.onClicked.addListener(async () => {
-  sendEvent({
-    ec: "interface",
-    ea: "expand-panel",
-    el: "browser-action",
-    cd1: await browser.tabs.query({}).length,
-  });
-});
-
 async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}, customDimensions) {
-  let allTabs = await browser.tabs.query({});
+  let allTabs = await browser.tabs.query({currentWindow: true});
   let tabInfo = {};
   for (let tab of allTabs) {
     if (tabIds.includes(tab.id)) {
@@ -203,7 +194,7 @@ function loginInterrupt(customDimensions) {
 }
 
 async function closeManyTabs(composeTabId, otherTabInfo) {
-  let tabs = await browser.tabs.query({});
+  let tabs = await browser.tabs.query({currentWindow: true});
 
   let toClose = [composeTabId];
   let tabInfoById = {};
