@@ -25,7 +25,7 @@ Data will be collected with Google Analytics and follow [Test Pilot standards](h
 * `cd3` - If the user is sending the current tab ("true" or "false")
 * `cd4` - The name of the template used
 * `cd5` - Count of email recipients
-* `cd6` - Did the user actually send all tabs ("true" or "false")
+* `cd6` - Is user sending all tabs? ("true" or "false")
 
 ### Events
 
@@ -172,6 +172,17 @@ cd2,
 cd3,
 cd4,
 cd5,
+cd6
+```
+
+##### The user cancels the email at template chooser screen
+
+```
+ec: interface,
+ea: template-cancelled
+cd1,
+cd2,
+cd3,
 cd6
 ```
 

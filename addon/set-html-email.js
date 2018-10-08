@@ -4,6 +4,7 @@ browser.runtime.onMessage.addListener((message) => {
   try {
     thisTabId = message.thisTabId;
     tabInfo = message.tabInfo;
+    customDimensions = message.customDimensions;
   } catch (e) {
     console.error("Error getting tabInfo:", String(e), e.stack);
     throw e;
@@ -11,10 +12,11 @@ browser.runtime.onMessage.addListener((message) => {
 });
 
 let completed = false;
+let customDimensions = {};
 let thisTabId;
 let tabInfo;
 
-window.addEventListener("beforeunload", () => {
+window.addEventListener("beforeunload", async () => {
   if (completed) {
     // Actually everything worked out just fine
     return;
@@ -23,8 +25,16 @@ window.addEventListener("beforeunload", () => {
     // We've been attached to the wrong page anyway
     return;
   }
+
+  browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+    type: "sendEvent",
+    ec: "interface",
+    ea: "compose-cancelled",
+    cd5: document.querySelectorAll("span[email]").length,
+  }));
   browser.runtime.sendMessage({
     type: "sendFailed",
+    customDimensions,
   });
 });
 
@@ -79,6 +89,7 @@ function setHtml(html) {
     type: "clearSelectionCache",
   });
   completed = true;
+
   if (anyDataImages) {
     // This code waits for the images to get uploaded, then reapplies any attributes that were
     // left out during the upload (specifically alt is of interest):
@@ -100,7 +111,13 @@ function setHtml(html) {
           image.setAttribute(attrPair[0], attrPair[1]);
         }
       }
-      clearTimeout(fixupInterval);
+      clearInterval(fixupInterval);
+      browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+        type: "sendEvent",
+        ec: "interface",
+        ea: "compose-pasted",
+        ni: true,
+      }));
       hideIframe();
     }, 100);
   } else {
@@ -108,10 +125,25 @@ function setHtml(html) {
   }
 }
 
-let completedTimeout = setInterval(() => {
+let completedInterval = setInterval(() => {
   let viewMessageEl = document.getElementById("link_vsm");
   if (viewMessageEl) {
-    clearTimeout(completedTimeout);
+    clearInterval(completedInterval);
+
+    let match = document.title.match(/([^\s<>()[\]]+@[a-z0-9.-]+)/);
+    let selfEmailAddress = match && match[1];
+    const selfSend = Array.from(document.querySelectorAll("span[email]"))
+          .map(el => el.getAttribute("email"))
+          .includes(selfEmailAddress);
+
+    browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+      type: "sendEvent",
+      ec: "interface",
+      ea: "compose-sent",
+      el: selfSend ? "send-to-self" : "send-to-other",
+      cd5: document.querySelectorAll("span[email]").length,
+    }));
+
     showCloseButtons();
   }
 }, 300);
@@ -130,12 +162,24 @@ function showCloseButtons() {
     doneMsg.textContent = doneMsg.getAttribute("data-many-tabs").replace("__NUMBER__", numTabs);
   }
   done.addEventListener("click", async () => {
+    browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+      type: "sendEvent",
+      ec: "interface",
+      ea: "button-click",
+      el: "compose-done-close",
+    }));
     await browser.runtime.sendMessage({
       type: "closeComposeTab",
       tabId: thisTabId,
     });
   });
   closeAllTabs.addEventListener("click", async () => {
+    browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+      type: "sendEvent",
+      ec: "interface",
+      ea: "button-click",
+      el: "compose-done-close-all",
+    }));
     await browser.runtime.sendMessage({
       type: "closeTabs",
       closeTabInfo: tabInfo,
@@ -149,8 +193,16 @@ function showLoading() {
 }
 
 function getTemplateListener(selectedTemplate) {
+  customDimensions.cd4 = selectedTemplate;
   return async () => {
     showLoading();
+    browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+      type: "sendEvent",
+      ec: "interface",
+      ea: "button-click",
+      el: "choose-template",
+    }));
+
     let { html, subject } = await browser.runtime.sendMessage({
       type: "renderTemplate",
       selectedTemplate,
@@ -166,6 +218,12 @@ function showTemplateSelector() {
   let cancel = iframeDocument.querySelector("#choose-template-cancel");
   cancel.addEventListener("click", async () => {
     completed = true;
+    browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+      type: "sendEvent",
+      ec: "interface",
+      ea: "template-cancelled",
+    }));
+
     await browser.runtime.sendMessage({
       type: "closeComposeTab",
       tabId: thisTabId,

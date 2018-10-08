@@ -1,7 +1,7 @@
 /* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify */
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
-    sendEmail(message.tabIds).catch((e) => {
+    sendEmail(message.tabIds, message.customDimensions).catch((e) => {
       // FIXME: maybe we should abort the email in this case?
       console.error("Error sending email:", e, String(e), e.stack);
     });
@@ -9,12 +9,12 @@ browser.runtime.onMessage.addListener((message, source) => {
     return Promise.resolve();
   } else if (message.type === "copyTabHtml") {
     localStorage.removeItem("selectionCache");
-    return copyTabHtml(message.tabIds);
+    return copyTabHtml(message.tabIds, message.customDimensions);
   } else if (message.type === "clearSelectionCache") {
     localStorage.removeItem("selectionCache");
     return null;
   } else if (message.type === "sendFailed") {
-    loginInterrupt();
+    loginInterrupt(message.customDimensions);
     return null;
   } else if (message.type === "closeComposeTab") {
     return browser.tabs.remove(message.tabId);
@@ -56,8 +56,8 @@ sendEvent({
   ni: true,
 });
 
-async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
-  let allTabs = await browser.tabs.query({});
+async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}, customDimensions) {
+  let allTabs = await browser.tabs.query({currentWindow: true});
   let tabInfo = {};
   for (let tab of allTabs) {
     if (tabIds.includes(tab.id)) {
@@ -82,7 +82,7 @@ async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}) {
       await browser.tabs.executeScript(tabId, {
         file: "capture-data.js",
       });
-      let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots, wantsReadability});
+      let data = await browser.tabs.sendMessage(tabId, {type: "getData", wantsScreenshots, wantsReadability, customDimensions});
       if (data.readability && data.readability.content) {
         data.readability.content = DOMPurify.sanitize(data.readability.content);
       }
@@ -104,7 +104,7 @@ async function renderTabs(tabInfo, templateName) {
   return { html, subject };
 }
 
-async function sendEmail(tabIds) {
+async function sendEmail(tabIds, customDimensions) {
   let currentTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
@@ -125,7 +125,7 @@ async function sendEmail(tabIds) {
       loginInterrupt();
     }
   }, 1000);
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true});
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
   await browser.tabs.executeScript(newTab.id, {
     file: "templateMetadata.js",
     runAt: "document_start",
@@ -138,11 +138,12 @@ async function sendEmail(tabIds) {
     type: "sendTabInfo",
     thisTabId: newTab.id,
     tabInfo,
+    customDimensions,
   });
 }
 
-async function copyTabHtml(tabIds) {
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: false, wantsReadability: false});
+async function copyTabHtml(tabIds, customDimensions) {
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: false, wantsReadability: false}, customDimensions);
   let { html } = await renderTabs(tabInfo, "just_links");
   copyHtmlToClipboard(html);
 
@@ -170,7 +171,7 @@ function copyHtmlToClipboard(html) {
 
 let loginInterruptedTime;
 
-function loginInterrupt() {
+function loginInterrupt(customDimensions) {
   // Note: this is a dumb flag for the popup:
   if (loginInterruptedTime && Date.now() - loginInterruptedTime < 30 * 1000) {
     // We notified the user recently
@@ -184,10 +185,16 @@ function loginInterrupt() {
     title: "Email sending failed",
     message: "Please try again after logging into your email",
   });
+
+  sendEvent(Object.assign({}, customDimensions, {
+    ec: "interface",
+    ea: "compose-window-error",
+    el: "account",
+  }));
 }
 
 async function closeManyTabs(composeTabId, otherTabInfo) {
-  let tabs = await browser.tabs.query({});
+  let tabs = await browser.tabs.query({currentWindow: true});
 
   let toClose = [composeTabId];
   let tabInfoById = {};
