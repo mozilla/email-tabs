@@ -37,12 +37,21 @@ this.emailTemplates = (function () {
     return trunc;
   }
 
+  class Signature extends React.Component {
+    render() {
+      return (<div>
+              <br/>
+              <p>Sent with <a href="https://testpilot.firefox.com/experiments/email-tabs?utm_source=email-tabs&utm_medium=email&utm_campaign=email-footer">Email Tabs</a>, a <a href="https://testpilot.firefox.com?utm_source=email-tabs&utm_medium=email&utm_campaign=email-footer">Firefox Test Pilot</a> experiment.
+              </p></div>);
+    }
+  }
+
   class TitleScreenshot extends React.Component {
     render() {
       let tabList = this.props.tabs.map(
         tab => <TitleScreenshotTab key={tab.id} tab={tab} />
       );
-      return <div style={{width: "600px"}}>{tabList}</div>;
+      return <div style={{width: "600px"}}>{tabList}<Signature/></div>;
     }
   }
 
@@ -84,7 +93,7 @@ this.emailTemplates = (function () {
           { selectionMarkup(tab.selection) }
         </Fragment>;
       });
-      return <Fragment>{tabList}</Fragment>;
+      return <Fragment>{tabList}<Signature/></Fragment>;
     }
   }
 
@@ -160,6 +169,7 @@ this.emailTemplates = (function () {
         {toc}
         {!!toc && <h4>Full Text</h4>}
         {tabList}
+        <Signature/>
       </div>;
     }
   }
