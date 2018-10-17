@@ -26,6 +26,7 @@ Data will be collected with Google Analytics and follow [Test Pilot standards](h
 * `cd4` - The name of the template used
 * `cd5` - Count of email recipients
 * `cd6` - Is user sending all tabs? ("true" or "false")
+* `cd7` - The mail provider ("gmail", "yahoo" or "outlook")
 
 ### Events
 
@@ -51,7 +52,55 @@ Note `ni` (not-interactive) will keep these events from being grouped under user
 ec: interface,
 ea: expand-panel,
 el: browser-action,
+cd1,
+cd7
+```
+
+##### When the user is shown the forced mail preference screen
+
+```
+ec: interface,
+ea: provider-preference,
+el: first-time,
 cd1
+```
+
+###### When the user is shown the mail preference due to selecting settings
+
+```
+ec: interface,
+ea: provider-preference,
+el: settings,
+cd1,
+cd7: previous provider
+```
+
+###### When the user selects a mail preference
+
+```
+ec: interface,
+ea: provider-select,
+el: gmail, yahoo, or outlook
+cd1,
+cd7: previous provider (or null)
+```
+
+###### When the user asks to "learn more" about mail preference
+
+```
+ec: interface,
+ea: provider-learn-more
+cd1,
+cd7: previous provider (or null)
+```
+
+###### When the user cancels mail preference change
+
+```
+ec: interface,
+ea: provider-cancel
+cd1,
+cd7: previous provider
 ```
 
 ##### When the user clicks select all
@@ -60,7 +109,8 @@ cd1
 ec: interface,
 ea: select-all,
 el: browser-action,
-cd1
+cd1,
+cd7
 ```
 
 ##### When the user clicks the feedback button
@@ -70,7 +120,8 @@ ea: button-click,
 el: feedback,
 cd1,
 cd2,
-cd3
+cd3,
+cd7
 ```
 
 ##### When the user Clicks the Copy Tabs to Clipboard button
@@ -80,7 +131,8 @@ ea: button-click,
 el: copy-tabs-to-clipboard,
 cd1,
 cd2,
-cd3
+cd3,
+cd7
 ```
 
 ##### When the user Clicks the Email Tabs button
@@ -91,7 +143,8 @@ el: email-tabs,
 cd1,
 cd2,
 cd3,
-cd6
+cd6,
+cd7
 ```
 
 ###### When the user is not logged in, or encounters a compose window error
@@ -104,7 +157,8 @@ el: account or error,
 cd1,
 cd2,
 cd3,
-cd6
+cd6,
+cd7
 ```
 
 ###### When the user chooses the template
@@ -118,7 +172,8 @@ cd1,
 cd2,
 cd3,
 cd4,
-cd6
+cd6,
+cd7
 ```
 
 ###### When `capture-data.js` encounters a non-fatal error
@@ -132,7 +187,8 @@ cd1,
 cd2,
 cd3,
 cd4,
-cd6
+cd6,
+cd7
 ```
 
 ##### When the compose window is finished uploading images
@@ -144,6 +200,7 @@ cd2,
 cd3,
 cd4,
 cd6,
+cd7,
 ni: true
 ```
 
@@ -159,7 +216,8 @@ cd2,
 cd3,
 cd4,
 cd5,
-cd6
+cd6,
+cd7
 ```
 
 ##### The user cancels or closes the email before sending it
@@ -172,7 +230,8 @@ cd2,
 cd3,
 cd4,
 cd5,
-cd6
+cd6,
+cd7
 ```
 
 ##### The user cancels the email at template chooser screen
@@ -183,7 +242,8 @@ ea: template-cancelled
 cd1,
 cd2,
 cd3,
-cd6
+cd6,
+cd7
 ```
 
 ##### After email sent, "done" chosen
@@ -195,7 +255,8 @@ cd1,
 cd2,
 cd3,
 cd4,
-cd6
+cd6,
+cd7
 ```
 
 ##### After email sent, "Close n tabs" chosen
@@ -207,5 +268,6 @@ cd1,
 cd2,
 cd3,
 cd4,
-cd6
+cd6,
+cd7
 ```

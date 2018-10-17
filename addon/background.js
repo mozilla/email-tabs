@@ -1,7 +1,29 @@
 /* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify */
+
+const providerUrls = {
+  gmail: {
+    compose: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=",
+    isLoginPage(url) {
+      return url.includes("accounts.google.com") || url.includes("google.com/gmail/about/");
+    },
+  },
+  yahoo: {
+    compose: "https://mail.yahoo.com/d/compose",
+    isLoginPage(url) {
+      return false;
+    },
+  },
+  outlook: {
+    compose: "https://outlook.live.com/owa/?path=/mail/action/compose&to=",
+    isLoginPage(url) {
+      return false;
+    },
+  },
+};
+
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
-    sendEmail(message.tabIds, message.customDimensions).catch((e) => {
+    sendEmail(message.tabIds, message.mailProvider, message.customDimensions).catch((e) => {
       // FIXME: maybe we should abort the email in this case?
       console.error("Error sending email:", e, String(e), e.stack);
     });
@@ -104,7 +126,7 @@ async function renderTabs(tabInfo, templateName) {
   return { html, subject };
 }
 
-async function sendEmail(tabIds, customDimensions) {
+async function sendEmail(tabIds, mailProvider, customDimensions) {
   let currentTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
@@ -114,13 +136,12 @@ async function sendEmail(tabIds, customDimensions) {
     openerTabId = currentTabs[0].id;
   }
   let newTab = await browser.tabs.create({
-    url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=",
+    url: providerUrls[mailProvider].compose,
     openerTabId,
   });
   setTimeout(async () => {
     let currentTab = await browser.tabs.get(newTab.id);
-    // The Gmail redesign changed the login redirect:
-    if (currentTab.url.includes("accounts.google.com") || currentTab.url.includes("google.com/gmail/about/")) {
+    if (providerUrls[mailProvider].isLoginPage(currentTab.url)) {
       // We have a login form
       loginInterrupt();
     }
