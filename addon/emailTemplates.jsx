@@ -93,6 +93,9 @@ this.emailTemplates = (function () {
           { selectionMarkup(tab.selection) }
         </Fragment>;
       });
+      if (this.props.copying) {
+        return <Fragment>{tabList}</Fragment>;
+      }
       return <Fragment>{tabList}<Signature/></Fragment>;
     }
   }
@@ -185,8 +188,8 @@ this.emailTemplates = (function () {
 
   exports.FullArticles = FullArticles;
 
-  exports.renderEmail = function(tabs, BaseComponent) {
-    let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} />);
+  exports.renderEmail = function(tabs, BaseComponent, copying) {
+    let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} copying={copying} />);
     let lastValue;
     while (lastValue !== emailHtml) {
       lastValue = emailHtml;
