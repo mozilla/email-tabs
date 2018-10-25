@@ -1,25 +1,4 @@
-/* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify */
-
-const providerUrls = {
-  gmail: {
-    compose: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=",
-    isLoginPage(url) {
-      return url.includes("accounts.google.com") || url.includes("google.com/gmail/about/");
-    },
-  },
-  yahoo: {
-    compose: "https://mail.yahoo.com/d/compose",
-    isLoginPage(url) {
-      return false;
-    },
-  },
-  outlook: {
-    compose: "https://outlook.live.com/owa/?path=/mail/action/compose&to=",
-    isLoginPage(url) {
-      return false;
-    },
-  },
-};
+/* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify, providerMetadata */
 
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
@@ -135,26 +114,36 @@ async function sendEmail(tabIds, mailProvider, customDimensions) {
   if (currentTabs && currentTabs.length) {
     openerTabId = currentTabs[0].id;
   }
+  let tabList = Array.from(await browser.tabs.query({})).filter(t => tabIds.includes(t.id));
+  let subject = emailTemplates.renderSubject(tabList);
   let newTab = await browser.tabs.create({
-    url: providerUrls[mailProvider].compose,
+    url: providerMetadata.providers[mailProvider].composeUrl(subject),
     openerTabId,
   });
   setTimeout(async () => {
     let currentTab = await browser.tabs.get(newTab.id);
-    if (providerUrls[mailProvider].isLoginPage(currentTab.url)) {
+    if (providerMetadata.providers[mailProvider].isLoginPage(currentTab.url)) {
       // We have a login form
       loginInterrupt();
     }
   }, 1000);
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
+  // Note that we let the other handlers load on the page while we collect data (i.e., we don't await getTabInfo)
+  let tabInfo = getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
   await browser.tabs.executeScript(newTab.id, {
     file: "templateMetadata.js",
+    runAt: "document_start",
+  });
+  await browser.tabs.executeScript(newTab.id, {
+    file: "providerMetadata.js",
     runAt: "document_start",
   });
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
     runAt: "document_start",
   });
+  // Here we block on actually getting the info:
+  tabInfo = await tabInfo;
+  console.log("Sending message to", newTab.id, newTab.url);
   await browser.tabs.sendMessage(newTab.id, {
     type: "sendTabInfo",
     thisTabId: newTab.id,
@@ -202,8 +191,9 @@ function loginInterrupt(customDimensions) {
   localStorage.setItem("loginInterrupt", String(Date.now()));
   browser.notifications.create("notify-no-login", {
     type: "basic",
+    // FIXME: add icon
     // iconUrl: "...",
-    title: "Email sending failed",
+    title: "Sending email failed",
     message: "Please try again after logging into your email",
   });
 
