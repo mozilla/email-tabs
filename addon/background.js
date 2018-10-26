@@ -125,7 +125,6 @@ async function sendEmail(tabIds, customDimensions) {
       loginInterrupt();
     }
   }, 1000);
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
   await browser.tabs.executeScript(newTab.id, {
     file: "templateMetadata.js",
     runAt: "document_start",
@@ -134,6 +133,7 @@ async function sendEmail(tabIds, customDimensions) {
     file: "set-html-email.js",
     runAt: "document_start",
   });
+  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
   await browser.tabs.sendMessage(newTab.id, {
     type: "sendTabInfo",
     thisTabId: newTab.id,

@@ -1,9 +1,20 @@
 /* globals cloneInto */
 
+function resolveablePromise() {
+  let _resolve, _reject;
+  let promise = new Promise((resolve, reject) => {
+    _resolve = resolve;
+    _reject = reject;
+  });
+  promise.resolve = _resolve;
+  promise.reject = _reject;
+  return promise;
+}
+
 browser.runtime.onMessage.addListener((message) => {
   try {
     thisTabId = message.thisTabId;
-    tabInfo = message.tabInfo;
+    tabInfo.resolve(message.tabInfo);
     customDimensions = message.customDimensions;
   } catch (e) {
     console.error("Error getting tabInfo:", String(e), e.stack);
@@ -14,7 +25,7 @@ browser.runtime.onMessage.addListener((message) => {
 let completed = false;
 let customDimensions = {};
 let thisTabId;
-let tabInfo;
+let tabInfo = resolveablePromise();
 
 window.addEventListener("beforeunload", async () => {
   if (completed) {
@@ -148,12 +159,12 @@ let completedInterval = setInterval(() => {
   }
 }, 300);
 
-function showCloseButtons() {
+async function showCloseButtons() {
   showIframe("#done-container");
   let done = iframeDocument.querySelector("#done");
   let doneMsg = iframeDocument.querySelector("#done-message");
   let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
-  let numTabs = tabInfo.length;
+  let numTabs = (await tabInfo).length;
   if (numTabs === 1) {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
     doneMsg.textContent = doneMsg.getAttribute("data-one-tab");
@@ -182,7 +193,7 @@ function showCloseButtons() {
     }));
     await browser.runtime.sendMessage({
       type: "closeTabs",
-      closeTabInfo: tabInfo,
+      closeTabInfo: await tabInfo,
       composeTabId: thisTabId,
     });
   });
@@ -206,7 +217,7 @@ function getTemplateListener(selectedTemplate) {
     let { html, subject } = await browser.runtime.sendMessage({
       type: "renderTemplate",
       selectedTemplate,
-      tabInfo,
+      tabInfo: await tabInfo,
     });
     setSubject(subject);
     setHtml(html);
@@ -242,47 +253,49 @@ function showTemplateSelector() {
 }
 
 let iframe = null;
-let initPromise;
+const initPromise = resolveablePromise();
 let iframeDocument = null;
 
 function createIframe() {
-  initPromise = new Promise((resolve, reject) => {
-    let iframeUrl = browser.extension.getURL("gmail-iframe.html");
-    iframe = document.createElement("iframe");
-    iframe.id = "mozilla-email-tabs";
-    iframe.src = iframeUrl;
-    iframe.style.zIndex = "99999999999";
-    iframe.style.border = "none";
-    iframe.style.top = "0";
-    iframe.style.left = "0";
-    iframe.style.margin = "0";
-    iframe.scrolling = "no";
-    iframe.style.clip = "auto";
-    iframe.style.display = "none";
-    iframe.style.setProperty("position", "fixed", "important");
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    document.body.appendChild(iframe);
-    // If the "load" event doesn't fire after 3 seconds, we put a warning in the console
-    let loadTimeoutId = setTimeout(() => {
-      console.warn("Iframe failed to load in 3 seconds");
-      console.warn("Iframe:", iframe && iframe.outerHTML);
-      console.warn("Iframe parent:", String(iframe.parentNode));
-    }, 3000);
-    iframe.addEventListener("load", () => {
-      try {
-        clearTimeout(loadTimeoutId);
-        if (iframe.contentDocument.documentURI !== iframeUrl) {
-          // This check protects against certain attacks on the iframe that quickly change src
-          console.error("iframe URL does not match expected URL", iframe.contentDocument.documentURI);
-          throw new Error("iframe URL does not match expected URL");
-        }
-        iframeDocument = iframe.contentDocument;
-        resolve();
-      } catch (e) {
-        reject(e);
+  if (!document.body) {
+    setTimeout(createIframe, 50);
+    return;
+  }
+  let iframeUrl = browser.extension.getURL("gmail-iframe.html");
+  iframe = document.createElement("iframe");
+  iframe.id = "mozilla-email-tabs";
+  iframe.src = iframeUrl;
+  iframe.style.zIndex = "99999999999";
+  iframe.style.border = "none";
+  iframe.style.top = "0";
+  iframe.style.left = "0";
+  iframe.style.margin = "0";
+  iframe.scrolling = "no";
+  iframe.style.clip = "auto";
+  iframe.style.display = "none";
+  iframe.style.setProperty("position", "fixed", "important");
+  iframe.style.width = "100%";
+  iframe.style.height = "100%";
+  document.body.appendChild(iframe);
+  // If the "load" event doesn't fire after 3 seconds, we put a warning in the console
+  let loadTimeoutId = setTimeout(() => {
+    console.warn("Iframe failed to load in 3 seconds");
+    console.warn("Iframe:", iframe && iframe.outerHTML);
+    console.warn("Iframe parent:", String(iframe.parentNode));
+  }, 3000);
+  iframe.addEventListener("load", () => {
+    try {
+      clearTimeout(loadTimeoutId);
+      if (iframe.contentDocument.documentURI !== iframeUrl) {
+        // This check protects against certain attacks on the iframe that quickly change src
+        console.error("iframe URL does not match expected URL", iframe.contentDocument.documentURI);
+        throw new Error("iframe URL does not match expected URL");
       }
-    });
+      iframeDocument = iframe.contentDocument;
+      initPromise.resolve();
+    } catch (e) {
+      initPromise.reject(e);
+    }
   });
 }
 
