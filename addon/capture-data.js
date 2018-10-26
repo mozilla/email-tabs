@@ -61,6 +61,7 @@
         data.screenshotAltText = captureText.getText(captureText.getViewportBox());
       }
     }
+
     if (message.wantsReadability) {
       if (document.contentType.startsWith("image/")) {
         let img = document.querySelector("img");
@@ -73,7 +74,13 @@
       } else {
         try {
           let documentClone = document.cloneNode(true);
-          data.readability = new Readability(documentClone).parse();
+          if (new Readability(documentClone).isProbablyReaderable()) {
+            data.readability = new Readability(documentClone).parse();
+          } else {
+            // not article, we'll just do a screenshot
+            data.screenshot = screenshotBox({left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight}, SCREENSHOT_WIDTH / window.innerWidth);
+            data.screenshotAltText = captureText.getText(captureText.getViewportBox());
+          }
         } catch (e) {
           console.error("Error extracting readable version:", String(e), e.stack);
           browser.runtime.sendMessage(Object.assign, {}, message.customDimensions, {
