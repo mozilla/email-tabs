@@ -114,6 +114,13 @@ function setHtml(html) {
         // No new images have appeared, so we'll wait for the next interval
         return;
       }
+      hideIframe();
+      // While some images have been uploaded, it's possible all images haven't been uploaded.
+      // The user can edit the email, but we'll wait until everything is uploaded to try to
+      // fix up the image attributes
+      if (surlImages.length < imageAttributeFixups.length) {
+        return;
+      }
       // FIXME: if there are no good images in the email, then this will never be reached
       // (which is okay, nothing to fixup then, but...)
       for (let i = 0; i < surlImages.length; i++) {
