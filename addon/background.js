@@ -178,8 +178,8 @@ async function copyTabHtml(tabIds, customDimensions) {
 
   browser.notifications.create("notify-copied", {
     type: "basic",
-    // iconUrl: "...",
-    title: "Tabs copied",
+    iconUrl: "./email-tabs-light-large.png",
+    title: "Tabs copied - Email Tabs",
     message: "Tabs copied to clipboard",
   });
 }
@@ -210,8 +210,8 @@ function loginInterrupt(customDimensions) {
   localStorage.setItem("loginInterrupt", String(Date.now()));
   browser.notifications.create("notify-no-login", {
     type: "basic",
-    // iconUrl: "...",
-    title: "Email sending failed",
+    iconUrl: "./email-tabs-light-large.png",
+    title: "Email sending failed - Email Tabs",
     message: "Please try again after logging into your email",
   });
 
