@@ -192,6 +192,10 @@ this.emailTemplates = (function () {
   exports.FullArticles = FullArticles;
 
   exports.renderEmail = function(tabs, BaseComponent, copying) {
+    if (!tabs) {
+      console.trace();
+      throw new Error("Cannot renderEmail without tabs");
+    }
     let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} copying={copying} />);
     let lastValue;
     while (lastValue !== emailHtml) {
