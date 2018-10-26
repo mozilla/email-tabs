@@ -95,12 +95,12 @@ async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}, customDi
   return tabIds.map(id => tabInfo[id]);
 }
 
-async function renderTabs(tabInfo, templateName) {
+async function renderTabs(tabInfo, templateName, copying) {
   let TemplateComponent = emailTemplates[templateMetadata.getTemplate(templateName).componentName];
   if (!TemplateComponent) {
     throw new Error(`No component found for template: ${templateName}`);
   }
-  let html = emailTemplates.renderEmail(tabInfo, TemplateComponent);
+  let html = emailTemplates.renderEmail(tabInfo, TemplateComponent, copying);
   let subject = emailTemplates.renderSubject(tabInfo);
   return { html, subject };
 }
@@ -143,7 +143,6 @@ async function sendEmail(tabIds, mailProvider, customDimensions) {
   });
   // Here we block on actually getting the info:
   tabInfo = await tabInfo;
-  console.log("Sending message to", newTab.id, newTab.url);
   await browser.tabs.sendMessage(newTab.id, {
     type: "sendTabInfo",
     thisTabId: newTab.id,
@@ -154,7 +153,9 @@ async function sendEmail(tabIds, mailProvider, customDimensions) {
 
 async function copyTabHtml(tabIds, customDimensions) {
   let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: false, wantsReadability: false}, customDimensions);
-  let { html } = await renderTabs(tabInfo, "just_links");
+  // this is passed as a prop to the email template in order to exclude the signature on copy
+  const copying = true;
+  let { html } = await renderTabs(tabInfo, "just_links", copying);
   copyHtmlToClipboard(html);
 
   browser.notifications.create("notify-copied", {

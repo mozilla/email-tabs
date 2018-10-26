@@ -93,6 +93,9 @@ this.emailTemplates = (function () {
           { selectionMarkup(tab.selection) }
         </Fragment>;
       });
+      if (this.props.copying) {
+        return <Fragment>{tabList}</Fragment>;
+      }
       return <Fragment>{tabList}<Signature/></Fragment>;
     }
   }
@@ -116,7 +119,7 @@ this.emailTemplates = (function () {
            // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/anchor-has-content
           anchorTag = <a name={tab.anchorName}></a>;
         }
-        let readability = null;
+        let readability, screenshot = null;
         if (tab.readability && tab.readability.content) {
           let content = parseReadableDocument(tab.readability.content);
           for (let img of content.querySelectorAll("img")) {
@@ -152,6 +155,8 @@ this.emailTemplates = (function () {
           }
 
           readability = <div dangerouslySetInnerHTML={{__html: content.outerHTML}} />;
+        } else if (tab.screenshot) {
+          screenshot = <TitleScreenshotTab tab={tab} />;
         }
 
         return <div key={index} style={{ maxWidth: "600px", background: "#f9f9fa", borderBottom: "2px solid #ededf0", padding: "24px", marginBottom: "24px", borderRadius: "3px" }}>
@@ -162,6 +167,7 @@ this.emailTemplates = (function () {
           <br />
           { selectionMarkup(tab.selection) }
           { readability }
+          { screenshot }
         </div>;
       });
       return <div style={{fontSize: "1.1em"}}>
@@ -185,8 +191,12 @@ this.emailTemplates = (function () {
 
   exports.FullArticles = FullArticles;
 
-  exports.renderEmail = function(tabs, BaseComponent) {
-    let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} />);
+  exports.renderEmail = function(tabs, BaseComponent, copying) {
+    if (!tabs) {
+      console.trace();
+      throw new Error("Cannot renderEmail without tabs");
+    }
+    let emailHtml = ReactDOMServer.renderToStaticMarkup(<BaseComponent tabs={tabs} copying={copying} />);
     let lastValue;
     while (lastValue !== emailHtml) {
       lastValue = emailHtml;

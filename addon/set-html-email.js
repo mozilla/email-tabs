@@ -2,10 +2,21 @@
 
 let provider = providerMetadata.detectProvider();
 
+function resolveablePromise() {
+  let _resolve, _reject;
+  let promise = new Promise((resolve, reject) => {
+    _resolve = resolve;
+    _reject = reject;
+  });
+  promise.resolve = _resolve;
+  promise.reject = _reject;
+  return promise;
+}
+
 browser.runtime.onMessage.addListener((message) => {
   try {
     thisTabId = message.thisTabId;
-    tabInfo = message.tabInfo;
+    tabInfo.resolve(message.tabInfo);
     customDimensions = message.customDimensions;
   } catch (e) {
     console.error("Error getting tabInfo:", String(e), e.stack);
@@ -16,15 +27,18 @@ browser.runtime.onMessage.addListener((message) => {
 let completed = false;
 let customDimensions = {};
 let thisTabId;
-let tabInfo;
+let tabInfo = resolveablePromise();
+
+function isLoginPage() {
+  return location.href.includes("accounts.google.com") || location.href.includes("www.google.com/gmail/about/");
+}
 
 window.addEventListener("beforeunload", async () => {
   if (completed) {
     // Actually everything worked out just fine
     return;
   }
-  if (location.href.includes("accounts.google.com")
-      || location.href.includes("login.yahoo.com")) {
+  if (providers[provider] && providers[provider].isLoginPage(location.href)) {
     // We've been attached to the wrong page anyway
     return;
   }
@@ -181,12 +195,12 @@ const providers = {
   },
 };
 
-function showCloseButtons() {
+async function showCloseButtons() {
   showIframe("#done-container");
   let done = iframeDocument.querySelector("#done");
   let doneMsg = iframeDocument.querySelector("#done-message");
   let closeAllTabs = iframeDocument.querySelector("#close-all-tabs");
-  let numTabs = tabInfo.length;
+  let numTabs = (await tabInfo).length;
   if (numTabs === 1) {
     closeAllTabs.textContent = closeAllTabs.getAttribute("data-one-tab");
     doneMsg.textContent = doneMsg.getAttribute("data-one-tab");
@@ -215,7 +229,7 @@ function showCloseButtons() {
     }));
     await browser.runtime.sendMessage({
       type: "closeTabs",
-      closeTabInfo: tabInfo,
+      closeTabInfo: await tabInfo,
       composeTabId: thisTabId,
     });
   });
@@ -239,7 +253,7 @@ function getTemplateListener(selectedTemplate) {
     let { html, subject } = await browser.runtime.sendMessage({
       type: "renderTemplate",
       selectedTemplate,
-      tabInfo,
+      tabInfo: await tabInfo,
     });
     providers[provider].setSubject(subject);
     providers[provider].setHtml(html);
@@ -275,11 +289,7 @@ function showTemplateSelector() {
 }
 
 let iframe = null;
-let _initPromiseResolve, _initPromiseReject;
-let initPromise = new Promise((resolve, reject) => {
-  _initPromiseResolve = resolve;
-  _initPromiseReject = reject;
-});
+const initPromise = resolveablePromise();
 let iframeDocument = null;
 
 function createIframe() {
@@ -318,9 +328,9 @@ function createIframe() {
         throw new Error("iframe URL does not match expected URL");
       }
       iframeDocument = iframe.contentDocument;
-      _initPromiseResolve();
+      initPromise.resolve();
     } catch (e) {
-      _initPromiseReject(e);
+      initPromise.reject(e);
     }
   });
 }
@@ -347,6 +357,8 @@ function hideIframe() {
 createIframe();
 
 initPromise.then(() => {
-  showTemplateSelector();
-  providers[provider].setup();
+  if (!providers[provider].isLoginPage(location.href)) {
+    showTemplateSelector();
+    providers[provider].setup();
+  }
 });
