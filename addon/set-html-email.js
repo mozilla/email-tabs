@@ -38,7 +38,7 @@ window.addEventListener("beforeunload", async () => {
     // Actually everything worked out just fine
     return;
   }
-  if (providers[provider] && providers[provider].isLoginPage(location.href)) {
+  if (providerMetadata.providers[provider] && providerMetadata.providers[provider].isLoginPage(location.href)) {
     // We've been attached to the wrong page anyway
     return;
   }
@@ -363,7 +363,7 @@ function hideIframe() {
 createIframe();
 
 initPromise.then(() => {
-  if (!providers[provider].isLoginPage(location.href)) {
+  if (!providerMetadata.providers[provider].isLoginPage(location.href)) {
     showTemplateSelector();
     providers[provider].setup();
   }
