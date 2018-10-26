@@ -16,12 +16,16 @@ let customDimensions = {};
 let thisTabId;
 let tabInfo;
 
+function isLoginPage() {
+  return location.href.includes("accounts.google.com") || location.href.includes("www.google.com/gmail/about/");
+}
+
 window.addEventListener("beforeunload", async () => {
   if (completed) {
     // Actually everything worked out just fine
     return;
   }
-  if (location.href.includes("accounts.google.com")) {
+  if (isLoginPage()) {
     // We've been attached to the wrong page anyway
     return;
   }
@@ -308,5 +312,7 @@ function hideIframe() {
 createIframe();
 
 initPromise.then(() => {
-  showTemplateSelector();
+  if (!isLoginPage()) {
+    showTemplateSelector();
+  }
 });
