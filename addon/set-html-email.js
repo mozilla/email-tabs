@@ -269,7 +269,7 @@ function createIframe() {
   iframe = document.createElement("iframe");
   iframe.id = "mozilla-email-tabs";
   iframe.src = iframeUrl;
-  iframe.style.zIndex = "99999999999";
+  iframe.style.zIndex = "2";
   iframe.style.border = "none";
   iframe.style.top = "0";
   iframe.style.left = "0";
