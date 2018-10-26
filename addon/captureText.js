@@ -8,12 +8,22 @@ this.captureText = (function() {
     const scrollY = window.scrollY;
     const text = [];
     function traverse(el) {
-      let elBox = el.getBoundingClientRect();
-      elBox = {
-        top: elBox.top + scrollY,
-        bottom: elBox.bottom + scrollY,
-        left: elBox.left + scrollX,
-        right: elBox.right + scrollX,
+      let elStyle = getComputedStyle(el);
+      if (elStyle.opacity === "0" || elStyle.opacity === 0) {
+        return;
+      }
+      if (elStyle.display === "none") {
+        return;
+      }
+      if (elStyle.visibility === "hidden") {
+        return;
+      }
+      let clientRect = el.getBoundingClientRect();
+      let elBox = {
+        top: clientRect.top + scrollY,
+        bottom: clientRect.bottom + scrollY,
+        left: clientRect.left + scrollX,
+        right: clientRect.right + scrollX,
       };
       if (elBox.bottom < box.top ||
           elBox.top > box.bottom ||
@@ -21,6 +31,19 @@ this.captureText = (function() {
           elBox.left > box.right) {
         // Totally outside of the box
         return;
+      }
+      let parent = el.parentNode;
+      if (parent) {
+        let parentStyle = getComputedStyle(parent);
+        if (parentStyle.overflow === "hidden" || parentStyle.overflow === "scroll") {
+          if (clientRect.left > parent.offsetWidth + parent.scrollLeft - CAPTURE_WIGGLE ||
+            clientRect.right < parent.scrollLeft + CAPTURE_WIGGLE ||
+            clientRect.top > parent.offsetHeight + parent.scrollTop - CAPTURE_WIGGLE ||
+            clientRect.bottom < parent.scrollTop + CAPTURE_WIGGLE) {
+            // el is scrolled out of view or truncated:
+            return;
+          }
+        }
       }
       if (elBox.bottom > box.bottom + CAPTURE_WIGGLE ||
           elBox.top < box.top - CAPTURE_WIGGLE ||

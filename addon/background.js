@@ -57,6 +57,34 @@ sendEvent({
   ni: true,
 });
 
+function pause(time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+}
+
+async function getReloadedTab(discardedTab) {
+  // Sometimes when you reload a tab and then use tabs.get to refresh its data,
+  // you'll get back about:blank. We don't want that, so this pauses a bit in that
+  // case
+  if (!discardedTab.discarded) {
+    throw new Error("getReloadedTab should only be used on discarded tabs");
+  }
+  await browser.tabs.reload(discardedTab.id);
+  let retryLimit = 10;
+  while (true) {
+    let newTab = await browser.tabs.get(discardedTab.id);
+    if (newTab.url !== "about:blank" || discardedTab.url === "about:blank") {
+      return newTab;
+    }
+    retryLimit--;
+    if (retryLimit <= 0) {
+      return newTab;
+    }
+    await pause(100);
+  }
+}
+
 async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}, customDimensions) {
   let allTabs = await browser.tabs.query({currentWindow: true});
   let tabInfo = {};
@@ -64,8 +92,7 @@ async function getTabInfo(tabIds, {wantsScreenshots, wantsReadability}, customDi
     if (tabIds.includes(tab.id)) {
       if (tab.discarded) {
         console.info("Reloading discarded tab", tab.id, tab.url);
-        await browser.tabs.reload(tab.id);
-        tab = await browser.tabs.get(tab.id);
+        tab = await getReloadedTab(tab);
       }
       tabInfo[tab.id] = {url: tab.url, urlBar: tab.url, title: tab.title, favIcon: tab.favIconUrl, id: tab.id};
     }
@@ -160,8 +187,8 @@ async function copyTabHtml(tabIds, customDimensions) {
 
   browser.notifications.create("notify-copied", {
     type: "basic",
-    // iconUrl: "...",
-    title: "Tabs copied",
+    iconUrl: "./email-tabs-light-large.png",
+    title: "Tabs copied - Email Tabs",
     message: "Tabs copied to clipboard",
   });
 }
@@ -192,9 +219,8 @@ function loginInterrupt(customDimensions) {
   localStorage.setItem("loginInterrupt", String(Date.now()));
   browser.notifications.create("notify-no-login", {
     type: "basic",
-    // FIXME: add icon
-    // iconUrl: "...",
-    title: "Sending email failed",
+    iconUrl: "./email-tabs-light-large.png",
+    title: "Email sending failed - Email Tabs",
     message: "Please try again after logging into your email",
   });
 
