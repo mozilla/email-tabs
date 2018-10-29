@@ -18,7 +18,7 @@ this.providerMetadata = (function () {
         return "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=";
       },
       isLoginPage(url) {
-        return url.includes("accounts.google.com") || url.includes("google.com/gmail/about/");
+        return url.includes("accounts.google.com") || /google\.com.*\/gmail\/about/.test(url);
       },
     },
     yahoo: {
