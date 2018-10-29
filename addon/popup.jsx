@@ -5,6 +5,8 @@
 let activeTabLi;
 let activeTabSelected = false;
 let selected = new Map();
+let mailProvider;
+let isSelectingMailProvider = false;
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
 /* True if this is a tab we can "send". Doesn't include about:preferences, etc. */
@@ -50,6 +52,7 @@ class Tab extends React.Component {
       cd1: await browser.tabs.query({currentWindow: true}).length,
       cd2: getSelectedCount(),
       cd3: activeTabSelected,
+      cd7: mailProvider,
     });
   }
 
@@ -124,6 +127,7 @@ class Popup extends React.Component {
           <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
           <label htmlFor="allCheckbox" className="styled-checkbox"></label>
           <label htmlFor="allCheckbox">Select All</label>
+          <button onClick={this.onSelectProvider.bind(this)}>Settings</button>
         </div>
       </div>
       <div className="separator"></div>
@@ -171,6 +175,7 @@ class Popup extends React.Component {
       ea: "select-all",
       el: "browser-action",
       cd1: await browser.tabs.query({currentWindow: true}).length,
+      cd7: mailProvider,
     });
   }
 
@@ -185,12 +190,14 @@ class Popup extends React.Component {
 
     await browser.runtime.sendMessage({
       type: "sendEmail",
+      mailProvider,
       tabIds: sendTabs,
       customDimensions: {
         cd1: await browser.tabs.query({currentWindow: true}).length,
         cd2: getSelectedCount(),
         cd3: activeTabSelected,
         cd6: this.allCheckbox.checked,
+        cd7: mailProvider,
       },
     });
 
@@ -203,6 +210,7 @@ class Popup extends React.Component {
       cd2: getSelectedCount(),
       cd3: activeTabSelected,
       cd6: this.allCheckbox.checked,
+      cd7: mailProvider,
     });
 
     window.close();
@@ -231,7 +239,13 @@ class Popup extends React.Component {
       cd1: await browser.tabs.query({currentWindow: true}).length,
       cd2: getSelectedCount(),
       cd3: activeTabSelected,
+      cd7: mailProvider,
     });
+  }
+
+  async onSelectProvider() {
+    isSelectingMailProvider = true;
+    render();
   }
 
 }
@@ -245,6 +259,67 @@ class LoginError extends React.Component {
       Please make sure you are logged in, then try again.</p>
       <img className="close" src="images/close.svg" onClick={this.props.dismissError} alt="close" />
     </div>;
+  }
+}
+
+class MailPreference extends React.Component {
+  render() {
+    let footer = (
+      <footer className="panel-footer toggle-enabled">
+        <button onClick={this.onCancel.bind(this)}>
+          Cancel
+        </button>
+      </footer>
+    );
+
+    return <div>
+      <div>
+        <button onClick={this.onSelect.bind(this, "gmail")}>Gmail</button>
+        <button onClick={this.onSelect.bind(this, "yahoo")}>Yahoo</button>
+        <button onClick={this.onSelect.bind(this, "outlook")}>Outlook</button>
+      </div>
+      <div className="separator"></div>
+      <p className="feedback-link">Sorry, we don&apos;t support any other mail providers. <a href="https://testpilot.firefox.com/experiments/email-tabs#providers" onClick={this.onLearnMore.bind(this)}>Learn more.</a></p>
+      {this.props.mailProvider ? footer : null}
+    </div>;
+  }
+
+  async onSelect(provider) {
+    let previousMailProvider = mailProvider;
+    mailProvider = provider;
+    browser.storage.local.set({mailProvider});
+    isSelectingMailProvider = false;
+    await browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "provider-select",
+      el: provider,
+      cd1: await browser.tabs.query({currentWindow: true}).length,
+      cd7: previousMailProvider,
+    });
+    render();
+  }
+
+  async onLearnMore() {
+    await browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "provider-learn-more",
+      cd1: await browser.tabs.query({currentWindow: true}).length,
+      cd7: mailProvider,
+    });
+  }
+
+  async onCancel() {
+    isSelectingMailProvider = false;
+    await browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "provider-cancel",
+      cd1: await browser.tabs.query({currentWindow: true}).length,
+      cd7: mailProvider,
+    });
+    render();
   }
 }
 
@@ -265,7 +340,20 @@ async function render(firstRun) {
   if (Date.now() - showLoginError > LOGIN_ERROR_TIME) {
     showLoginError = false;
   }
-  let page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} incognito={incognito} />;
+  let page;
+  if (mailProvider && !isSelectingMailProvider) {
+    page = <Popup selected={selected} tabs={tabs} showLoginError={showLoginError} incognito={incognito} />;
+  } else {
+    await browser.runtime.sendMessage({
+      type: "sendEvent",
+      ec: "interface",
+      ea: "provider-preference",
+      el: isSelectingMailProvider ? "settings" : "first-time",
+      cd1: await browser.tabs.query({currentWindow: true}).length,
+      cd7: mailProvider,
+    });
+    page = <MailPreference mailProvider={mailProvider} />;
+  }
   ReactDOM.render(page, document.getElementById("panel"));
   if (firstRun) {
     activeTabLi.scrollIntoView({
@@ -343,6 +431,8 @@ for (let eventName of ["onAttached", "onCreated", "onDetached", "onMoved", "onUp
 browser.tabs.onRemoved.addListener(renderWithDelay);
 
 async function init() {
+  let result = await browser.storage.local.get("mailProvider");
+  mailProvider = result.mailProvider;
   render(true);
   browser.runtime.sendMessage({
     type: "sendEvent",
@@ -350,6 +440,7 @@ async function init() {
     ea: "expand-panel",
     el: "browser-action",
     cd1: await browser.tabs.query({currentWindow: true}).length,
+    cd7: mailProvider,
   });
 }
 

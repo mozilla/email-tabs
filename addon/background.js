@@ -1,7 +1,8 @@
-/* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify */
+/* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify, providerMetadata */
+
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
-    sendEmail(message.tabIds, message.customDimensions).catch((e) => {
+    sendEmail(message.tabIds, message.mailProvider, message.customDimensions).catch((e) => {
       // FIXME: maybe we should abort the email in this case?
       console.error("Error sending email:", e, String(e), e.stack);
     });
@@ -131,7 +132,7 @@ async function renderTabs(tabInfo, templateName, copying) {
   return { html, subject };
 }
 
-async function sendEmail(tabIds, customDimensions) {
+async function sendEmail(tabIds, mailProvider, customDimensions) {
   let currentTabs = await browser.tabs.query({
     active: true,
     currentWindow: true,
@@ -140,27 +141,35 @@ async function sendEmail(tabIds, customDimensions) {
   if (currentTabs && currentTabs.length) {
     openerTabId = currentTabs[0].id;
   }
+  let tabList = Array.from(await browser.tabs.query({})).filter(t => tabIds.includes(t.id));
+  let subject = emailTemplates.renderSubject(tabList);
   let newTab = await browser.tabs.create({
-    url: "https://mail.google.com/mail/?view=cm&fs=1&tf=1&source=mailto&to=",
+    url: providerMetadata.providers[mailProvider].composeUrl(subject),
     openerTabId,
   });
   setTimeout(async () => {
     let currentTab = await browser.tabs.get(newTab.id);
-    // The Gmail redesign changed the login redirect:
-    if (currentTab.url.includes("accounts.google.com") || currentTab.url.includes("google.com/gmail/about/")) {
+    if (providerMetadata.providers[mailProvider].isLoginPage(currentTab.url)) {
       // We have a login form
       loginInterrupt();
     }
   }, 1000);
+  // Note that we let the other handlers load on the page while we collect data (i.e., we don't await getTabInfo)
+  let tabInfo = getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
   await browser.tabs.executeScript(newTab.id, {
     file: "templateMetadata.js",
+    runAt: "document_start",
+  });
+  await browser.tabs.executeScript(newTab.id, {
+    file: "providerMetadata.js",
     runAt: "document_start",
   });
   await browser.tabs.executeScript(newTab.id, {
     file: "set-html-email.js",
     runAt: "document_start",
   });
-  let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: true, wantsReadability: true}, customDimensions);
+  // Here we block on actually getting the info:
+  tabInfo = await tabInfo;
   await browser.tabs.sendMessage(newTab.id, {
     type: "sendTabInfo",
     thisTabId: newTab.id,
