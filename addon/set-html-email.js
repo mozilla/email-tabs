@@ -29,10 +29,6 @@ let customDimensions = {};
 let thisTabId;
 let tabInfo = resolveablePromise();
 
-function isLoginPage() {
-  return location.href.includes("accounts.google.com") || location.href.includes("www.google.com/gmail/about/");
-}
-
 window.addEventListener("beforeunload", async () => {
   if (completed) {
     // Actually everything worked out just fine
