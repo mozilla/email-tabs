@@ -71,11 +71,24 @@ async function getReloadedTab(discardedTab) {
     throw new Error("getReloadedTab should only be used on discarded tabs");
   }
   await browser.tabs.reload(discardedTab.id);
-  let retryLimit = 10;
+  let retryLimit = 600;
   while (true) {
     let newTab = await browser.tabs.get(discardedTab.id);
     if (newTab.url !== "about:blank" || discardedTab.url === "about:blank") {
-      return newTab;
+      // Even after all this, the tab might not be entirely reloaded
+      // Typically this will cause screenshot and article extraction to fail, and a message
+      // about host permissions missing (because it'll appear we're loading a script onto
+      // an about:blank page)
+      while (true) {
+        try {
+          await browser.tabs.executeScript(newTab.id, {
+            code: "null",
+          });
+        } catch (e) {
+          continue;
+        }
+        return newTab;
+      }
     }
     retryLimit--;
     if (retryLimit <= 0) {
