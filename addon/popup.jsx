@@ -6,6 +6,7 @@ let activeTabLi;
 let activeTabSelected = false;
 let selected = new Map();
 let mailProvider;
+let showAdditionalProviders;
 let isSelectingMailProvider = false;
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
 
@@ -127,7 +128,7 @@ class Popup extends React.Component {
           <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
           <label htmlFor="allCheckbox" className="styled-checkbox"></label>
           <label htmlFor="allCheckbox">Select All</label>
-          <button onClick={this.onSelectProvider.bind(this)}>Settings</button>
+          <button className="settings-icon-wrap" onClick={this.onSelectProvider.bind(this)}><img className="settings-icon" src="images/settings.svg" alt="settings icon"/></button>
         </div>
       </div>
       <div className="separator"></div>
@@ -270,12 +271,27 @@ class MailPreference extends React.Component {
       </footer>
     );
 
+    const providerCb = showAdditionalProviders ? this.onSelect : () => {};
+
     return <div>
-      <div>
-        <button onClick={this.onSelect.bind(this, "gmail")}>Gmail</button>
-        <button onClick={this.onSelect.bind(this, "yahoo")}>Yahoo</button>
-        <button onClick={this.onSelect.bind(this, "outlook")}>Outlook</button>
+      <p className="provider-heading">Select Default Mail Provider</p>
+      <div className="separator"></div>
+
+      <div className="providers-container">
+        <button className="provider-button" onClick={this.onSelect.bind(this, "gmail")}>
+          <img className="provider-icon" src="images/gmail.svg"/>
+          <p>Gmail</p>
+        </button>
+        <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "yahoo")}>
+          <img className="provider-icon" src="images/yahoo.svg"/>
+          <p>Yahoo Mail</p>
+        </button>
+        <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "outlook")}>
+          <img className="provider-icon" src="images/outlook.svg"/>
+          <p>Outlook</p>
+        </button>
       </div>
+
       <div className="separator"></div>
       {this.props.mailProvider ? footer : null}
     </div>;
@@ -430,6 +446,10 @@ browser.tabs.onRemoved.addListener(renderWithDelay);
 async function init() {
   let result = await browser.storage.local.get("mailProvider");
   mailProvider = result.mailProvider;
+
+  let providerResult = await browser.storage.local.get('showAdditionalProviders');
+  showAdditionalProviders = providerResult.showAdditionalProviders;
+
   render(true);
   browser.runtime.sendMessage({
     type: "sendEvent",
