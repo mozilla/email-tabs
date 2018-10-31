@@ -200,7 +200,6 @@ async function copyTabHtml(tabIds, customDimensions) {
 
   browser.notifications.create("notify-copied", {
     type: "basic",
-    iconUrl: "./email-tabs-light-large.png",
     title: "Email Tabs",
     message: "Tabs copied to clipboard",
   });
@@ -232,7 +231,6 @@ function loginInterrupt(customDimensions) {
   localStorage.setItem("loginInterrupt", String(Date.now()));
   browser.notifications.create("notify-no-login", {
     type: "basic",
-    iconUrl: "./email-tabs-light-large.png",
     title: "Email Tabs",
     message: "Sign in to your email account to start using Email Tabs.",
   });
