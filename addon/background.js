@@ -200,7 +200,7 @@ async function copyTabHtml(tabIds, customDimensions) {
 
   browser.notifications.create("notify-copied", {
     type: "basic",
-    title: "Tabs copied - Email Tabs",
+    title: "Email Tabs",
     message: "Tabs copied to clipboard",
   });
 }
@@ -231,8 +231,8 @@ function loginInterrupt(customDimensions) {
   localStorage.setItem("loginInterrupt", String(Date.now()));
   browser.notifications.create("notify-no-login", {
     type: "basic",
-    title: "Email sending failed - Email Tabs",
-    message: "Please try again after logging into your email",
+    title: "Email Tabs",
+    message: "Sign in to your email account to start using Email Tabs.",
   });
 
   sendEvent(Object.assign({}, customDimensions, {
