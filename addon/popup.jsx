@@ -6,8 +6,13 @@ let activeTabLi;
 let activeTabSelected = false;
 let selected = new Map();
 let mailProvider;
+let showAdditionalProviders;
 let isSelectingMailProvider = false;
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
+const gettingItem = browser.storage.local.get('showAdditionalProviders');
+gettingItem.then((res) => {
+  showAdditionalProviders = res.showAdditionalProviders;
+});
 
 /* True if this is a tab we can "send". Doesn't include about:preferences, etc. */
 function isSelectableTabUrl(url) {
@@ -127,7 +132,7 @@ class Popup extends React.Component {
           <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
           <label htmlFor="allCheckbox" className="styled-checkbox"></label>
           <label htmlFor="allCheckbox">Select All</label>
-          <button onClick={this.onSelectProvider.bind(this)}>Settings</button>
+          <img className="settings-icon" src="images/settings.svg" onClick={this.onSelectProvider.bind(this)} alt="settings icon"/>
         </div>
       </div>
       <div className="separator"></div>
@@ -272,12 +277,28 @@ class MailPreference extends React.Component {
       </footer>
     );
 
+    const providerButtonClasses = showAdditionalProviders ? "provider-button" : "provider-button disabled";
+    const providerCb = showAdditionalProviders ? this.onSelect : () => {};
+
     return <div>
-      <div>
-        <button onClick={this.onSelect.bind(this, "gmail")}>Gmail</button>
-        <button onClick={this.onSelect.bind(this, "yahoo")}>Yahoo</button>
-        <button onClick={this.onSelect.bind(this, "outlook")}>Outlook</button>
+      <p className="provider-heading">Select Default Mail Provider</p>
+      <div className="separator"></div>
+
+      <div className="providers-container">
+        <div className="provider-button" onClick={providerCb.bind(this, "gmail")}>
+          <img className="provider-icon" src="images/gmail.svg" alt="gmail icon"/>
+          <p>Gmail</p>
+        </div>
+        <div className={providerButtonClasses} onClick={providerCb.bind(this, "yahoo")}>
+          <img className="provider-icon" src="images/yahoo.svg" alt="yahoo icon"/>
+          <p>Yahoo Mail</p>
+        </div>
+        <div className={providerButtonClasses} onClick={providerCb.bind(this, "outlook")}>
+          <img className="provider-icon" src="images/outlook.svg" alt="outlook icon"/>
+          <p>Outlook</p>
+        </div>
       </div>
+
       <div className="separator"></div>
       <p className="feedback-link">Sorry, we don&apos;t support any other mail providers. <a href="https://testpilot.firefox.com/experiments/email-tabs#providers" onClick={this.onLearnMore.bind(this)}>Learn more.</a></p>
       {this.props.mailProvider ? footer : null}
