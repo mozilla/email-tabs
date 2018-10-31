@@ -5,11 +5,9 @@ function saveOptions(e) {
   e.preventDefault();
 }
 
-function restoreOptions() {
-  const gettingItem = browser.storage.local.get('showAdditionalProviders');
-  gettingItem.then((res) => {
-    document.querySelector("#provider").checked = res.showAdditionalProviders;
-  });
+async function restoreOptions() {
+  const showAdditionalProviders = await browser.storage.local.get('showAdditionalProviders');
+  document.querySelector("#provider").checked = showAdditionalProviders;
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);

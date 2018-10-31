@@ -132,7 +132,7 @@ class Popup extends React.Component {
           <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
           <label htmlFor="allCheckbox" className="styled-checkbox"></label>
           <label htmlFor="allCheckbox">Select All</label>
-          <img className="settings-icon" src="images/settings.svg" onClick={this.onSelectProvider.bind(this)} alt="settings icon"/>
+          <button className="settings-icon-wrap" onClick={this.onSelectProvider.bind(this)}><img className="settings-icon" src="images/settings.svg" alt="settings icon"/></button>
         </div>
       </div>
       <div className="separator"></div>
@@ -277,7 +277,6 @@ class MailPreference extends React.Component {
       </footer>
     );
 
-    const providerButtonClasses = showAdditionalProviders ? "provider-button" : "provider-button disabled";
     const providerCb = showAdditionalProviders ? this.onSelect : () => {};
 
     return <div>
@@ -285,18 +284,18 @@ class MailPreference extends React.Component {
       <div className="separator"></div>
 
       <div className="providers-container">
-        <div className="provider-button" onClick={providerCb.bind(this, "gmail")}>
-          <img className="provider-icon" src="images/gmail.svg" alt="gmail icon"/>
+        <button className="provider-button" onClick={this.onSelect.bind(this, "gmail")}>
+          <img className="provider-icon" src="images/gmail.svg"/>
           <p>Gmail</p>
-        </div>
-        <div className={providerButtonClasses} onClick={providerCb.bind(this, "yahoo")}>
-          <img className="provider-icon" src="images/yahoo.svg" alt="yahoo icon"/>
+        </button>
+        <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "yahoo")}>
+          <img className="provider-icon" src="images/yahoo.svg"/>
           <p>Yahoo Mail</p>
-        </div>
-        <div className={providerButtonClasses} onClick={providerCb.bind(this, "outlook")}>
-          <img className="provider-icon" src="images/outlook.svg" alt="outlook icon"/>
+        </button>
+        <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "outlook")}>
+          <img className="provider-icon" src="images/outlook.svg"/>
           <p>Outlook</p>
-        </div>
+        </button>
       </div>
 
       <div className="separator"></div>
@@ -454,6 +453,10 @@ browser.tabs.onRemoved.addListener(renderWithDelay);
 async function init() {
   let result = await browser.storage.local.get("mailProvider");
   mailProvider = result.mailProvider;
+
+  let providerResult = await browser.storage.local.get('showAdditionalProviders');
+  showAdditionalProviders = providerResult.showAdditionalProviders;
+
   render(true);
   browser.runtime.sendMessage({
     type: "sendEvent",
