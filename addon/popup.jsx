@@ -9,10 +9,6 @@ let mailProvider;
 let showAdditionalProviders;
 let isSelectingMailProvider = false;
 const LOGIN_ERROR_TIME = 90 * 1000; // 90 seconds
-const gettingItem = browser.storage.local.get('showAdditionalProviders');
-gettingItem.then((res) => {
-  showAdditionalProviders = res.showAdditionalProviders;
-});
 
 /* True if this is a tab we can "send". Doesn't include about:preferences, etc. */
 function isSelectableTabUrl(url) {
