@@ -254,9 +254,7 @@ class LoginError extends React.Component {
   render() {
     return <div id="login-error">
       <img className="warn" src="images/warning.svg" alt="warning icon"/>
-      <p>
-      Last attempt to send an email failed, probably because you weren&#39;t logged into your email.
-      Please make sure you are logged in, then try again.</p>
+      <p>Don&#39;t forget to sign in to your email account to use Email Tabs.</p>
       <img className="close" src="images/close.svg" onClick={this.props.dismissError} alt="close" />
     </div>;
   }
@@ -279,7 +277,6 @@ class MailPreference extends React.Component {
         <button onClick={this.onSelect.bind(this, "outlook")}>Outlook</button>
       </div>
       <div className="separator"></div>
-      <p className="feedback-link">Sorry, we don&apos;t support any other mail providers. <a href="https://testpilot.firefox.com/experiments/email-tabs#providers" onClick={this.onLearnMore.bind(this)}>Learn more.</a></p>
       {this.props.mailProvider ? footer : null}
     </div>;
   }

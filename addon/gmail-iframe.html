@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <!-- Note that any resources referenced here should also be listed in manifest.json under web_accessible_resources -->
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <style>
+<head>
+  <meta charset="UTF-8">
+  <style>
 
       button {
         /* Reset's every elements appearance */
         background: none repeat scroll 0 0 transparent;
         border: medium none;
         border-spacing: 0;
-        color: #26589F;
+        color: #26589f;
         font-size: 16px;
         font-weight: normal;
         height: 32px;
@@ -78,56 +78,16 @@
       }
 
       .container {
-        background-color: rgba(0, 0, 0, 0.7);
-        color: #fff;
-      }
-
-      .card-container {
-        background-color: transparent;
-        position: absolute;
-        height: 175px;
-        width: 300px;
-        top: 40%;
-        left: 40%;
-        margin-right: -150px;
-        margin-top: -150px;
-        box-shadow: 0 1px 4px rgba(12, 12, 13, 0.1);
-      }
-
-      .card-container:hover {
-        box-shadow: 0 2px 8px rgba(12, 12, 13, 0.1);
-      }
-
-      .big-container {
-        width: 100%;
+        align-items: center;
+        background-color: white;
+        display: flex;
         height: 100%;
+        justify-content: center;
+        left: 0;
         position: absolute;
         top: 0;
-        left: 0;
-        background-color: white;
-      }
-
-      #loading-container {
         width: 100%;
-        height: 100%;
-        background: white;
-      }
-
-      #loading-container .card-container {
-        font-weight: bold;
-        font-size: 20px;
-        height: 250px;
-        vertical-align: center;
-        text-align: center;
-      }
-
-      #loading-container p {
-        color: #0a84ff;
-      }
-
-      #done-container {
-        left: 35%;
-        width: 432px;
+        flex-direction: column;
       }
 
       #done-container .btn {
@@ -147,7 +107,7 @@
       }
 
       #done-container button {
-        color: #0C0C0D;
+        color: #0c0c0d;
         font-size: 13px;
         letter-spacing: 0;
         margin-left: 10px;
@@ -173,7 +133,6 @@
         align-items: center;
         background: var(--white);
         display: flex;
-        height: 55%;
         justify-content: center;
         left: 0;
         position: relative;
@@ -191,69 +150,78 @@
         height: 74px;
         width: 74px;
         position: relative;
-        overflow :hidden;
+        overflow: hidden;
       }
-      .app-loading-indicator .app-loading-indicator__spinner:before {
-          content:"";
-          animation-duration:8s;
-          animation-iteration-count:infinite;
-          animation-name:rainbow;
-          animation-timing-function:ease-in-out;
-          box-shadow:inset 0 0 0 6px #bf4040;
-          width:72px;
-          height:72px;
-          border-radius:50%;
-          margin:1px;
+
+      .app-loading-indicator .app-loading-indicator__spinner::before {
+        content: "";
+        animation-duration: 8s;
+        animation-iteration-count: infinite;
+        animation-name: rainbow;
+        animation-timing-function: ease-in-out;
+        box-shadow: inset 0 0 0 6px #bf4040;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        margin: 1px;
       }
-      .app-loading-indicator .app-loading-indicator__spinner:after {
-          content:"";
-          box-sizing:border-box;
-          width:72px;
-          height:72px;
-          animation:rotate linear 1.88s infinite;
-          transform-origin:left top;
-          background:hsla(0,0%,100%,.7);
-          position:absolute;
-          top:37px;
-          left:37px;
+
+      .app-loading-indicator .app-loading-indicator__spinner::after {
+        content: "";
+        box-sizing: border-box;
+        width: 72px;
+        height: 72px;
+        animation: rotate linear 1.88s infinite;
+        transform-origin: left top;
+        background: hsla(0, 0%, 100%, 0.7);
+        position: absolute;
+        top: 37px;
+        left: 37px;
       }
 
       @keyframes rotate {
-          0% {
-              transform:rotate(0);
-          }
-          to {
-              transform:rotate(1turn);
-          }
+        0% {
+          transform: rotate(0);
+        }
+
+        to {
+          transform: rotate(1turn);
+        }
       }
 
       @keyframes rainbow {
-          0% {
-              box-shadow:inset 0 0 0 6px #bf4040;
-          }
-          16% {
-              box-shadow:inset 0 0 0 6px #bfbf40;
-          }
-          32% {
-              box-shadow:inset 0 0 0 6px #40bf40;
-          }
-          48% {
-              box-shadow:inset 0 0 0 6px #40bfbf;
-          }
-          64% {
-              box-shadow:inset 0 0 0 6px #4040bf;                                                       }
-          80% {
-              box-shadow:inset 0 0 0 6px #bf40bf;
-          }
-          96% {
-              box-shadow:inset 0 0 0 6px #bf4040;
-          }
+        0% {
+          box-shadow: inset 0 0 0 6px #bf4040;
+        }
+
+        16% {
+          box-shadow: inset 0 0 0 6px #bfbf40;
+        }
+
+        32% {
+          box-shadow: inset 0 0 0 6px #40bf40;
+        }
+
+        48% {
+          box-shadow: inset 0 0 0 6px #40bfbf;
+        }
+
+        64% {
+          box-shadow: inset 0 0 0 6px #4040bf;
+        }
+
+        80% {
+          box-shadow: inset 0 0 0 6px #bf40bf;
+        }
+
+        96% {
+          box-shadow: inset 0 0 0 6px #bf4040;
+        }
       }
 
       /* Templates */
       #choose-template section {
         height: 400px;
-        margin: 120px auto;
         width: 650px;
         color: black;
         text-align: center;
@@ -272,26 +240,24 @@
         text-align: center;
         text-decoration: none;
         color: black;
-      }
-
-      .template-icon div {
-        width: 175px;
-        height: 180px;
-        background-size: cover;
-        border: 1px solid rgba(115,115,115,0.20);
-        border-radius: 7px;
-      }
-
-      .template-icon p {
         font-size: 14px;
       }
 
+      .template-icon div {
+        background-size: cover;
+        border-radius: 7px;
+        box-shadow: 0 0 0 1px rgba(115, 115, 115, 0.2);
+        height: 180px;
+        transition: box-shadow 150ms;
+        width: 175px;
+      }
+
       .template-icon:active div {
-        border: 1px solid #0A84FF;
+        box-shadow: 0 0 0 4px #0a84ff;
       }
 
       .template-icon:hover div {
-        border: 1px solid rgba(23,138,254,0.80);
+        box-shadow: 0 0 0 4px rgba(23, 138, 254, 0.8);
       }
 
       #screenshot-template div {
@@ -314,7 +280,7 @@
         font-size: 13px;
         font-weight: 400;
         margin-top: 30px;
-        padding: 0px 8px;
+        padding: 0 8px;
         text-align: center;
         width: 132px;
       }
@@ -330,47 +296,43 @@
   </head>
   <body>
 
-    <div id="loading-container">
-      <div class="container card-container">
-        <div class="app-loading-indicator">
-          <div class="app-loading-indicator__spinner"></div>
-        </div>
-        <p>Preparing your email...</p>
+    <div id="loading-container" class="container">
+      <div class="app-loading-indicator">
+        <div class="app-loading-indicator__spinner"></div>
       </div>
+      <p>Preparing your email...</p>
     </div>
 
-    <div id="done-container" class="container card-container" style="display: none">
+    <div id="done-container" class="container" style="display: none;">
       <div class="message-wrap">
-        <h4>Thanks for using Firefox Email Tabs</h4>
+        <h4>Thanks for using Email Tabs</h4>
         <p id="done-message" data-many-tabs="__NUMBER__ tabs were sent." data-one-tab="Tab was sent.">tabs were sent.</p>
-        <br>
         <button id="done" class="btn">Done</button>
         <button id="close-all-tabs" class="btn close" data-many-tabs="Close __NUMBER__ tabs" data-one-tab="Close 1 tab">Close tabs</button>
       </div>
     </div>
 
-    <div id="choose-template" class="container big-container" style="display: none">
+    <div id="choose-template" class="container" style="display: none;">
       <section>
         <h2>Select an email template</h2>
         <div class="template-contain">
           <a id="screenshot-template" class="template-icon" data-name="title_screenshot" href="#">
             <div></div>
-            <p>Link with Screenshots</p>
+            <p>Links with screenshots</p>
           </a>
 
           <a id="link-template" class="template-icon" data-name="just_links" href="#">
             <div></div>
-            <p>Link only</p>
+            <p>Links only</p>
           </a>
 
           <a id="readability-template" class="template-icon" data-name="readability" href="#">
             <div></div>
-            <p>Link with Full Articles</p>
+            <p>Links with full articles</p>
           </a>
         </div>
         <button id="choose-template-cancel">Cancel</button>
       </section>
     </div>
-
   </body>
 </html>

@@ -201,7 +201,7 @@ async function copyTabHtml(tabIds, customDimensions) {
   browser.notifications.create("notify-copied", {
     type: "basic",
     iconUrl: "./email-tabs-light-large.png",
-    title: "Tabs copied - Email Tabs",
+    title: "Email Tabs",
     message: "Tabs copied to clipboard",
   });
 }
@@ -233,8 +233,8 @@ function loginInterrupt(customDimensions) {
   browser.notifications.create("notify-no-login", {
     type: "basic",
     iconUrl: "./email-tabs-light-large.png",
-    title: "Email sending failed - Email Tabs",
-    message: "Please try again after logging into your email",
+    title: "Email Tabs",
+    message: "Sign in to your email account to start using Email Tabs.",
   });
 
   sendEvent(Object.assign({}, customDimensions, {
