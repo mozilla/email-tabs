@@ -234,7 +234,7 @@ function loginInterrupt(customDimensions) {
     type: "basic",
     iconUrl: "./email-tabs-light-large.png",
     title: "Email Tabs",
-    message: "Sign in to your email account to start using Email Tabs."
+    message: "Sign in to your email account to start using Email Tabs.",
   });
 
   sendEvent(Object.assign({}, customDimensions, {
