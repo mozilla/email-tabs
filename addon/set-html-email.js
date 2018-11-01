@@ -153,8 +153,7 @@ const providers = {
         if (viewMessageEl) {
           clearInterval(completedInterval);
 
-          let match = document.title.match(/([^\s<>()[\]]+@[a-z0-9.-]+)/);
-          let selfEmailAddress = match && match[1];
+          let selfEmailAddress = extractEmailAddress(document.title);
           const selfSend = Array.from(document.querySelectorAll("span[email]"))
                 .map(el => el.getAttribute("email"))
                 .includes(selfEmailAddress);
@@ -185,17 +184,104 @@ const providers = {
         setTimeout(this.setHtml.bind(this, html), 100);
         return;
       }
-      let oldHtml = editableEl.innerHTML;
-      editableEl.innerHTML = html + "\n<br />" + oldHtml ; // eslint-disable-line no-unsanitized/property
+      completed = true;
+      pasteHtml(html, editableEl);
       hideIframe();
     },
 
     setup() {
+      let completedInterval = setInterval(() => {
+        // The To addresses aren't there after you send, so we save any To addresses we find in this.toAddresses
+        // and check it against the self address when the document is actually sent
+        let toAddressField = document.querySelector("div[data-test-id='compose-header-field-to']");
+        if (toAddressField && toAddressField.textContent) {
+          let toAddresses = Array.from(toAddressField.querySelectorAll("[data-test-id='pill']"));
+          toAddresses = toAddresses.map(el => extractEmailAddress(el.getAttribute("title")));
+          toAddresses = toAddresses.filter(a => a);
+          toAddresses = toAddresses.map(a => a.toLowerCase());
+          if (toAddresses.length) {
+            this.toAddresses = toAddresses;
+          }
+        }
 
+        // An example success message looks like this:
+        /*
+          <div class=\"em_N D_F P_Z2baRGn A_6EWk i_6Mbr C_Z281SGl o_h r_BN\"><span>Your <a href=\"/d/folders/2/messages/35?mrdparam=HFwiFMAYeagMubHHVdKk2WO37dPXDxluQjhI.NaS3_aHrCt.HJSs6wQ1lZ4crwpKwdVmZCZKaUd3ExqD0lYNzwzIwR.GSQ7CQ2oi_Vz5VXacqone~A\" class=\"C_Z2aVTcY r_P\" data-test-id=\"navigate-button\"><span>message</span></a> has been sent.</span></div>
+        */
+        let successMessageEl = document.querySelector("div > span > a[href^='/d/folders/'][data-test-id='navigate-button'] > span");
+        if (successMessageEl) {
+          clearInterval(completedInterval);
+          let selfEmailAddress = extractEmailAddress(document.title);
+          const selfSend = this.toAddresses && this.toAddresses.includes(selfEmailAddress);
+          browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+            type: "sendEvent",
+            ec: "interface",
+            ea: "compose-sent",
+            el: selfSend ? "send-to-self" : "send-to-other",
+            cd5: self.toAddresses ? self.toAddresses.length : null,
+          }));
+
+          showCloseButtons();
+        }
+      }, 300);
     },
 
   },
 };
+
+/** Attempts to extract an email address using a regular expression, otherwise null
+ * Note: this isn't very accurate, but is good enough for the metrics where we use it
+*/
+function extractEmailAddress(text) {
+  if (!text) {
+    return null;
+  }
+  let match = text.match(/([^\s<>()[\]]+@[a-z0-9.-]+)/);
+  return match ? match[1] : null;
+}
+
+async function pasteHtml(html, destination) {
+  // If we could use the clipboard APIs:
+  /*
+  let previous = await navigator.clipboard.read();
+  let htmlTransfer = new DataTransfer();
+  htmlTransfer.setData("text/html", html);
+  await navigator.clipboard.write(htmlTransfer);
+  destination.focus();
+  document.execCommand("paste");
+  await navigator.clipboard.write(previous);
+  */
+  // But we have to do it this way because those APIs are hidden behind a pref...
+  let div = document.createElement("div");
+  div.setAttribute("contenteditable", "true");
+  div.innerHTML = html; // eslint-disable-line no-unsanitized/property
+  document.body.appendChild(div);
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(div);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  document.execCommand("copy");
+  destination.focus();
+  let pasteSucceeded = document.execCommand("paste");
+  if (!pasteSucceeded) {
+    // FIXME: sendEvent here about paste failure
+    // (execCommand("paste") should be reliable in this add-on context, but in experience it isn't always)
+    browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+      type: "sendEvent",
+      ec: "interface",
+      ea: "paste-failed",
+      ni: true,
+    }));
+    const pasteSymbol = (window.navigator.platform.match(/Mac/i)) ? "\u2318" : "Ctrl";
+    browser.notifications.create("paste-failed", {
+      type: "basic",
+      title: "Email Tabs",
+      message: `Please use ${pasteSymbol}+V to add the email contents`,
+    });
+  }
+  document.body.removeChild(div);
+}
 
 async function showCloseButtons() {
   showIframe("#done-container");
