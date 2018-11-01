@@ -279,15 +279,15 @@ class MailPreference extends React.Component {
 
       <div className="providers-container">
         <button className="provider-button" onClick={this.onSelect.bind(this, "gmail")}>
-          <img className="provider-icon" src="images/gmail.svg" alt="gmail icon"/>
+          <img className="provider-icon" src="images/gmail.svg" alt=""/>
           <p>Gmail</p>
         </button>
         <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "yahoo")}>
-          <img className="provider-icon" src="images/yahoo.svg" alt="yahoo icon"/>
+          <img className="provider-icon" src="images/yahoo.svg" alt=""/>
           <p>Yahoo Mail</p>
         </button>
         <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "outlook")}>
-          <img className="provider-icon" src="images/outlook.svg" alt="outlook icon"/>
+          <img className="provider-icon" src="images/outlook.svg" alt=""/>
           <p>Outlook</p>
         </button>
       </div>
