@@ -6,8 +6,8 @@ function saveOptions(e) {
 }
 
 async function restoreOptions() {
-  const showAdditionalProviders = await browser.storage.local.get("showAdditionalProviders");
-  document.querySelector("#provider").checked = showAdditionalProviders;
+  const result = await browser.storage.local.get("showAdditionalProviders");
+  document.querySelector("#provider").checked = result.showAdditionalProviders;
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
