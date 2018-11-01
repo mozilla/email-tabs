@@ -279,15 +279,15 @@ class MailPreference extends React.Component {
 
       <div className="providers-container">
         <button className="provider-button" onClick={this.onSelect.bind(this, "gmail")}>
-          <img className="provider-icon" src="images/gmail.svg"/>
+          <img className="provider-icon" src="images/gmail.svg" alt=""/>
           <p>Gmail</p>
         </button>
         <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "yahoo")}>
-          <img className="provider-icon" src="images/yahoo.svg"/>
+          <img className="provider-icon" src="images/yahoo.svg" alt=""/>
           <p>Yahoo Mail</p>
         </button>
         <button className="provider-button" disabled={!showAdditionalProviders} onClick={providerCb.bind(this, "outlook")}>
-          <img className="provider-icon" src="images/outlook.svg"/>
+          <img className="provider-icon" src="images/outlook.svg" alt=""/>
           <p>Outlook</p>
         </button>
       </div>
@@ -447,7 +447,7 @@ async function init() {
   let result = await browser.storage.local.get("mailProvider");
   mailProvider = result.mailProvider;
 
-  let providerResult = await browser.storage.local.get('showAdditionalProviders');
+  let providerResult = await browser.storage.local.get("showAdditionalProviders");
   showAdditionalProviders = providerResult.showAdditionalProviders;
 
   render(true);
