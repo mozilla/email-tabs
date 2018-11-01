@@ -63,6 +63,10 @@ const providers = {
       input.value = subject;
     },
 
+    loginRequired() {
+      return false;
+    },
+
     setHtml(html) {
       let editableEl = document.querySelector("div.editable[contenteditable]");
       if (!editableEl) {
@@ -178,6 +182,10 @@ const providers = {
       // to update that field.
     },
 
+    loginRequired() {
+      return false;
+    },
+
     setHtml(html) {
       let editableEl = document.querySelector("[aria-label='Message body']");
       if (!editableEl) {
@@ -198,7 +206,6 @@ const providers = {
           let toAddresses = Array.from(toAddressField.querySelectorAll("[data-test-id='pill']"));
           toAddresses = toAddresses.map(el => extractEmailAddress(el.getAttribute("title")));
           toAddresses = toAddresses.filter(a => a);
-          toAddresses = toAddresses.map(a => a.toLowerCase());
           if (toAddresses.length) {
             this.toAddresses = toAddresses;
           }
@@ -226,6 +233,65 @@ const providers = {
       }, 300);
     },
 
+  },
+
+  outlook: {
+    zIndex: 999999,
+    setSubject(subject) {
+      let input = document.querySelector("input[role='textbox'][autoid='_mcp_c']");
+      if (!input) {
+        setTimeout(this.setSubject.bind(this, subject), 100);
+        return;
+      }
+      input.value = subject;
+      let event = new Event("change");
+      input.dispatchEvent(event);
+    },
+    setHtml(html) {
+      let editableEl = document.querySelector("div[autoid='_z_l'] div[contenteditable]");
+      if (!editableEl) {
+        setTimeout(this.setHtml.bind(this, html), 100);
+        return;
+      }
+      editableEl.innerHTML = html + editableEl.innerHTML; // eslint-disable-line no-unsanitized/property
+      completed = true;
+      hideIframe();
+    },
+    setup() {
+      let completedInterval = setInterval(() => {
+        // The To addresses aren't there after you send, so we save any To addresses we find in this.toAddresses
+        // and check it against the self address when the document is actually sent
+        let toAddresses = document.querySelectorAll(".PersonaPaneLauncher span[autoid='_pe_d']");
+        if (toAddresses.length) {
+          toAddresses = Array.from(toAddresses).map(el => extractEmailAddress(el.innerText)).filter(x => x);
+          this.toAddresses = toAddresses;
+        }
+        // Outlook doesn't have any success message or indicator
+        let editableEl = document.querySelector("div[autoid='_z_l'] div[contenteditable]");
+        if (editableEl) {
+          this.hasSeenEditable = true;
+        }
+        if (!editableEl && this.hasSeenEditable) {
+          // This doesn't distinguish between canceling the composition and sending the mail
+          clearInterval(completedInterval);
+          let selfEmailAddress = extractEmailAddress(document.title);
+          const selfSend = this.toAddresses && this.toAddresses.includes(selfEmailAddress);
+          browser.runtime.sendMessage(Object.assign({}, customDimensions, {
+            type: "sendEvent",
+            ec: "interface",
+            ea: "compose-sent",
+            el: selfSend ? "send-to-self" : "send-to-other",
+            cd5: self.toAddresses ? self.toAddresses.length : null,
+          }));
+
+          showCloseButtons();
+        }
+      }, 300);
+    },
+    loginRequired() {
+      let el = document.querySelector("a.linkButtonFixedHeader.office-signIn");
+      return !!el;
+    },
   },
 };
 
@@ -389,7 +455,7 @@ function createIframe() {
   iframe = document.createElement("iframe");
   iframe.id = "mozilla-email-tabs";
   iframe.src = iframeUrl;
-  iframe.style.zIndex = "2";
+  iframe.style.zIndex = providers[provider].zIndex || "2";
   iframe.style.border = "none";
   iframe.style.top = "0";
   iframe.style.left = "0";
@@ -445,6 +511,12 @@ function hideIframe() {
 createIframe();
 
 initPromise.then(() => {
+  if (providers[provider].loginRequired()) {
+    browser.runtime.sendMessage({
+      type: "sendFailed",
+    });
+    return;
+  }
   if (!providerMetadata.providers[provider].isLoginPage(location.href)) {
     showTemplateSelector();
     providers[provider].setup();
