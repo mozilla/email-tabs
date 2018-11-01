@@ -170,10 +170,13 @@ this.emailTemplates = (function () {
           { screenshot }
         </div>;
       });
+      // <span>&#8203;</span> is a zero-width space; if you insert characters before it in the editor, they will
+      // not be <strong>
       return <div style={{fontSize: "1.1em"}}>
-        {!!toc && <h4>Table of Contents</h4>}
+        {!!toc && <Fragment><span>&#8203;</span><strong>Table of Contents</strong><br /><br /></Fragment>}
+        {!toc && <br />}
         {toc}
-        {!!toc && <h4>Full Text</h4>}
+        {!!toc && <Fragment><strong>Full Text</strong></Fragment>}
         {tabList}
         <Signature/>
       </div>;
