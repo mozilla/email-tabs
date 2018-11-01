@@ -51,7 +51,7 @@ this.emailTemplates = (function () {
       let tabList = this.props.tabs.map(
         tab => <TitleScreenshotTab key={tab.id} tab={tab} />
       );
-      return <div style={{width: "600px"}}>{tabList}<Signature/></div>;
+      return <div style={{width: "600px"}}><br />{tabList}<Signature/></div>;
     }
   }
 
