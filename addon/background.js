@@ -15,7 +15,7 @@ browser.runtime.onMessage.addListener((message, source) => {
     localStorage.removeItem("selectionCache");
     return null;
   } else if (message.type === "sendFailed") {
-    loginInterrupt(message.customDimensions);
+    loginInterrupt(message.customDimensions, source.tab.id);
     return null;
   } else if (message.type === "closeComposeTab") {
     return browser.tabs.remove(message.tabId);
@@ -221,7 +221,14 @@ function copyHtmlToClipboard(html) {
 
 let loginInterruptedTime;
 
-function loginInterrupt(customDimensions) {
+async function loginInterrupt(customDimensions, tabId) {
+  try {
+    await browser.tabs.get(tabId);
+  } catch (e) {
+    // This will fail when the tab has been closed. In that case the user has closed
+    // the tab, and this isn't a login failure
+    return;
+  }
   // Note: this is a dumb flag for the popup:
   if (loginInterruptedTime && Date.now() - loginInterruptedTime < 30 * 1000) {
     // We notified the user recently
