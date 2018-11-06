@@ -293,6 +293,7 @@ class MailPreference extends React.Component {
       </div>
 
       <div className="separator"></div>
+      <p class="sorry">Sorry we don&#39;t support any other mail providers. <a href="https://github.com/mozilla/email-tabs/blob/master/docs/faq.md#frequently-asked-questions">Learn more</a></p>
       {this.props.mailProvider ? footer : null}
     </div>;
   }
