@@ -4,6 +4,8 @@ This is an experimental extension for Firefox that composes a Gmail email with i
 
 Note that only Gmail is supported, because there's no general standard for composing HTML emails.
 
+There is a user-focused [Frequently Asked Questions](./docs/faq.md) as well.
+
 ## Installing
 
 [**Install add-on with this link**](https://testpilot.firefox.com/files/email-tabs@mozilla.org/signed-addon.xpi)
