@@ -41,7 +41,7 @@
   "scripts": {
     "start": "npm-run-all build run",
     "lint": "npm-run-all lint:*",
-    "lint:addon": "web-ext lint -s addon --ignore-files=build/*.js || true",
+    "lint:addon": "web-ext lint -s addon --ignore-files='build/*.js' --self-hosted || true",
     "lint:js": "eslint addon --ext=js,jsx",
     "lint:styles": "stylelint ./addon/*.css",
     "preview-templates": "http-server -c-1 .",
