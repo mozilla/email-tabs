@@ -404,6 +404,10 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
   margin: auto;
 }
 
+.sorry {
+  margin: 10px 15px;
+}
+
 #login-error {
   background-color: #ffe902;
   border-radius: 4px;
