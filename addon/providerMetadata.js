@@ -36,6 +36,7 @@ this.providerMetadata = (function () {
         return "https://outlook.live.com/owa/?path=/mail/action/compose&to=";
       },
       isLoginPage(url) {
+        // The login page on Outlook is entirely inline, it doesn't cause any redirect
         return false;
       },
     },

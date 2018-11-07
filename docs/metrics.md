@@ -204,6 +204,21 @@ cd7,
 ni: true
 ```
 
+##### If auto-pasting fails
+This only applies to some providers (currently Yahoo), we use `document.execCommand("paste")`, which is not always reliable:
+
+```
+ec: interface
+ea: paste-failed,
+cd1,
+cd2,
+cd3,
+cd4,
+cd6,
+cd7,
+ni: true
+```
+
 ##### When the email is sent
 `el` will be `send-to-self` if the user sent the email back to themselves, and `send-to-other` if not.
 
