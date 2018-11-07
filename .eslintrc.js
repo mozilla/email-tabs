@@ -15,7 +15,8 @@ module.exports = {
   },
   "plugins": [
     "jsx-a11y",
-    "mozilla"
+    "mozilla",
+    "react"
   ],
   "root": true,
   "rules": {
@@ -29,5 +30,10 @@ module.exports = {
     // them, but we aren't currently doing that.
     "jsx-a11y/label-has-associated-control": "off",
     "jsx-a11y/label-has-for": "off",
+  },
+  "settings": {
+    "react": {
+      "version": "16"
+    }
   }
 };
