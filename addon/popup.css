@@ -29,7 +29,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   max-width: 440px;
-  min-width: 380px;
+  min-width: 400px;
   width: 100%;
 }
 
@@ -150,7 +150,7 @@ supply a favicon */
 }
 
 .controls {
-  padding: 12px 16px 6px;
+  padding: 12px 6px 6px 16px;
 }
 
 .settings-icon-wrap {
@@ -266,19 +266,22 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
   background-repeat: no-repeat;
 }
 
-.feedback-link {
+.feedback-link,
+.sorry {
   font-size: 11px;
   color: #4a4a4f;
   letter-spacing: -0.08px;
   padding: 2px 16px;
 }
 
-.feedback-link a {
+.feedback-link a,
+.sorry a {
   color: #0a84ff;
   text-decoration: none;
 }
 
-.feedback-link a:hover {
+.feedback-link a:hover,
+.sorry a:hover {
   color: #0060df;
 }
 
@@ -347,6 +350,8 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
 
 .providers-container {
   display: flex;
+  padding: 0 6px;
+  justify-content: space-around;
 }
 
 .provider-heading {
@@ -368,44 +373,43 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
   flex-direction: column;
   height: 120px;
   justify-content: center; /* center items horizontally, in this case */
-  margin: 16px 8px;
   width: 120px;
-}
-
-.provider-button:hover {
-  border: 1px solid #0a84ff;
+  padding: 6px;
+  transition: box-shadow 100ms, background 100ms;
+  box-shadow: 0 0 0 transparent;
 }
 
 .provider-button:disabled {
-  background: #efefef;
-  box-shadow: inset 0 0 2px #b2b2b2;
-}
-
-.provider-button:disabled:hover {
-  background: #cdcdcd;
-  border: 1px solid rgba(115, 115, 115, 0.4);
+  background: hsla(0, 0%, 80%, 0.2);
   position: relative;
+  opacity: 0.4;
 }
 
-.provider-button:disabled:hover ::after {
-  font-size: 18px;
-  transform: rotate(45deg);
+.provider-button:not(:disabled):hover {
+  border: 1px solid #fff;
+  box-shadow: 0 0 0 3px #0a84ff;
+  background: hsla(0, 0%, 80%, 0.2);
+}
+
+.provider-button:disabled::after {
   content: 'Coming Soon';
+  transform-origin: center center;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
   position: absolute;
-  top: 30px;
-  left: 5px;
-  display: inline-block;
-  margin-top: 10px;
-  color: white;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  color: #000;
+  justify-content: center;
+  transform: rotate(45deg);
 }
 
 .provider-button img {
   display: block;
   margin: auto;
-}
-
-.sorry {
-  margin: 10px 15px;
 }
 
 #login-error {
