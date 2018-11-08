@@ -14,16 +14,6 @@ We are interested in supporting other providers, and have some early support for
 
 If the experiment is successful we will have to consider how to support other providers.
 
-### I use Yahoo Mail or Outlook.com, can I try it?
-
-If you want to preview the support for these mail providers, you may do so.
-
-Go to **Tools > Add-ons** or type `about:addons` in the URL bar. Select **Extensions** and under Email Tabs select **Preferences**.
-
-In the preferences you may "Enable additional email providers" and Save.
-
-Then if click on the Email Tabs toolbar button and change settings (the gear icon in the top-right), you may select one of the other providers
-
 ### I don't use webmail, can Email Tabs support me?
 
 Not really. You can use the Copy Tabs To Clipboard functionality to paste into an email, though we don't support the full set of templates that we support for webmail.
