@@ -2,7 +2,7 @@ this.providerMetadata = (function () {
   let exports = {};
 
   exports.detectProvider = function () {
-    if (location.host.includes("mail.google")) {
+    if (location.host.includes("mail.google") || location.host.includes("www.google.com")) {
       return "gmail";
     } else if (location.host.includes("mail.yahoo")) {
       return "yahoo";
