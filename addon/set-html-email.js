@@ -489,6 +489,8 @@ function createIframe() {
   });
 }
 
+let keepIframeFocusedTimer;
+
 function showIframe(container) {
   let containers = ["#loading-container", "#done-container", "#choose-template"];
   if (!containers.includes(container)) {
@@ -502,10 +504,25 @@ function showIframe(container) {
     }
   }
   iframe.style.display = "";
+  iframe.contentWindow.focus();
+  let textareaFocusCounter = 3;
+  keepIframeFocusedTimer = setInterval(() => {
+    if (document.activeElement.tagName === "TEXTAREA") {
+      textareaFocusCounter--;
+      // The textarea tries to get an autofocus
+      iframe.contentWindow.focus();
+      if (textareaFocusCounter <= 0) {
+        clearInterval(keepIframeFocusedTimer);
+        keepIframeFocusedTimer = null;
+      }
+    }
+  }, 100);
 }
 
 function hideIframe() {
   iframe.style.display = "none";
+  clearInterval(keepIframeFocusedTimer);
+  keepIframeFocusedTimer = null;
 }
 
 createIframe();
