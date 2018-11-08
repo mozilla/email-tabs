@@ -164,7 +164,7 @@ async function sendEmail(tabIds, mailProvider, customDimensions) {
     let currentTab = await browser.tabs.get(newTab.id);
     if (providerMetadata.providers[mailProvider].isLoginPage(currentTab.url)) {
       // We have a login form
-      loginInterrupt();
+      loginInterrupt(customDimensions, currentTab.id);
     }
   }, 1000);
   // Note that we let the other handlers load on the page while we collect data (i.e., we don't await getTabInfo)
