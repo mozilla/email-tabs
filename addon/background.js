@@ -222,6 +222,7 @@ function copyHtmlToClipboard(html) {
 let loginInterruptedTime;
 
 async function loginInterrupt(customDimensions, tabId) {
+  await pause(100);
   try {
     await browser.tabs.get(tabId);
   } catch (e) {
