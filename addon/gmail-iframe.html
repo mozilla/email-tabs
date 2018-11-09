@@ -242,6 +242,8 @@
         color: black;
         font-size: 14px;
         outline: none;
+        cursor: pointer;
+        height: 100%;
       }
 
       .template-icon div {
@@ -285,6 +287,7 @@
         padding: 0 8px;
         text-align: center;
         width: 132px;
+        cursor: pointer;
       }
 
       #choose-template-cancel:focus,
@@ -319,20 +322,20 @@
       <section>
         <h2>Select an email template</h2>
         <div class="template-contain">
-          <a id="screenshot-template" class="template-icon" data-name="title_screenshot" href="#" tabindex="0">
+          <button id="screenshot-template" class="template-icon" data-name="title_screenshot" tabindex="0">
             <div></div>
             <p>Links with screenshots</p>
-          </a>
+          </button>
 
-          <a id="link-template" class="template-icon" data-name="just_links" href="#" tabindex="0">
+          <button id="link-template" class="template-icon" data-name="just_links" tabindex="0">
             <div></div>
             <p>Links only</p>
-          </a>
+          </button>
 
-          <a id="readability-template" class="template-icon" data-name="readability" href="#" tabindex="0">
+          <button id="readability-template" class="template-icon" data-name="readability" tabindex="0">
             <div></div>
             <p>Links with full articles</p>
-          </a>
+          </button>
         </div>
         <button id="choose-template-cancel" tabindex="0">Cancel</button>
       </section>
