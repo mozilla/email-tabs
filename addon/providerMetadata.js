@@ -25,7 +25,7 @@ this.providerMetadata = (function () {
       composeUrl(subject) {
         // Updating the subject in the Yahoo Mail interface is seemingly impossible due to some
         // kind of malware detection
-        return `http://compose.mail.yahoo.com/?subject=${encodeURIComponent(subject)}`;
+        return `https://compose.mail.yahoo.com/?subject=${encodeURIComponent(subject)}`;
       },
       isLoginPage(url) {
         return url.includes("login.yahoo.com");

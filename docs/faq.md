@@ -23,3 +23,7 @@ If this would be of interest to you, we welcome your feedback via the add-on, or
 ### What about other mail providers?
 
 Each mail provider requires quite a bit of work to support, and this is currently an experiment. We won't be able to support other providers during the experiment.
+
+## What will my email look like to the person reading it?
+
+In our experimentation most clients display these emails well. If you are interested in the details, you can [view some of the tests we've done here](https://github.com/mozilla/email-tabs/issues/35#issuecomment-436726410)
