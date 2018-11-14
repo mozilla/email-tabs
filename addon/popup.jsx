@@ -128,7 +128,7 @@ class Popup extends React.Component {
           <input checked={allChecked} ref={allCheckbox => this.allCheckbox = allCheckbox} type="checkbox" id="allCheckbox" onChange={this.onClickCheckAll.bind(this)} />
           <label htmlFor="allCheckbox" className="styled-checkbox"></label>
           <label htmlFor="allCheckbox">Select All</label>
-          <button className="settings-icon-wrap" onClick={this.onSelectProvider.bind(this)}><img className="settings-icon" src="images/settings.svg" alt="settings icon"/></button>
+          <button className="settings-icon-wrap" title="Set mail provider" onClick={this.onSelectProvider.bind(this)}><img className="settings-icon" src="images/settings.svg" alt="settings icon"/></button>
         </div>
       </div>
       <div className="separator"></div>
