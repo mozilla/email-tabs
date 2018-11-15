@@ -102,6 +102,20 @@ this.emailTemplates = (function () {
 
   exports.JustLinks = JustLinks;
 
+  class ClipboardLinks extends React.Component {
+    render() {
+      let tabList = this.props.tabs.map((tab, index) => {
+        return <Fragment key={index}>
+          {tab.title} <a href={tab.url}>{tab.url}</a> <br />
+          { selectionMarkup(tab.selection) }
+        </Fragment>;
+      });
+      return <Fragment>{tabList}</Fragment>;
+    }
+  }
+
+  exports.ClipboardLinks = ClipboardLinks;
+
   class FullArticles extends React.Component {
     render() {
       let toc = null;

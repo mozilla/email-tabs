@@ -23,6 +23,13 @@ this.templateMetadata = (function() {
       wantsReadability: true,
       componentName: "FullArticles",
     },
+    {
+      name: "clipboard_links",
+      title: "Title and links",
+      wantsScreenshots: false,
+      wantsReadability: false,
+      componentName: "ClipboardLinks",
+    },
   ];
 
   for (let name in this.templateMetadata) {
