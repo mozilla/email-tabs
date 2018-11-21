@@ -80,7 +80,7 @@ this.captureText = (function() {
     if (text.length) {
       let result = text.join("\n");
       result = result.replace(/^\s+/, "");
-      result = result.replace(/\s+$/, "");
+      result = result.replace(/\s+$/, " ");
       result = result.replace(/[ \t]+\n/g, "\n");
       return result;
     }
