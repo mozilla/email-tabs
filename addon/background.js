@@ -232,7 +232,7 @@ async function copyTabHtml(tabIds, customDimensions) {
   let tabInfo = await getTabInfo(tabIds, {wantsScreenshots: false, wantsReadability: false}, customDimensions);
   // this is passed as a prop to the email template in order to exclude the signature on copy
   const copying = true;
-  let { html } = await renderTabs(tabInfo, "just_links", copying);
+  let { html } = await renderTabs(tabInfo, "clipboard_links", copying);
   copyHtmlToClipboard(html);
 
   browser.notifications.create("notify-copied", {
