@@ -385,10 +385,18 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
   opacity: 0.4;
 }
 
+.provider-button:focus {
+  box-shadow: 0 0 0 1px #0a84ff inset, 0 0 0 1px #0a84ff, 0 0 0 4px rgba(10, 132, 255, 0.3);
+}
+
 .provider-button:not(:disabled):hover {
   border: 1px solid #fff;
   box-shadow: 0 0 0 3px #0a84ff;
-  background: hsla(0, 0%, 80%, 0.2);
+  background: rgba(12, 12, 13, 0.1);
+}
+
+.provider-button:not(:disabled):active {
+  background: rgba(12, 12, 13, 0.2);
 }
 
 .provider-button:disabled::after {
