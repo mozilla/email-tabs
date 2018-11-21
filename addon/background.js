@@ -57,6 +57,43 @@ sendEvent({
   ni: true,
 });
 
+browser.contextMenus.create({
+  id: "email-tab",
+  title: "Email Tab",
+  contexts: ["page", "tab"],
+  documentUrlPatterns: ["<all_urls>"],
+});
+
+browser.contextMenus.onClicked.addListener(async (info, tab) => {
+  let mailProvider = (await browser.storage.local.get("mailProvider")).mailProvider;
+  if (!mailProvider) {
+    browser.notifications.create("error-no-preference", {
+      type: "basic",
+      title: "Email Tabs",
+      message: "You must first set your mail provider using the toolbar button",
+    });
+    sendEvent({
+      ec: "interface",
+      ea: "context-menu-failed-pref",
+      ni: true,
+    });
+    return;
+  }
+  let customDimensions = {
+    cd1: await browser.tabs.query({currentWindow: true}).length,
+    cd2: 1,
+    cd3: tab.active,
+    cd6: false,
+    cd7: mailProvider,
+  };
+  sendEvent(Object.assign({
+    ec: "interface",
+    ea: "context-menu",
+    el: "email-tabs",
+  }, customDimensions));
+  sendEmail([tab.id], mailProvider, customDimensions);
+});
+
 function pause(time) {
   return new Promise((resolve) => {
     setTimeout(resolve, time);

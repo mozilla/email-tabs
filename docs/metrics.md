@@ -147,6 +147,27 @@ cd6,
 cd7
 ```
 
+###### When the user uses the context menu to email tabs
+
+```
+ec: interface
+ea: context-menu,
+el: email-tabs,
+cd1,
+cd2,
+cd3,
+cd6,
+cd7
+```
+
+####### If the context menu failed because no mail provider was selected
+
+```
+ec: interface,
+ea: context-menu-failed-pref,
+ni: true
+```
+
 ###### When the user is not logged in, or encounters a compose window error
 `el` will be `account` if we believe the user encountered a login form, or `error` if there's some other problem encountered.
 
