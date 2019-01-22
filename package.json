@@ -1,7 +1,7 @@
 {
   "name": "email-tabs",
   "description": "Compose an email from your tabs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Mozilla Test Pilot Team (https://testpilot.firefox.com)",
   "bugs": {
     "url": "https://github.com/mozilla/email-tabs"
