@@ -1,4 +1,4 @@
-/* globals TestPilotGA, emailTemplates, templateMetadata, DOMPurify, providerMetadata */
+/* globals emailTemplates, templateMetadata, DOMPurify, providerMetadata */
 
 browser.runtime.onMessage.addListener((message, source) => {
   if (message.type === "sendEmail") {
@@ -32,23 +32,8 @@ browser.runtime.onMessage.addListener((message, source) => {
   return null;
 });
 
-const manifest = browser.runtime.getManifest();
-
-const is_production = !manifest.version_name.includes("dev");
-
-const ga = new TestPilotGA({
-  an: "email-tabs",
-  aid: manifest.applications.gecko.id,
-  aiid: "testpilot",
-  av: manifest.version,
-  // cd19 could also be dev or stage:
-  cd19: is_production ? "production" : "local",
-  ds: "addon",
-  tid: is_production ? "UA-124570950-1" : "",
-});
-
 async function sendEvent(args) {
-  ga.sendEvent(args.ec, args.ea, args);
+  // Currently doing nothing (we used to send to GA)
 }
 
 sendEvent({
