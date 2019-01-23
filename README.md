@@ -8,7 +8,7 @@ There is a user-focused [Frequently Asked Questions](./docs/faq.md) as well.
 
 ## Installing
 
-[**Install add-on with this link**](https://testpilot.firefox.com/files/email-tabs@mozilla.org/signed-addon.xpi)
+[**Install add-on from AMO**](https://addons.mozilla.org/en-US/firefox/addon/email-tabs/)
 
 That will install the latest version of the add-on built from the [production branch](https://github.com/mozilla/email-tabs/tree/production).
 
