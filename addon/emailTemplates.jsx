@@ -41,8 +41,7 @@ this.emailTemplates = (function () {
     render() {
       return (<div>
               <br/>
-              <p>Sent with <a href="https://testpilot.firefox.com/experiments/email-tabs?utm_source=email-tabs&utm_medium=email&utm_campaign=email-footer">Email Tabs</a>, a <a href="https://testpilot.firefox.com?utm_source=email-tabs&utm_medium=email&utm_campaign=email-footer">Firefox Test Pilot</a> experiment
-              </p></div>);
+              <p>Sent with <a href="https://addons.mozilla.org/en-US/firefox/addon/email-tabs/">Email Tabs</a> for <a href="https://firefox.com">Firefox</a></p></div>);
     }
   }
 
