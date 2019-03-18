@@ -187,7 +187,7 @@ const providers = {
     },
 
     setHtml(html) {
-      let editableEl = document.querySelector("[aria-label='Message body']");
+      let editableEl = document.querySelector("[contenteditable][role='textbox']");
       if (!editableEl) {
         setTimeout(this.setHtml.bind(this, html), 100);
         return;
