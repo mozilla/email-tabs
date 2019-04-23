@@ -266,7 +266,6 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
   background-repeat: no-repeat;
 }
 
-.feedback-link,
 .sorry {
   font-size: 11px;
   color: #4a4a4f;
@@ -274,19 +273,13 @@ input[type="checkbox"]#allCheckbox:checked + .styled-checkbox::after {
   padding: 2px 16px;
 }
 
-.feedback-link a,
 .sorry a {
   color: #0a84ff;
   text-decoration: none;
 }
 
-.feedback-link a:hover,
 .sorry a:hover {
   color: #0060df;
-}
-
-.feedback-link a:active {
-  color: #003eaa;
 }
 
 .panel-footer {

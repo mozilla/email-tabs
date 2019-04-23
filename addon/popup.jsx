@@ -44,19 +44,6 @@ class Tab extends React.Component {
     </li>;
   }
 
-  async onFeedback() {
-    browser.runtime.sendMessage({
-      type: "sendEvent",
-      ec: "interface",
-      ea: "button-click",
-      el: "feedback",
-      cd1: await browser.tabs.query({currentWindow: true}).length,
-      cd2: getSelectedCount(),
-      cd3: activeTabSelected,
-      cd7: mailProvider,
-    });
-  }
-
   onChange() {
     selected.set(this.props.tab.id, this.checkbox.checked);
     if (this.props.onChange) {
@@ -135,8 +122,6 @@ class Popup extends React.Component {
       <div className="tabList">
         <TabList tabs={this.props.tabs} selected={this.props.selected} />
       </div>
-      <div className="separator"></div>
-      <p className="feedback-link">What do you think of Email Tabs? <a href="https://qsurvey.mozilla.com/s3/email-tabs?ref=popup" target="_blank" rel="noopener noreferrer" onClick={this.onFeedback}>Let us know.</a></p>
 
       <footer className="panel-footer toggle-enabled">
         <button onClick={this.copyTabs.bind(this)} disabled={!anyChecked}>
